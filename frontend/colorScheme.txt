@@ -1,0 +1,56 @@
+
+For the given component with light and dark mode support, I used the following color scheme:
+
+Light Mode
+Foreground (Text): rgb(51, 51, 51) (--foreground-rgb: 51, 51, 51)
+Background Start: rgb(255, 222, 204) (--background-start-rgb: 255, 222, 204)
+Background End: rgb(255, 238, 228) (--background-end-rgb: 255, 238, 228)
+Input Border: border-gray-300
+Button Background: bg-blue-500
+Button Hover: hover:bg-blue-700
+Success Message Background: bg-green-100
+Success Message Text: text-green-700
+Message Container Background: bg-gray-100
+Dark Mode
+Foreground (Text): text-gray-100
+Background: bg-gray-800
+Form Container Background: bg-gray-900
+Input Border: dark:border-gray-700
+Button Background: dark:bg-blue-700
+Button Hover: dark:hover:bg-blue-500
+Message Container Background: dark:bg-gray-800
+Tailwind CSS Custom Theme Configuration
+javascript
+Copy code
+// tailwind.config.js
+module.exports = {
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx}',
+    './components/**/*.{js,ts,jsx,tsx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        foreground: 'rgb(var(--foreground-rgb))',
+        'my-bg-1': 'rgb(255, 222, 204)',
+        'my-bg-2': 'rgb(255, 238, 228)',
+      },
+    },
+  },
+  darkMode: 'class', // Enable dark mode using a class
+  plugins: [],
+};
+Global CSS with Light and Dark Mode Styles
+css
+Copy code
+/* styles/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 51, 51, 51;
+  --background-start-rgb: 255, 222, 204;
+  --background-end-rgb: 255, 238, 228;
+}

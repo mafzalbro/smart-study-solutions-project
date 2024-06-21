@@ -1,0 +1,49 @@
+src
+ ├── config
+ │   ├── db.js
+ │   ├── passport.js
+ │   └── whatsapp.js
+ ├── controllers
+ │   ├── adminAuthController.js
+ │   ├── authController.js
+ │   ├── bookController.js
+ │   ├── chatWithPdfController.js
+ │   ├── qnaController.js
+ │   ├── userController.js
+ │   └── whatsappController.js
+ ├── middlewares
+ │   ├── adminAuth.js
+ │   ├── auth.js
+ │   ├── cacheMiddleware.js
+ │   └── errorHandler.js
+ ├── models
+ │   ├── admin.js
+ │   ├── book.js
+ │   ├── counter.js
+ │   ├── qna.js
+ │   └── user.js
+ ├── routes
+ │   ├── adminAuthRoutes.js
+ │   ├── authRoutes.js
+ │   ├── bookRoutes.js
+ │   ├── chatWithPdfRoutes.js
+ │   ├── qnaRoutes.js
+ │   ├── userRoutes.js
+ │   └── whatsappRoutes.js
+ ├── services
+ │   ├── bookRecommendation.js
+ │   ├── chatWithPdf.js
+ │   └── whatsappService.js
+ └── utils
+     ├── autoIncrement.js
+     ├── chatUtils.js
+     ├── insertBooks.js
+     ├── logger.js
+     ├── pagination.js
+     ├── pdfUtils.js
+     └── validator.js
+
+
+packages
+
+  body-parser connect-mongo dotenv express express-session jsonwebtoken mongoose morgan passport passport-jwt nodemon

@@ -1,0 +1,112 @@
+[
+  {
+    "title": "Sapiens: A Brief History of Humankind",
+    "author": "Yuval Noah Harari",
+    "genre": "Non-fiction",
+    "description": "A book that explores the history of the human species from the emergence of Homo sapiens to the present.",
+    "status": false,
+    "slug": "sapiens-a-brief-history-of-humankind",
+    "type": "book",
+    "ai_approval": false,
+    "tags": ["anthropology", "history", "evolution"]
+  },
+  {
+    "title": "The Handmaid's Tale",
+    "author": "Margaret Atwood",
+    "genre": "Dystopian",
+    "description": "A novel set in a totalitarian society where women are oppressed and used for reproduction.",
+    "status": true,
+    "slug": "the-handmaids-tale",
+    "type": "book",
+    "ai_approval": true,
+    "tags": ["feminism", "oppression", "gender roles"]
+  },
+  {
+    "title": "A Game of Thrones",
+    "author": "George R.R. Martin",
+    "genre": "Fantasy",
+    "description": "The first novel in the epic fantasy series A Song of Ice and Fire, set in the fictional continents of Westeros and Essos.",
+    "status": true,
+    "slug": "a-game-of-thrones",
+    "type": "book",
+    "ai_approval": true,
+    "tags": ["dragons", "political intrigue", "power struggle"]
+  },
+  {
+    "title": "The Alchemist",
+    "author": "Paulo Coelho",
+    "genre": "Fiction",
+    "description": "A novel about a young Andalusian shepherd named Santiago and his journey to find the meaning of life.",
+    "status": true,
+    "slug": "the-alchemist",
+    "type": "book",
+    "ai_approval": false,
+    "tags": ["philosophy", "spirituality", "personal legend"]
+  },
+  {
+    "title": "The Book Thief",
+    "author": "Markus Zusak",
+    "genre": "Historical Fiction",
+    "description": "A novel set in Nazi Germany, narrated by Death, about a young girl who steals books and learns to read.",
+    "status": true,
+    "slug": "the-book-thief",
+    "type": "book",
+    "ai_approval": false,
+    "tags": ["World War II", "death", "books and reading"]
+  },
+  {
+    "title": "The Road Less Traveled",
+    "author": "M. Scott Peck",
+    "genre": "Self-help",
+    "description": "A book that addresses various issues, such as love, growth, and spirituality.",
+    "status": false,
+    "slug": "the-road-less-traveled",
+    "type": "book",
+    "ai_approval": false,
+    "tags": ["psychology", "personal development", "relationships"]
+  },
+  {
+    "title": "The Girl on the Train",
+    "author": "Paula Hawkins",
+    "genre": "Thriller",
+    "description": "A psychological thriller novel that follows the lives of three women linked by the disappearance of a person.",
+    "status": true,
+    "slug": "the-girl-on-the-train",
+    "type": "book",
+    "ai_approval": true,
+    "tags": ["unreliable narrator", "obsession", "mystery"]
+  },
+  {
+    "title": "The Silent Patient",
+    "author": "Alex Michaelides",
+    "genre": "Psychological Thriller",
+    "description": "A psychological thriller about a woman who stops speaking after being accused of murdering her husband.",
+    "status": true,
+    "slug": "the-silent-patient",
+    "type": "book",
+    "ai_approval": true,
+    "tags": ["mental health", "obsession", "mystery"]
+  },
+  {
+    "title": "Eleanor Oliphant Is Completely Fine",
+    "author": "Gail Honeyman",
+    "genre": "Fiction",
+    "description": "A novel about a socially awkward woman who gradually opens up to the world around her.",
+    "status": false,
+    "slug": "eleanor-oliphant-is-completely-fine",
+    "type": "book",
+    "ai_approval": false,
+    "tags": ["loneliness", "friendship", "self-discovery"]
+  },
+  {
+    "title": "Educated: A Memoir",
+    "author": "Tara Westover",
+    "genre": "Memoir",
+    "description": "A memoir about the author's journey from a survivalist family in Idaho to becoming a scholar at Cambridge University.",
+    "status": true,
+    "slug": "educated-a-memoir",
+    "type": "book",
+    "ai_approval": false,
+    "tags": ["education", "family", "identity"]
+  }
+]

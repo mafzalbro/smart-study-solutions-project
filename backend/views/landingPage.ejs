@@ -1,0 +1,15 @@
+<!-- views/landingPage.ejs -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Landing Page</title>
+</head>
+<body>
+  <h1>Welcome to the Book Store</h1>
+  <ul>
+    <% books.forEach(book => { %>
+      <li><a href="/books/<%= book.id %>"><%= book.title %></a></li>
+    <% }) %>
+  </ul>
+</body>
+</html>
