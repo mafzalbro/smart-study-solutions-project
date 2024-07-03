@@ -88,18 +88,30 @@ const deleteResource = async (req, res) => {
 // Get all resources with optional sorting, filtering, and searching
 const getAllResources = async (req, res) => {
   const { page = 1, limit = 5, sortBy, filterBy, query } = req.query;
+  
   let queryOptions = {};
+  let sortOptions = {};
 
   try {
+    // Parse sorting options
     if (sortBy) {
-      queryOptions.sort = sortBy;
+      const [field, direction] = sortBy.split(':');
+      sortOptions[field] = direction === 'desc' ? -1 : 1;
     }
 
+    console.log(sortBy);
+
+    // Parse filtering options
     if (filterBy) {
-      const filter = JSON.parse(filterBy);
-      Object.assign(queryOptions, filter);
+      try {
+        const filter = JSON.parse(filterBy);
+        Object.assign(queryOptions, filter);
+      } catch (error) {
+        return res.status(400).json({ message: 'Invalid filterBy parameter' });
+      }
     }
 
+    // Parse search query
     if (query) {
       queryOptions.$or = [
         { title: { $regex: query, $options: 'i' } },
@@ -109,8 +121,14 @@ const getAllResources = async (req, res) => {
       ];
     }
 
-    const results = await paginateResults(Resource.find(queryOptions), parseInt(page), parseInt(limit));
-    res.status(200).json(results);
+    // Fetch results with pagination and sorting
+    const results = await paginateResults(
+      Resource.find(queryOptions).sort(sortOptions),
+      parseInt(page),
+      parseInt(limit)
+    );
+
+    res.status(200).json({ results: { totalResults: results.length, data: results }, queryOptions, sortOptions });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error fetching resources' });

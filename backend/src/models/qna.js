@@ -12,7 +12,12 @@ const answerSchema = new Schema({
 const qnaSchema = new Schema({
   question: { type: String, required: true },
   askedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
+  tags: [{ type: String }],
+  slug: { type: String, unique: true },
   answers: [answerSchema]
 }, { timestamps: true });
 
-module.exports = mongoose.model('Qna', qnaSchema);
+const Question = mongoose.model('Question', qnaSchema);
+
+module.exports = Question;

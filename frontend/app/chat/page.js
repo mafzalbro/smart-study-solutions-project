@@ -1,11 +1,12 @@
 import React from 'react'
 import ChatWithPdf from '../components/ChatWithPdf'
-import LoginForm from '../components/LoginForm'
+import AddAPIKey from '../components/AddAPIKey'
+
 
 const page = () => {
     return (
     <div>
-        <ChatWithPdf />
+        < ChatWithPdf />
     </div>
   )
 }

@@ -30,6 +30,11 @@ const NavBar = () => {
             </Link>
           </li>
           <li>
+            <Link href="/chat/test" className="text-lg hover:text-blue-500 dark:hover:text-blue-300">
+              Test API
+            </Link>
+          </li>
+          <li>
             <Link href="/login" className="text-lg hover:text-blue-500 dark:hover:text-blue-300">
               Log In
             </Link>
@@ -37,7 +42,7 @@ const NavBar = () => {
         </ul>
         <button
           onClick={toggleDarkMode}
-          className="ml-4 py-2 px-4 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-500"
+          className="ml-4 py-2 px-4 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 dark:bg-orange-700 dark:hover:bg-orange-600"
         >
           {darkMode ? 'Light Mode' : 'Dark Mode'}
         </button>

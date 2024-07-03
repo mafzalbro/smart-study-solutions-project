@@ -2,6 +2,7 @@ const User = require('../models/user');
 const { extractTextFromPdf } = require('../utils/pdfUtils');
 const { generateChatResponse } = require('../utils/chatUtils');
 const { paginateResultsForArray } = require('../utils/pagination');
+const { getAIMessage } = require('../utils/getAIMessage');
 
 
 const createChatOption = async (req, res) => {
@@ -128,7 +129,7 @@ const getAllChatTitles = async (req, res) => {
     }
 
     // Extracting titles
-    const titles = filteredChatOptions.map(option => ({ id: option._id, title: option.title }));
+    const titles = filteredChatOptions.map(option => ({ id: option._id, slug: option.slug, title: option.title, }));
 
     // Pagination
     const results = paginateResultsForArray(titles, parseInt(page), parseInt(limit));
@@ -145,27 +146,40 @@ const chatWithPdfById = async (req, res) => {
     const { pdfUrl, message } = req.body;
     const userId = req?.user?.id;
 
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found. Please log in to continue.' });
+    if (!userId) {
+      return res.status(401).json({ message: 'Please log in to continue.' });
     }
 
-    const chatOption = user.chatOptions.id(chatId);
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
 
-    if (!chatOption) {
-      return res.status(404).json({ message: 'Chat option not found' });
+    const apiKey = user.apiKey;
+    if (!apiKey) {
+      return res.status(404).json({ message: 'Please add an API key. You must be logged in.' });
+    }
+
+    let chatOption;
+
+    if (chatId) {
+      chatOption = user.chatOptions.id(chatId);
+      if (!chatOption) {
+        return res.status(404).json({ message: 'Chat option not found.' });
+      }
+    } else {
+      chatOption = user.chatOptions[0];
     }
 
     const pdfText = pdfUrl ? await extractTextFromPdf(pdfUrl) : '';
     const context = chatOption.chatHistory;
-    const pdfContext = pdfText ? [{ user_query: `PDF Document Text: ${pdfText}`, model_response: '' }] : [];
+    const pdfContext = pdfText ? [{ user_query: `This is PDF Document Text to summarize: ${pdfText}`, model_response: '' }] : [];
     const combinedContext = [...context, ...pdfContext];
 
     res.setHeader('Content-Type', 'text/html');
     res.setHeader('Transfer-Encoding', 'chunked');
 
-    const responseStream = generateChatResponse(message, combinedContext);
+    const responseStream = generateChatResponse(message, combinedContext, apiKey);
 
     let fullResponse = '';
 
@@ -176,14 +190,28 @@ const chatWithPdfById = async (req, res) => {
 
     // Save full response to specific chat history
     chatOption.chatHistory.push({ user_query: message, model_response: fullResponse });
-    await user.save();
+
+    // Use findByIdAndUpdate to avoid VersionError
+    await User.findByIdAndUpdate(
+      userId,
+      { $set: { 'chatOptions.$[chatOption]': chatOption } },
+      {
+        arrayFilters: [{ 'chatOption._id': chatOption._id }],
+        new: true,
+        runValidators: true,
+      }
+    );
 
     res.end();
   } catch (error) {
     console.error('Error in chatWithPdfById:', error);
-    res.status(500).json({ message: 'Internal server error' });
+
+    if (!res.headersSent) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
   }
 };
+
 
 
 
@@ -275,7 +303,44 @@ const getChatOptionById = async (req, res) => {
   }
 };
 
+const setupAPIKey = async (req, res) => {
+  const user = req.user;
+  const { apiKey } = req.body
+
+  if(!apiKey){
+    return res.status(404).json({ message: "API Key is not there" })
+  }
+  
+  try{
+    const message = await getAIMessage(apiKey, "testing, return me 'Cool, API Key is working!'")
+    if(message !== "try test again or add correct api key"){
+      user.apiKey = apiKey
+      await user.save()
+      return res.status(200).json({ message: message.split("\n")[0].trim(), valid: true })
+    } else{
+      return res.status(404).json({ message: "try test again or add correct api key", valid: false })
+    }
+
+  } catch(error){
+    console.log("Error saving API Key", error)
+    return res.status(500).json({ message: 'Internal server error', valid: false })
+  }
+}
 
 
+const fetchAPIKey = async (req, res) => {
+  const apiKey = req.user.apiKey;
+  
+  if (!apiKey) {
+    return res.status(404).json({ message: "Please login" });
+  }
 
-module.exports = { createChatOption, updateChatOption, removeChatOption, getChatOptionById, chatWithPdfById, getAllChatOptions, getAllChatTitles };
+  try {
+    return res.status(200).json({ message: "API retrieved successfully", apiKey });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+module.exports = { createChatOption, updateChatOption, removeChatOption, getChatOptionById, chatWithPdfById, getAllChatOptions, getAllChatTitles, setupAPIKey, fetchAPIKey };

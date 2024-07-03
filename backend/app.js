@@ -29,19 +29,16 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
-
-
-
 // CORS middleware
 app.use(cors({
-  origin: 'http://localhost:8080',
+  origin: process.env.ORIGIN,
   credentials: true
 }));
 
 // Session configuration
 
 app.use(session({
-  secret: process.env.JWT_SECRET || 'your_secret_key',
+  secret: process.env.JWT_SECRET,
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),

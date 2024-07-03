@@ -14,7 +14,7 @@ const {
 // Define routes
 router.get('/recommend', recommendResource);
 router.get('/:id', getResourceById);
-router.post('/', addResource);
+router.post('/add', addResource);
 router.put('/:id', updateResource);
 router.delete('/:id', deleteResource);
 router.get('/', getAllResources); // GET /?page=1&limit=5&sortBy=title&filterBy={"status":"active"}&query=keyword

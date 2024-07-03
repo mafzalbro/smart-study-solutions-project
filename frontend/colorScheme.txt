@@ -6,8 +6,8 @@ Foreground (Text): rgb(51, 51, 51) (--foreground-rgb: 51, 51, 51)
 Background Start: rgb(255, 222, 204) (--background-start-rgb: 255, 222, 204)
 Background End: rgb(255, 238, 228) (--background-end-rgb: 255, 238, 228)
 Input Border: border-gray-300
-Button Background: bg-blue-500
-Button Hover: hover:bg-blue-700
+Button Background: bg-orange-500
+Button Hover: hover:bg-orange-700
 Success Message Background: bg-green-100
 Success Message Text: text-green-700
 Message Container Background: bg-gray-100
@@ -16,8 +16,8 @@ Foreground (Text): text-gray-100
 Background: bg-gray-800
 Form Container Background: bg-gray-900
 Input Border: dark:border-gray-700
-Button Background: dark:bg-blue-700
-Button Hover: dark:hover:bg-blue-500
+Button Background: dark:bg-orange-700
+Button Hover: dark:hover:bg-orange-500
 Message Container Background: dark:bg-gray-800
 Tailwind CSS Custom Theme Configuration
 javascript

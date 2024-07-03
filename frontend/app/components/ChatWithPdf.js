@@ -1,6 +1,7 @@
-"use client"
+"use client";
 
 import React, { useState } from 'react';
+import { ClipLoader } from 'react-spinners'; // Import the spinner component
 const marked = require('marked');
 import useTypewriter from '../customHooks/useTypewriter';
 
@@ -8,10 +9,11 @@ const ChatWithPdf = () => {
   const [chatChunks, setChatChunks] = useState([]);
   const [message, setMessage] = useState('');
   const [pdfUrl, setPdfUrl] = useState('');
+  const [loading, setLoading] = useState(false); // Manage loading state
 
   const fetchChatChunks = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/chatwithpdf', {
+      const response = await fetch('http://localhost:3000/api/chat', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -39,6 +41,8 @@ const ChatWithPdf = () => {
       }
     } catch (error) {
       console.error('Error fetching chat chunks:', error);
+    } finally {
+      setLoading(false); // Set loading to false after response
     }
   };
 
@@ -47,10 +51,12 @@ const ChatWithPdf = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setChatChunks([]); // Clear previous chat chunks
+    setLoading(true); // Set loading to true when starting to fetch
     await fetchChatChunks(); // Fetch new chat chunks
     // Optionally, clear message and pdfUrl inputs if desired
     // setMessage('');
     // setPdfUrl('');
+    setLoading(false)
   };
 
   return (
@@ -65,7 +71,7 @@ const ChatWithPdf = () => {
               value={message}
               placeholder="Enter your message"
               onChange={(e) => setMessage(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600"
             />
           </div>
           <div>
@@ -75,15 +81,21 @@ const ChatWithPdf = () => {
               value={pdfUrl}
               placeholder="Enter the PDF URL"
               onChange={(e) => setPdfUrl(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600"
             />
           </div>
-          <button
-            type="submit"
-            className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Send
-          </button>
+          {loading ? (
+            <div className="flex justify-center items-center">
+              <ClipLoader color={"#000000"} loading={loading} size={35} />
+            </div>
+          ) : (
+            <button
+              type="submit"
+              className="w-full py-2 px-4 bg-orange-600 text-white font-semibold rounded-lg shadow-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600"
+            >
+              Send
+            </button>
+          )}
         </form>
         <div className="mt-6 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
           {chatChunks.map((chunk, index) => (

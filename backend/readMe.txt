@@ -31,4 +31,11 @@ change filter, sort, search, pagination
 
 ---------------------
 
-change topics based chatHistory
+change topics based chatHistory (done)
+
+---------------------
+
+Please make backend amazing
+work on long documents and image pdfs
+clear chat as sooner as possible
+then go to next one faster

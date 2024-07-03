@@ -38,9 +38,15 @@ const userSchema = new Schema({
   },
   profileImage: {
     type: String,
+    default: null,
+  },
+  apiKey: {
+    type: String,
+    default: null,
   },
   favoriteGenre: {
     type: String,
+    required: true,
   },
   chatOptions: {
     type: [ChatSchema],

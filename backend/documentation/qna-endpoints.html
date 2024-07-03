@@ -1,0 +1,154 @@
+<h3>Question Endpoints</h3>
+<ol>
+<li>
+<p><strong>Submit a Question</strong></p>
+<ul>
+<li><strong>Request Type</strong>: POST</li>
+<li><strong>URL</strong>: <code>http://localhost:3000/questions</code></li>
+<li><strong>Body</strong>:
+<div dir="ltr"><code>{ "question": "What is Node.js?", "category": "60d0fe4f5311236168a109ca", "tags": ["JavaScript", "Backend"] } </code></div>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Answer a Question</strong></p>
+<ul>
+<li><strong>Request Type</strong>: PUT</li>
+<li><strong>URL</strong>: <code>http://localhost:3000/questions/60d21b4667d0d8992e610c85/answer</code></li>
+<li><strong>Body</strong>:
+<div>
+<div dir="ltr"><code>{ "answerText": "Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine." } </code></div>
+</div>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Get All Questions</strong></p>
+<ul>
+<li><strong>Request Type</strong>: GET</li>
+<li><strong>URL</strong>: <code>http://localhost:3000/questions</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Get a Specific Question by ID</strong></p>
+<ul>
+<li><strong>Request Type</strong>: GET</li>
+<li><strong>URL</strong>: <code>http://localhost:3000/questions/60d21b4667d0d8992e610c85</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Update a Question</strong></p>
+<ul>
+<li><strong>Request Type</strong>: PUT</li>
+<li><strong>URL</strong>: <code>http://localhost:3000/questions/60d21b4667d0d8992e610c85</code></li>
+<li><strong>Body</strong>:
+<div>
+<div dir="ltr"><code>{ "question": "What is Node.js and its uses?", "category": "60d0fe4f5311236168a109cb", "tags": ["JavaScript", "Backend", "Runtime"] } </code></div>
+</div>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Delete a Question</strong></p>
+<ul>
+<li><strong>Request Type</strong>: DELETE</li>
+<li><strong>URL</strong>: <code>http://localhost:3000/questions/60d21b4667d0d8992e610c85</code></li>
+</ul>
+</li>
+</ol>
+<h3>Answer Endpoints</h3>
+<ol start="7">
+<li>
+<p><strong>Get All Answers for a Specific Question</strong></p>
+<ul>
+<li><strong>Request Type</strong>: GET</li>
+<li><strong>URL</strong>: <code>http://localhost:3000/questions/60d21b4667d0d8992e610c85/answers</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Update an Answer</strong></p>
+<ul>
+<li><strong>Request Type</strong>: PUT</li>
+<li><strong>URL</strong>: <code>http://localhost:3000/questions/60d21b4667d0d8992e610c85/answers/60d21b9067d0d8992e610c86</code></li>
+<li><strong>Body</strong>:
+<div>
+<div dir="ltr"><code>{ "answerText": "Node.js is a JavaScript runtime that allows you to run JavaScript on the server-side." } </code></div>
+</div>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Delete an Answer</strong></p>
+<ul>
+<li><strong>Request Type</strong>: DELETE</li>
+<li><strong>URL</strong>: <code>http://localhost:3000/questions/60d21b4667d0d8992e610c85/answers/60d21b9067d0d8992e610c86</code></li>
+</ul>
+</li>
+</ol>
+<h3>User-specific Endpoints</h3>
+<ol start="10">
+<li>
+<p><strong>Get All Questions Asked by a Specific User</strong></p>
+<ul>
+<li><strong>Request Type</strong>: GET</li>
+<li><strong>URL</strong>: <code>http://localhost:3000/user/60d0fe4f5311236168a109ca/questions</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Get All Answers Given by a Specific User</strong></p>
+<ul>
+<li><strong>Request Type</strong>: GET</li>
+<li><strong>URL</strong>: <code>http://localhost:3000/user/60d0fe4f5311236168a109ca/answers</code></li>
+</ul>
+</li>
+</ol>
+<h3>Recommendation Endpoint</h3>
+<ol start="12">
+<li><strong>Recommend Questions</strong>
+<ul>
+<li><strong>Request Type</strong>: GET</li>
+<li><strong>URL</strong>: <code>http://localhost:3000/recommendations</code></li>
+</ul>
+</li>
+</ol>
+<h3>Category Endpoints</h3>
+<ol start="13">
+<li>
+<p><strong>Create a New Category</strong></p>
+<ul>
+<li><strong>Request Type</strong>: POST</li>
+<li><strong>URL</strong>: <code>http://localhost:3000/categories</code></li>
+<li><strong>Body</strong>:
+<div>
+<div dir="ltr"><code>{ "name": "Backend Development", "description": "Questions related to backend development." } </code></div>
+</div>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Get All Categories</strong></p>
+<ul>
+<li><strong>Request Type</strong>: GET</li>
+<li><strong>URL</strong>: <code>http://localhost:3000/categories</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Update a Category</strong></p>
+<ul>
+<li><strong>Request Type</strong>: PUT</li>
+<li><strong>URL</strong>: <code>http://localhost:3000/categories/60d0fe4f5311236168a109cb</code></li>
+<li><strong>Body</strong>:
+<div>
+<div dir="ltr"><code>{ "name": "Backend Development and Databases", "description": "Questions related to backend development and database management." } </code></div>
+</div>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Delete a Category</strong></p>
+<ul>
+<li><strong>Request Type</strong>: DELETE</li>
+<li><strong>URL</strong>: <code>http://localhost:3000/categories/60d0fe4f5311236168a109cb</code></li>
+</ul>
+</li>
+</ol>

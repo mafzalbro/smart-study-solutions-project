@@ -111,10 +111,11 @@ const deleteBook = async (req, res) => {
 const getAllBooks = async (req, res) => {
   const { page = 1, limit = 5, sortBy, filterBy, query } = req.query;
   let queryOptions = {};
-
+  let sortOptions = {}
   try {
     if (sortBy) {
-      queryOptions.sort = sortBy;
+      const [field, direction] = sortBy.split(':')
+      sortOptions[field] = direction == "desc" ? "desc" : "asc";
     }
 
     if (filterBy) {
@@ -131,8 +132,8 @@ const getAllBooks = async (req, res) => {
       ];
     }
 
-    const results = await paginateResults(Book.find(queryOptions), parseInt(page), parseInt(limit));
-    res.status(200).json(results);
+    const results = await paginateResults(Book.find(queryOptions).sort(sortOptions), parseInt(page), parseInt(limit));
+    res.status(200).json({results, sortOptions, queryOptions});
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error fetching books' });

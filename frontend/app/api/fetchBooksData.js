@@ -7,7 +7,7 @@ export default async function fetchBooksData() {
       
       const data = await response.json();
       console.log(data);
-      return data.data;
+      return data.results.data;
   } catch (error) {
       console.error('Error fetching books:', error);
       throw error; // Re-throw for potential error handling in the calling component

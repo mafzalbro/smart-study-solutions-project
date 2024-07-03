@@ -7,7 +7,7 @@ const resourceSchema = new Schema({
   type: { type: String, required: true },
   slug: { type: String, required: true },
   description: { type: String, required: true },
-  profileImage: { type: String },
+  profileImage: { type: String, default: null },
   tags: [{ type: String }],
   status: { type: Boolean, required: true },
   ai_approval: { type: Boolean, default: false },

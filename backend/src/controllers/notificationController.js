@@ -1,5 +1,5 @@
 const Notification = require('../models/notification');
-const paginateResults = require('../utils/pagination');
+const { paginateResults } = require('../utils/pagination');
 
 exports.createNotification = async (req, res) => {
   try {
@@ -12,9 +12,10 @@ exports.createNotification = async (req, res) => {
 };
 
 exports.getNotifications = async (req, res) => {
-  const { userId } = req.params;
+  // const { userId } = req.params;
   const { page = 1, limit = 10, sortBy, filterBy, query } = req.query;
-  let queryOptions = { user_id: userId };
+  // let queryOptions = { user_id: userId };
+  let queryOptions = {};
 
   try {
     if (sortBy) {
