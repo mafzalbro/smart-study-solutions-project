@@ -1,0 +1,22 @@
+.chat-message {
+  margin: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  line-height: 2;
+}
+
+.chat-message pre {
+  padding: 10px;
+  background-color: #f7f7f7;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+.chat-message blockquote {
+  margin: 0;
+  padding: 10px;
+  background-color: #e0f7fa;
+  border-left: 5px solid #00bcd4;
+}
+
+  

@@ -6,8 +6,13 @@ const Schema = mongoose.Schema;
 
 const ChatSchema = new Schema({
   _id: { type: Schema.Types.ObjectId, auto: true },
-  slug: { type: String, required: true, unique: true, default: uuidv4() },
-  title: { type: String, required: true, default: "Title Here" },
+  slug: { type: String, required: true, unique: true, default: uuidv4 },
+  title: { type: String, required: true, default: "New Chat" },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+  pdfText: {type: String, default: ''},
+  pdfUrls: {type: Array, default: [], unique: true},
+
   chatHistory: [
     {
       _id: { type: Schema.Types.ObjectId, auto: true },
@@ -29,7 +34,7 @@ const userSchema = new Schema({
   },
   password: {
     type: String,
-    required: true,
+    default: null, // Make password optional
   },
   role: {
     type: String,
@@ -50,25 +55,32 @@ const userSchema = new Schema({
   },
   chatOptions: {
     type: [ChatSchema],
-    default: () => ([{ title: 'Default Chat', chatHistory: [] }])
+    default: function() {
+      return [{ title: 'Default Chat', chatHistory: [] }];
+    }
+  },
+  resetTokenExpiry: {
+    type: Date,
+    default: null,
+  },
+  googleId: {
+    type: String,
+    default: null, // Store Google ID if user signs in with Google
   }
 }, { timestamps: true });
 
-let isNewUser = true; // Custom flag to track new user state
-
-// Pre-save hook to track new user state
-userSchema.pre('save', function(next) {
-  if (this.isNew) {
-    isNewUser = true; // Mark as new if isNew flag is true
-  } else {
-    isNewUser = false; // Mark as not new for existing documents
+// Middleware to update updatedAt in chatOptions when user document is updated
+userSchema.pre('findOneAndUpdate', function(next) {
+  const update = this.getUpdate();
+  if (update && update.$set && update.$set['chatOptions']) {
+    update.$set['chatOptions.$.updatedAt'] = new Date();
   }
   next();
 });
 
 // Post-save hook to create notification for new users
 userSchema.post('save', async function(doc) {
-  if (isNewUser && doc._id) {
+  if (doc.isNew) {
     try {
       await NotificationService.createNotification(doc._id, `New user "${doc.username}" registered.`, 'new_user');
       console.log('Notification created successfully'); // Debug log

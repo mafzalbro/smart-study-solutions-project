@@ -74,7 +74,7 @@ export default function AddAPIKey() {
         {initialLoad ? (
           <p>Loading...</p>
         ) : valid && apiKey ? (
-          <p className="mt-4 p-2 bg-green-100 text-green-700 rounded">API Key is valid: {apiKey}</p>
+          <p className="mt-4 p-2 bg-green-100 text-green-700 rounded">{apiKey}</p>
         ) : (
           <>
             <input
@@ -95,7 +95,7 @@ export default function AddAPIKey() {
         {message && (
           <p
             className={`mt-4 p-2 rounded ${
-              valid ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+              valid ? 'text-green-700' : 'bg-red-100 text-red-700'
             }`}
           >
             {message}

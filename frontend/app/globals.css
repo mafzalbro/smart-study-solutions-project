@@ -27,7 +27,8 @@ body {
       rgb(var(--background-end-rgb))
     ),
     rgb(var(--background-start-rgb));
-    /* background-attachment: fixed; */
+    background-attachment: fixed;
+    background-repeat: no-repeat;
 }
 .relative.flex.flex-col.text-gray-700.bg-white.shadow-md.bg-clip-border.rounded-xl {
     width: 400px;
@@ -37,3 +38,5 @@ body {
     text-wrap: balance;
   }
 }
+
+

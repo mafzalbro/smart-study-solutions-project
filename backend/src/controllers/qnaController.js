@@ -3,7 +3,7 @@ const Category = require('../models/category');
 const User = require('../models/user');
 const slugify = require('slugify');
 const { questionRecommendation } = require('../services/questionRecommendation');
-
+const { paginateResults, paginateResultsForArray } = require('../utils/pagination');
 
 // Submit a question
 const submitQuestion = async (req, res) => {
@@ -64,9 +64,44 @@ const answerQuestion = async (req, res) => {
 
 // Get all questions
 const getAllQuestions = async (req, res) => {
+  const { page = 1, limit = 10, sortBy, filterBy, query } = req.query;
+  
+  let queryOptions = {};
+  let sortOptions = {};
+
   try {
-    const questions = await Question.find().populate('category');
-    res.status(200).json(questions);
+    // Parse sorting options
+    if (sortBy) {
+      const [field, direction] = sortBy.split(':');
+      sortOptions[field] = direction === 'desc' ? -1 : 1;
+    }
+
+    // Parse filtering options
+    if (filterBy) {
+      try {
+        const filter = JSON.parse(filterBy);
+        Object.assign(queryOptions, filter);
+      } catch (error) {
+        return res.status(400).json({ message: 'Invalid filterBy parameter' });
+      }
+    }
+
+    // Parse search query
+    if (query) {
+      queryOptions.$or = [
+        { question: { $regex: query, $options: 'i' } },
+      ];
+    }
+
+    // Fetch results with pagination and sorting
+    const questions = await paginateResults(
+      Question.find(queryOptions).populate('category'),
+      parseInt(page),
+      parseInt(limit),
+      sortOptions
+    );
+
+    res.status(200).json({ totalResults: questions.totalResults, data: questions.data });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to retrieve questions' });
@@ -195,9 +230,39 @@ const deleteAnswer = async (req, res) => {
 // Get all questions asked by a specific user
 const getUserQuestions = async (req, res) => {
   const { userId } = req.params;
+  const { page = 1, limit = 10, sortBy, filterBy, query } = req.query;
+  
+  let queryOptions = {};
+  let sortOptions = {};
+
   try {
-    const questions = await Question.find({ askedBy: userId }).populate('category');
-    res.status(200).json(questions);
+    // Parse sorting options
+    if (sortBy) {
+      const [field, direction] = sortBy.split(':');
+      sortOptions[field] = direction === 'desc' ? -1 : 1;
+    }
+
+    // Parse filtering options
+    if (filterBy) {
+      try {
+        const filter = JSON.parse(filterBy);
+        Object.assign(queryOptions, filter);
+      } catch (error) {
+        return res.status(400).json({ message: 'Invalid filterBy parameter' });
+      }
+    }
+
+    if(query){
+      queryOptions.$or = [
+        { question: { $regex: query, $options: 'i' } },
+      ]
+    }
+
+    // Apply pagination and sorting
+    const paginatedResults = await paginateResults(Question.find({ askedBy: userId, ...queryOptions }).sort(sortOptions).populate('category'), parseInt(page), parseInt(limit));
+
+    res.status(200).json({ totalResults: paginatedResults.totalResults, data: paginatedResults.data });
+    // res.status(200).json(questions);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to retrieve user questions' });
@@ -207,15 +272,40 @@ const getUserQuestions = async (req, res) => {
 // Get all answers given by a specific user
 const getUserAnswers = async (req, res) => {
   const { userId } = req.params;
+  const { page = 1, limit = 10, sortBy, filterBy, query } = req.query;
+  
+  let sortOptions = {};
+
   try {
-    const questions = await Question.find({ 'answers.answeredBy': userId });
+    // Parse sorting options
+    if (sortBy) {
+      const [field, direction] = sortBy.split(':');
+      sortOptions[field] = direction === 'desc' ? -1 : 1;
+    }
+
+    // Initialize query to find questions where user has answered
+    let queryToFindQuestions = { 'answers.answeredBy': userId };
+
+    // Parse filtering options
+    if (filterBy) {
+      try {
+        const filter = JSON.parse(filterBy);
+        Object.assign(queryToFindQuestions, filter);
+      } catch (error) {
+        return res.status(400).json({ message: 'Invalid filterBy parameter' });
+      }
+    }
+
+    // Fetch questions where user has answered and apply filtering
+    const questions = await Question.find(queryToFindQuestions);
 
     // Create a list of answers with their corresponding question details
-    const userAnswers = questions.flatMap(q => 
+    let userAnswers = questions.flatMap(q => 
       q.answers
         .filter(a => a.answeredBy.toString() === userId.toString())
         .map(a => ({
           questionId: q._id,
+          questionSlug: q.slug,
           question: q.question,
           answerId: a._id,
           answerText: a.answerText,
@@ -224,7 +314,18 @@ const getUserAnswers = async (req, res) => {
         }))
     );
 
-    res.status(200).json(userAnswers);
+    // Implement searching
+    if (query) {
+      const regex = new RegExp(query, 'i');
+      userAnswers = userAnswers.filter(answer =>
+        regex.test(answer.question) || regex.test(answer.answerText)
+      );
+    }
+
+    // Apply pagination and sorting
+    const paginatedResults = await paginateResultsForArray(userAnswers, parseInt(page), parseInt(limit));
+
+    res.status(200).json({ totalResults: paginatedResults.totalResults, data: paginatedResults.data });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to retrieve user answers' });
@@ -269,9 +370,45 @@ const createCategory = async (req, res) => {
 
 // Get all categories
 const getAllCategories = async (req, res) => {
+  const { page = 1, limit = 10, sortBy, filterBy, query } = req.query;
+  
+  let queryOptions = {};
+  let sortOptions = {};
+
   try {
-    const categories = await Category.find();
-    res.status(200).json(categories);
+    // Parse sorting options
+    if (sortBy) {
+      const [field, direction] = sortBy.split(':');
+      sortOptions[field] = direction === 'desc' ? -1 : 1;
+    }
+
+    // Parse filtering options
+    if (filterBy) {
+      try {
+        const filter = JSON.parse(filterBy);
+        Object.assign(queryOptions, filter);
+      } catch (error) {
+        return res.status(400).json({ message: 'Invalid filterBy parameter' });
+      }
+    }
+
+    // Parse search query
+    if (query) {
+      queryOptions.$or = [
+        { name: { $regex: query, $options: 'i' } },
+        { description: { $regex: query, $options: 'i' } }
+      ];
+    }
+
+    // Fetch results with pagination and sorting
+    const categories = await paginateResults(
+      Category.find(queryOptions),
+      parseInt(page),
+      parseInt(limit),
+      sortOptions
+    );
+
+    res.status(200).json({ totalResults: categories.totalResults, data: categories.data });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to retrieve categories' });

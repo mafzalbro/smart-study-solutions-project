@@ -2,6 +2,10 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const passport = require('../config/passport');
 const { getNextSequenceValue } = require('../utils/autoIncrement'); // Adjust the path as needed
+const { sendPasswordResetEmail, sendGenericEmail } = require('../services/emailService'); // Adjust path as needed
+const jwt = require('jsonwebtoken');
+
+// sendGenericEmail("maf415415@gmail.com", "Hey", "This is Afzal to Test email!")
 
 const registerUser = async (req, res) => {
   const { username, email, password, role, favoriteGenre } = req.body;
@@ -106,4 +110,105 @@ const changePassword = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, logoutUser, changePassword };
+
+
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    if (!email) {
+      return res.status(404).json({ message: 'Email not found' });
+    }
+    // Find the user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Generate a unique reset token
+    const resetToken = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    // Set the reset token expiry time on the user object
+    user.resetTokenExpiry = Date.now() + 3600000; // Token expires in 1 hour
+
+    // Save the updated user object
+    await user.save();
+
+    // Construct the password reset link
+    const resetLink = `${process.env.BACKEND_ORIGIN}/api/auth/verifyToken?token=${resetToken}`;
+
+    // Send the password reset email
+    await sendPasswordResetEmail(user.email, resetLink);
+
+    res.status(200).json({ message: 'Password reset instructions sent to your email' });
+  } catch (error) {
+    console.error('Error in forgotPassword:', error);
+    res.status(500).json({ message: 'Failed to process password reset request', error: error.message });
+  }
+};
+
+const verifyToken = async (req, res) => {
+  const { token } = req.query;
+  try {
+    // Verify the JWT token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Find the user by email and ensure the token has not expired
+    const user = await User.findOne({
+      email: decoded.email,
+      resetTokenExpiry: { $gt: Date.now() } // Ensure the token has not expired
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired token' });
+    }
+
+    // Token is valid
+    res.status(200).json({ message: 'Token is valid', token });
+  } catch (error) {
+    console.error('Error in verifyToken:', error);
+    res.status(400).json({ message: 'Invalid or expired token' });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+  try {
+    // Verify the JWT token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Find the user by email and ensure the token has not expired
+    const user = await User.findOne({
+      email: decoded.email,
+      resetTokenExpiry: { $gt: Date.now() } // Ensure the token has not expired
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired token' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the user's password and clear the reset token and expiry
+    user.password = hashedPassword;
+    user.resetTokenExpiry = null;
+
+    // Save the updated user object
+    await user.save();
+
+    res.status(200).json({ message: 'Password has been reset successfully' });
+  } catch (error) {
+    console.error('Error in resetPassword:', error);
+    res.status(500).json({ message: 'Failed to reset password', error: error.message });
+  }
+};
+
+const checkAuth = (req, res) => {
+  if (req.isAuthenticated()) {
+    res.status(200).json({ auth: true });
+  } else {
+    res.status(401).json({ auth: false });
+  }
+};
+
+module.exports = { registerUser, loginUser, logoutUser, changePassword, forgotPassword, verifyToken, resetPassword, checkAuth };

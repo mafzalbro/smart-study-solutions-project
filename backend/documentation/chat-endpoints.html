@@ -1,0 +1,202 @@
+<div>
+    <div dir="auto" data-message-author-role="assistant" data-message-id="bb712307-4959-4420-a80a-1796ecd46f82">
+    <div>
+    <div>
+    <h2>API Documentation</h2>
+    <h3>1. Get All Chat Options</h3>
+    <ul>
+    <li><strong>URL</strong>: <code>http://localhost:3000/api/chat/</code></li>
+    <li><strong>Method</strong>: GET</li>
+    <li><strong>Query Parameters</strong>:
+    <ul>
+    <li><code>page</code> (optional): Page number (default: 1)</li>
+    <li><code>limit</code> (optional): Number of results per page (default: 5)</li>
+    <li><code>sortBy</code> (optional): Field to sort by</li>
+    <li><code>filterBy</code> (optional): JSON string to filter by fields</li>
+    <li><code>query</code> (optional): Search query</li>
+    </ul>
+    </li>
+    </ul>
+    <h3>2. Create a New Chat Option</h3>
+    <ul>
+    <li><strong>URL</strong>: <code>http://localhost:3000/api/chat/create</code></li>
+    <li><strong>Method</strong>: POST</li>
+    <li><strong>Body</strong>:
+    <div dir="ltr"><code>{ "title": "string" } </code></div>
+    </li>
+    </ul>
+    </div>
+    <h3>3. Get All Chat Titles</h3>
+data looks like
+
+{
+  "totalResults": 3,
+  "data": [
+    {
+      "id": "6674710520942af63d8d6f87",
+      "slug": "1150b4ae-fe46-4310-8171-1e46ffd9be6f",
+      "title": "Let's begin with new title"
+    },
+    {
+      "id": "667476ac1aaa722d0c2d257e",
+      "slug": "5002ca16-a2de-4205-811e-07c06977db5d",
+      "title": "Let's go with new"
+    },
+    {
+      "id": "66856d3f1bf53ac018cc5c0d",
+      "slug": "1a255262-61a1-474b-b58a-9d0bd942f6a6",
+      "title": "darko"
+    }
+  ]
+}
+
+    <ul>
+    <li><strong>URL</strong>: <code>http://localhost:3000/api/chat/titles</code></li>
+    <li><strong>Method</strong>: GET</li>
+    <li><strong>Query Parameters</strong>:
+    <ul>
+    <li><code>page</code> (optional): Page number (default: 1)</li>
+    <li><code>limit</code> (optional): Number of results per page (default: 5)</li>
+    <li><code>sortBy</code> (optional): Field to sort by</li>
+    <li><code>filterBy</code> (optional): JSON string to filter by fields</li>
+    <li><code>query</code> (optional): Search query</li>
+    </ul>
+    </li>
+    </ul>
+    <h3>4. Get API Key</h3>
+    <ul>
+    <li><strong>URL</strong>: <code>http://localhost:3000/api/chat/getApi</code></li>
+    <li><strong>Method</strong>: GET</li>
+    </ul>
+    <h3>5. Add API Key</h3>
+    <ul>
+    <li><strong>URL</strong>: <code>http://localhost:3000/api/chat/addApi</code></li>
+    <li><strong>Method</strong>: PUT</li>
+    <li><strong>Body</strong>:
+    <div>
+    <div dir="ltr"><code>{ "apiKey": "string" } </code></div>
+    </div>
+    </li>
+    </ul>
+    <h3>6. Chat with PDF (Default Chat Option)</h3>
+    <ul>
+    <li><strong>URL</strong>: <code>http://localhost:3000/api/chat/</code></li>
+    <li><strong>Method</strong>: POST</li>
+    <li><strong>Body</strong>:
+    <div>
+    <div dir="ltr"><code>{ "pdfUrl": "string", "message": "string" } </code></div>
+    </div>
+    </li>
+    </ul>
+    <h3>7. Chat with PDF (Specific Chat Option)</h3>
+
+data looks like 
+
+{
+  "_id": "66856d3f1bf53ac018cc5c0d",
+  "slug": "1a255262-61a1-474b-b58a-9d0bd942f6a6",
+  "title": "darko",
+  "chatHistory": [
+    {
+      "_id": "66856e791bf53ac018cc5cb1",
+      "user_query": "thanks for everything",
+      "model_response": "You're welcome! \n\nIs there anything specific I can help you with, or is this just a general \"thank you\"?  I'm always happy to assist in any way I can. \n"
+    },
+    {
+      "_id": "66856e8a1bf53ac018cc5d30",
+      "user_query": "how to play football",
+      "model_response": "\"Football\" can mean different things depending on where you are in the world. Do you mean:\n\n* **American Football:**  The game played with an oval-shaped ball and pads. \n* **Soccer (Association Football):** The game played with a round ball and no pads. \n\nPlease clarify which type of football you're interested in, and I can give you more specific instructions on how to play! \n"
+    },
+    {
+      "_id": "66856ea11bf53ac018cc5db3",
+      "user_query": "hey",
+      "model_response": "Hey! 👋  What's on your mind today?  😊 \n"
+    },
+    {
+      "_id": "66856ec11bf53ac018cc5e3a",
+      "user_query": "what is this",
+      "model_response": "Please give me some context!  \"What is this?\" could refer to anything!  \n\nFor example, you could be asking:\n\n* **What is this object?** (Show me a picture or describe it.)\n* **What is this word?** (Give me the word.)\n* **What is this feeling?** (Tell me about the feeling.) \n* **What is this place?** (Give me some details about the place.)\n\nTell me more, and I'll do my best to help! 😊 \n"
+    },
+    {
+      "_id": "66856ee11bf53ac018cc5ec5",
+      "user_query": "explain is simply my dear",
+      "model_response": "You're right, \"explain\" is a very simple word! It means to make something clear or understandable, especially by giving reasons or details.  Think of it like a teacher explaining a difficult concept to a student.\n\nHere are some ways to use \"explain\" in a sentence:\n\n* **Can you explain what you mean?**  (asking for clarification)\n* **I'll explain how to do it later.**  (promising to make something clear)\n* **The scientist explained the experiment to the class.** (making a topic understandable)\n\nIs there something specific you want me to explain?  I'm happy to help!  😊 \n"
+    },
+    {
+      "_id": "66856efb1bf53ac018cc5f54",
+      "user_query": "explain it in simple words my dear",
+      "model_response": "You got it!  I'm ready to explain something in simple words.  But I need you to tell me what you want me to explain!  😊\n\nWhat's the topic? 🤔\n\nFor example:\n\n*  \"Explain what gravity is.\"\n*  \"Explain how to make a cake.\"\n*  \"Explain the difference between a cat and a dog.\"\n\nGive me a question, and I'll do my best to explain it simply!  \n"
+    },
+    {
+      "_id": "66856f241bf53ac018cc5fe7",
+      "user_query": "footbar",
+      "model_response": "\"Footbar\" isn't a common word or term. It's possible you meant:\n\n* **\"Foobar\":**  This is a placeholder word, often used in programming or technical documentation. It basically means \"something\" or \"anything\".\n* **\"Foot bar\":**  This could be a phrase referring to a bar where people go to watch a football game. \n* **\"Foot bar\" as a misspelling:**  Perhaps you meant a different word altogether, and it was just a typo. \n\nCould you give me more context?  What were you thinking of when you said \"footbar\"?  I'm happy to help if I can! 😊 \n"
+    },
+    {
+      "_id": "66856f331bf53ac018cc607e",
+      "user_query": "football",
+      "model_response": "Ah, football!  That's a much clearer topic! 😉  \n\nBut \"football\" can mean different things depending on where you are in the world. Do you mean:\n\n* **American Football:**  The game played with an oval-shaped ball and pads. \n* **Soccer (Association Football):** The game played with a round ball and no pads. \n\nLet me know which type of football you're interested in, and I can explain some basic things about it! \n\n\n"
+    },
+    {
+      "_id": "6688bfcfdf3cffee48834c47",
+      "user_query": "football",
+      "model_response": "Okay, I understand! You want to know about football. But I need to know which kind of football you're interested in.  It could be:\n\n* **American Football:** The game with an oval ball, pads, and a lot of strategy.\n* **Soccer (Association Football):** The game with a round ball,  no pads, and lots of running!\n\nTell me which one you want to know about, and I can give you some basic info! \n"
+    }
+  ]
+}
+    <ul>
+    <li><strong>URL</strong>: <code>http://localhost:3000/api/chat/:chatId</code></li>
+    <li><strong>Method</strong>: POST</li>
+    <li><strong>Params</strong>:
+    <ul>
+    <li><code>chatId</code>: The ID of the chat option</li>
+    </ul>
+    </li>
+    <li><strong>Body</strong>:
+    <div>
+    <div dir="ltr"><code>{ "pdfUrl": "string", "message": "string" } </code></div>
+    </div>
+    </li>
+    </ul>
+    <h3>8. Get a Chat Option by ID</h3>
+    <ul>
+    <li><strong>URL</strong>: <code>http://localhost:3000/api/chat/:chatId</code></li>
+    <li><strong>Method</strong>: GET</li>
+    <li><strong>Params</strong>:
+    <ul>
+    <li><code>chatId</code>: The ID of the chat option</li>
+    </ul>
+    </li>
+    </ul>
+    <h3>9. Update a Chat Option by ID</h3>
+
+this can update or remoavme title or 
+    <ul>
+    <li><strong>URL</strong>: <code>http://localhost:3000/api/chat/:chatId</code></li>
+    <li><strong>Method</strong>: PUT</li>
+    <li><strong>Params</strong>:
+    <ul>
+    <li><code>chatId</code>: The ID of the chat option</li>
+    </ul>
+    </li>
+    <li><strong>Body</strong>:
+    <div>
+    <div dir="ltr"><code>{ "title": "string", "user_query": "string", "model_response": "string" } </code></div>
+    </div>
+    </li>
+    </ul>
+    <h3>10. Remove a Chat Option by ID</h3>
+
+to delete chat
+    <ul>
+    <li><strong>URL</strong>: <code>http://localhost:3000/api/chat/:chatId</code></li>
+    <li><strong>Method</strong>: DELETE</li>
+    <li><strong>Params</strong>:
+    <ul>
+    <li><code>chatId</code>: The ID of the chat option</li>
+    </ul>
+    </li>
+    </ul>
+    </div>
+    </div>
+    </div>

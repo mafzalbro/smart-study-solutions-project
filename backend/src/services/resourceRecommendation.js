@@ -1,10 +1,9 @@
-// services/resourceRecommendation.js
 const Resource = require('../models/resource');
 const { calculateCosineSimilarity, convertToVector } = require('../utils/similarity');
 
 const recommendResources = async (user) => {
   try {
-    const likedResources = await Resource.find({ _id: { $in: user.likedResources } });
+    const likedResources = user?.likedResources ? await Resource.find({ _id: { $in: user.likedResources } }) : [];
 
     // If the user has liked resources, use them for similarity-based recommendations
     if (likedResources.length > 0) {
@@ -36,11 +35,11 @@ const recommendResources = async (user) => {
     }
 
     // If no liked resources or no recommendations found based on them, try using the favorite genre
-    if (user.favoriteGenre) {
+    if (user?.favoriteGenre) {
       const recommendedResources = await Resource.find({
         $or: [
-          { genre: user.favoriteGenre },
-          { title: { $regex: user.favoriteGenre, $options: 'i' } }
+          { genre: user?.favoriteGenre },
+          { title: { $regex: user?.favoriteGenre, $options: 'i' } }
         ]
       });
 

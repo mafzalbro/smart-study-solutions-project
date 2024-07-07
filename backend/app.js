@@ -31,7 +31,7 @@ app.use(morgan('dev'));
 
 // CORS middleware
 app.use(cors({
-  origin: process.env.ORIGIN,
+  origin: process.env.FRONTEND_ORIGIN,
   credentials: true
 }));
 
@@ -42,7 +42,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
-  cookie: { maxAge: 3600000, secure: false } // Session expires after 1 hour
+  // cookie: { maxAge: 3600000, secure: false } // Session expires after 1 hour
 }));
 
 

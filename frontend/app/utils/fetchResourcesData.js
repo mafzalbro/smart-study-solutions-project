@@ -1,6 +1,6 @@
-export default async function fetchBooksData() {
+export default async function fetchResourcesData() {
   try {
-      const response = await fetch('http://localhost:3000/api/books?limit=20'); //page = 1, limit = 5
+      const response = await fetch('http://localhost:3000/api/resources?limit=20'); //page = 1, limit = 5
       if (!response.ok) {
           throw new Error(`Error fetching books: ${response.statusText}`);
       }

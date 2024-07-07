@@ -1,14 +1,12 @@
-import React from 'react'
-import ChatWithPdf from '../components/ChatWithPdf'
-import AddAPIKey from '../components/AddAPIKey'
+import Sidebar from '../components/chat/Sidebar';
 
-
-const page = () => {
-    return (
-    <div>
-        < ChatWithPdf />
+export default function Home() {
+  return (
+    <div className="flex h-screen">
+      <Sidebar height="screen"/>
+      <div className="flex-1 flex flex-col justify-center items-center">
+        <h1 className="text-2xl">Welcome to Chat Web App</h1>
+      </div>
     </div>
-  )
+  );
 }
-
-export default page

@@ -1,35 +1,17 @@
-const express = require('express');
-const app = express();
 const passport = require('passport');
-const session = require('express-session');
 const LocalStrategy = require('passport-local').Strategy;
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const Admin = require('../models/admin');
+require('dotenv').config();
 
-// Initialize session middleware with session timing
-app.use(session({
-  secret: 'your_secret_key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { maxAge: 3600000, // Session will expire after 1 hour (3600000 milliseconds)
-    secure: false // Set to true if using HTTPS
-   }
-}));
-
-// Initialize Passport
-app.use(passport.initialize());
-app.use(passport.session());
-
-// Serialize user
-
+// Serialize user or admin
 passport.serializeUser((entity, done) => {
   done(null, { id: entity.id, type: entity.constructor.modelName });
 });
 
-
-// Deserialize user
-
+// Deserialize user or admin
 passport.deserializeUser(async ({ id, type }, done) => {
   try {
     const entity = await (type === 'User' ? User.findById(id) : Admin.findById(id));
@@ -38,8 +20,6 @@ passport.deserializeUser(async ({ id, type }, done) => {
     done(error, null);
   }
 });
-
-
 
 // Local strategy for user login
 passport.use('user-local', new LocalStrategy(async (username, password, done) => {
@@ -70,5 +50,45 @@ passport.use('admin-local', new LocalStrategy(async (username, password, done) =
     return done(error);
   }
 }));
+
+// Google strategy
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: `${process.env.BACKEND_ORIGIN}/api/auth/google/callback`,
+},
+async (accessToken, refreshToken, profile, done) => {
+  try {
+    // Check if user already exists by googleId
+    let user = await User.findOne({ googleId: profile.id });
+
+    if (!user) {
+      // Check if user already exists by email
+      user = await User.findOne({ email: profile.emails[0].value });
+
+      if (user) {
+        // Update existing user with googleId
+        user.googleId = profile.id;
+        await user.save();
+      } else {
+        // If user doesn't exist, create a new one
+        user = new User({
+          googleId: profile.id,
+          username: profile.displayName,
+          email: profile.emails[0].value,
+          profileImage: profile.photos[0].value,
+          role: 'student',
+          favoriteGenre: 'fiction',
+        });
+        await user.save();
+      }
+    }
+
+    done(null, user);
+  } catch (error) {
+    done(error, null);
+  }
+}
+));
 
 module.exports = passport;

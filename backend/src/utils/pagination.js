@@ -7,6 +7,7 @@ const paginateResults = async (query, page, limit) => {
   };
 };
 
+
 const paginateResultsForArray = (array, page, limit) => {
   const totalResults = array.length;
   const startIndex = (page - 1) * limit;
@@ -19,4 +20,5 @@ const paginateResultsForArray = (array, page, limit) => {
 };
 
 
-module.exports = {paginateResults, paginateResultsForArray}
+
+module.exports = { paginateResults, paginateResultsForArray }

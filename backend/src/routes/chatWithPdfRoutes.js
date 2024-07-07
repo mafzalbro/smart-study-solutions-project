@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createChatOption, updateChatOption, removeChatOption, getChatOptionById, chatWithPdfById, getAllChatOptions, getAllChatTitles, setupAPIKey, fetchAPIKey } = require('../controllers/chatWithPdfController');
+const { createChatOption, updateChatOption, removeChatOption, getChatOptionBySlug, chatWithPdfBySlug, getAllChatOptions, getAllChatTitles, setupAPIKey, fetchAPIKey } = require('../controllers/chatWithPdfController');
 const { auth } = require('../middlewares/auth');
 
 // Get all chats
@@ -18,21 +18,16 @@ router.get('/getApi', auth, fetchAPIKey);
 // add api key
 router.put('/addApi', auth, setupAPIKey);
 
+// Chat with PDF for a specific chat option by slug
+router.post('/:slug', auth, chatWithPdfBySlug);
 
+// Get a chat option by slug
+router.get('/:slug', auth, getChatOptionBySlug);
 
-// Chat with PDF for a specific chat option by ID
-router.post('/', auth, chatWithPdfById);
+// Update a chat option by slug (title or adding new history)
+router.put('/:slug', auth, updateChatOption);
 
-// Chat with PDF for a specific chat option by ID
-router.post('/:chatId', auth, chatWithPdfById);
-
-// Get a chat option by ID
-router.get('/:chatId', auth, getChatOptionById);
-
-// Update a chat option by ID (title or adding new history)
-router.put('/:chatId', auth, updateChatOption);
-
-// Remove a chat option by ID
-router.delete('/:chatId', auth, removeChatOption);
+// Remove a chat option by slug
+router.delete('/:slug', auth, removeChatOption);
 
 module.exports = router;

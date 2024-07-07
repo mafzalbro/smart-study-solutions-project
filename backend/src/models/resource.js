@@ -9,8 +9,21 @@ const resourceSchema = new Schema({
   description: { type: String, required: true },
   profileImage: { type: String, default: null },
   tags: [{ type: String }],
+  pdfLink: [{ type: String, default: null }],
   status: { type: Boolean, required: true },
   ai_approval: { type: Boolean, default: false },
+  rating: { type: Number, default: 0 },
+  ratingCount: { type: Number, default: 0 },
+  likes: { type: Number, default: 0 },
+  dislikes: { type: Number, default: 0 },
+  likedBy: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  dislikedBy: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  ratings: [
+    {
+      userId: { type: Schema.Types.ObjectId, ref: 'User' },
+      rating: { type: Number, required: true }
+    }
+  ]
 }, { timestamps: true });
 
 let isNewResource = true; // Custom flag to track new resource state

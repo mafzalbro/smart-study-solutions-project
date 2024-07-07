@@ -4,7 +4,6 @@ const { generateChatResponse } = require('../utils/chatUtils');
 const { paginateResultsForArray } = require('../utils/pagination');
 const { getAIMessage } = require('../utils/getAIMessage');
 
-
 const createChatOption = async (req, res) => {
   const { title } = req.body;
 
@@ -42,7 +41,6 @@ const createChatOption = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
-
 
 const getAllChatOptions = async (req, res) => {
   const { page = 1, limit = 5, sortBy, filterBy, query } = req.query;
@@ -119,17 +117,16 @@ const getAllChatTitles = async (req, res) => {
       filteredChatOptions = filteredChatOptions.filter(option => searchQuery.test(option.title));
     }
 
-    // Sorting
-    if (sortBy) {
-      filteredChatOptions.sort((a, b) => {
-        if (a[sortBy] < b[sortBy]) return -1;
-        if (a[sortBy] > b[sortBy]) return 1;
-        return 0;
-      });
-    }
+    // Sorting by updatedAt descending (most recently updated first)
+    filteredChatOptions.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
-    // Extracting titles
-    const titles = filteredChatOptions.map(option => ({ id: option._id, slug: option.slug, title: option.title, }));
+    // Extracting titles with slugs
+    const titles = filteredChatOptions.map(option => ({
+      slug: option.slug,
+      title: option.title,
+      createdAt: option.createdAt,
+      updatedAt: option.updatedAt
+    }));
 
     // Pagination
     const results = paginateResultsForArray(titles, parseInt(page), parseInt(limit));
@@ -140,10 +137,10 @@ const getAllChatTitles = async (req, res) => {
   }
 };
 
-const chatWithPdfById = async (req, res) => {
+const chatWithPdfBySlug = async (req, res) => {
   try {
-    const { chatId } = req.params;
-    const { pdfUrl, message } = req.body;
+    const { slug } = req.params;
+    const { pdfUrl, message, title } = req.body;
     const userId = req?.user?.id;
 
     if (!userId) {
@@ -152,18 +149,18 @@ const chatWithPdfById = async (req, res) => {
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
+      return res.status(404).json({ message: 'User not found. You must be logged in' });
     }
 
     const apiKey = user.apiKey;
     if (!apiKey) {
-      return res.status(404).json({ message: 'Please add an API key. You must be logged in.' });
+      return res.status(404).json({ message: 'Please add an API key.' });
     }
 
     let chatOption;
 
-    if (chatId) {
-      chatOption = user.chatOptions.id(chatId);
+    if (slug) {
+      chatOption = user.chatOptions.find(option => option.slug === slug);
       if (!chatOption) {
         return res.status(404).json({ message: 'Chat option not found.' });
       }
@@ -171,40 +168,50 @@ const chatWithPdfById = async (req, res) => {
       chatOption = user.chatOptions[0];
     }
 
-    const pdfText = pdfUrl ? await extractTextFromPdf(pdfUrl) : '';
-    const context = chatOption.chatHistory;
-    const pdfContext = pdfText ? [{ user_query: `This is PDF Document Text to summarize: ${pdfText}`, model_response: '' }] : [];
-    const combinedContext = [...context, ...pdfContext];
+    // Update chatOption with title and pdfUrls
+    chatOption.title = title;
+    chatOption.pdfUrls = pdfUrl.includes("http") ? Array.from(new Set([...chatOption.pdfUrls, pdfUrl])) : Array.from(new Set([...chatOption.pdfUrls]));
 
-    res.setHeader('Content-Type', 'text/html');
+    let pdfText = '';
+
+    // If PDF URL is provided, extract text and save it to chatOption
+    if (pdfUrl) {
+      chatOption.pdfText = '';
+      pdfText = await extractTextFromPdf(pdfUrl);
+      chatOption.pdfText = pdfText;
+    } else if (chatOption.pdfText) {
+      // Use existing pdfText if no new PDF URL is provided
+      pdfText = chatOption.pdfText;
+    }
+
+    const context = chatOption.chatHistory || [];
+
+    // Generate response with combined context or just pdfText if message is null
+    const responseStream = pdfText !== ''
+      ? generateChatResponse(`${message} => PDF Document Text: ${pdfText}`, context, apiKey)
+      : generateChatResponse(message, context, apiKey);
+
+    // Set headers for streaming response
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.setHeader('Transfer-Encoding', 'chunked');
 
-    const responseStream = generateChatResponse(message, combinedContext, apiKey);
-
+    // Send streaming response
     let fullResponse = '';
 
     for await (const chunkText of responseStream) {
       fullResponse += chunkText;
-      res.write(chunkText);
+      res.write(chunkText); // Stream chunk to client
     }
 
-    // Save full response to specific chat history
+    // Add new chat entry to chatHistory
     chatOption.chatHistory.push({ user_query: message, model_response: fullResponse });
 
-    // Use findByIdAndUpdate to avoid VersionError
-    await User.findByIdAndUpdate(
-      userId,
-      { $set: { 'chatOptions.$[chatOption]': chatOption } },
-      {
-        arrayFilters: [{ 'chatOption._id': chatOption._id }],
-        new: true,
-        runValidators: true,
-      }
-    );
+    // Save chatOption back to user's chatOptions array
+    await user.save();
 
-    res.end();
+    res.end(); // End the streaming response
   } catch (error) {
-    console.error('Error in chatWithPdfById:', error);
+    console.error('Error in chatWithPdfBySlug:', error);
 
     if (!res.headersSent) {
       res.status(500).json({ message: 'Internal server error' });
@@ -213,11 +220,8 @@ const chatWithPdfById = async (req, res) => {
 };
 
 
-
-
-
 const updateChatOption = async (req, res) => {
-  const { chatId } = req.params;
+  const { slug } = req.params;
   const { title, user_query, model_response } = req.body;
 
   try {
@@ -226,10 +230,10 @@ const updateChatOption = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found. Please log in to continue.' });
     }
-    if(!chatId){
-      return res.status(200).json({message: 'Please provide chat id'})
+    if(!slug){
+      return res.status(200).json({message: 'Please provide chat slug'})
     }
-    const chatOption = user.chatOptions.id(chatId);
+    const chatOption = user.chatOptions.find(option => option.slug === slug);
 
     if (!chatOption) {
       return res.status(404).json({ message: 'Chat option not found' });
@@ -253,7 +257,7 @@ const updateChatOption = async (req, res) => {
 };
 
 const removeChatOption = async (req, res) => {
-  const { chatId } = req.params;
+  const { slug } = req.params;
 
   try {
     const user = req.user;
@@ -262,8 +266,8 @@ const removeChatOption = async (req, res) => {
       return res.status(404).json({ message: 'User not found. Please log in to continue.' });
     }
 
-    // Find the chat option by ID
-    const chatOptionIndex = user.chatOptions.findIndex(option => option._id.toString() === chatId);
+    // Find the chat option by slug
+    const chatOptionIndex = user.chatOptions.findIndex(option => option.slug === slug);
 
     if (chatOptionIndex === -1) {
       return res.status(404).json({ message: 'Chat option not found' });
@@ -280,8 +284,8 @@ const removeChatOption = async (req, res) => {
   }
 };
 
-const getChatOptionById = async (req, res) => {
-  const { chatId } = req.params;
+const getChatOptionBySlug = async (req, res) => {
+  const { slug } = req.params;
 
   try {
     const user = req.user;
@@ -290,7 +294,7 @@ const getChatOptionById = async (req, res) => {
       return res.status(404).json({ message: 'User not found. Please log in to continue.' });
     }
 
-    const chatOption = user.chatOptions.id(chatId);
+    const chatOption = user.chatOptions.find(option => option.slug === slug);
 
     if (!chatOption) {
       return res.status(404).json({ message: 'Chat option not found' });
@@ -327,7 +331,6 @@ const setupAPIKey = async (req, res) => {
   }
 }
 
-
 const fetchAPIKey = async (req, res) => {
   const apiKey = req.user.apiKey;
   
@@ -342,5 +345,4 @@ const fetchAPIKey = async (req, res) => {
   }
 };
 
-
-module.exports = { createChatOption, updateChatOption, removeChatOption, getChatOptionById, chatWithPdfById, getAllChatOptions, getAllChatTitles, setupAPIKey, fetchAPIKey };
+module.exports = { createChatOption, updateChatOption, removeChatOption, getChatOptionBySlug, chatWithPdfBySlug, getAllChatOptions, getAllChatTitles, setupAPIKey, fetchAPIKey };

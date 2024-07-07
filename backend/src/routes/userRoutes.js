@@ -16,10 +16,12 @@ const { adminAuth } = require('../middlewares/adminAuth');
 // router.post('/', createUser);
 
 // Route to get all users
+// router.get('/', adminAuth, getAllUsers);
 router.get('/', adminAuth, getAllUsers);
 
 // Route to get a user by ID
-router.get('/:id', auth, getUserById);
+// router.get('/:id', auth, getUserById);
+router.get('/:id', getUserById);
 
 // Route to update a user by ID
 router.put('/:id', auth, updateUserById);

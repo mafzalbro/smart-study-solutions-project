@@ -1,10 +1,8 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 require('dotenv').config();
 
-
 const generateChatResponse = async function* (message, context, apiKey) {
   try {
-    // const apiKey = process.env.GEMINI_API_KEY || apiKey;
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
@@ -17,7 +15,7 @@ const generateChatResponse = async function* (message, context, apiKey) {
     // Add the latest message to the history
     history.push({ role: 'user', parts: [{ text: message }] });
 
-    console.log(history);
+    console.log("chatHistories", history.length);
 
     // Initialize the chat session with the complete history
     const chat = model.startChat({ history });
