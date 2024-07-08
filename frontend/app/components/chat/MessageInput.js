@@ -70,18 +70,18 @@ export default function MessageInput({ chatId, addMessageToChatHistory }) {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Type a message"
-        className="flex-grow p-2 bg-gray-700 rounded outline-none focus:ring-2 focus:ring-orange-600 h-12"
+        className="flex-grow p-2 bg-gray-700 rounded-lg outline-none focus:ring-2 focus:ring-orange-600 h-12"
         disabled={isSending} // Disable input while sending
       />
       {showPdfInput && <PdfInput pdfUrl={pdfUrl} setPdfUrl={setPdfUrl} />}
       <div className="flex space-x-2">
-        <button onClick={() => setShowPdfInput(!showPdfInput)} className="p-2 bg-gray-700 rounded outline-none focus:ring-2 focus:ring-orange-600 h-12">
+        <button onClick={() => setShowPdfInput(!showPdfInput)} className="p-2 bg-gray-700 rounded-lg outline-none focus:ring-2 focus:ring-orange-600 h-12">
           Add PDF
         </button>
         <button
           onClick={sendMessage}
           disabled={message.trim() === '' || isSending} // Disable the button if message is empty or sending
-          className={`p-2 bg-orange-600 rounded text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 h-12 ${message.trim() === '' || isSending ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`p-2 bg-orange-600 rounded-lg text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 h-12 ${message.trim() === '' || isSending ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           {isSending ? <Spinner /> : 'Send'}
         </button>

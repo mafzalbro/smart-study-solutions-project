@@ -42,7 +42,7 @@ router.get('/google/callback', passport.authenticate('google', { failureRedirect
   const hasMissingCredentials = !user.username || !user.email || !user.role || !user.favoriteGenre || !user.password;
 
   if (hasMissingCredentials) {
-    const redirectUrl = `${process.env.FRONTEND_ORIGIN}/update-profile?user=${user.id}`;
+    const redirectUrl = `${process.env.FRONTEND_ORIGIN}/dashboard`;
     res.redirect(redirectUrl);
   } else {
     const redirectUrl = `${process.env.FRONTEND_ORIGIN}/`;

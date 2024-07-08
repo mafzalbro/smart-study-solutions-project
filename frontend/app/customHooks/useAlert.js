@@ -1,7 +1,7 @@
 // hooks/useAlert.js
 import { useState, useEffect } from 'react';
 
-const useAlert = (initialMessage = '', duration = 3000) => {
+const useAlert = (initialMessage = '', duration = 5000) => {
   const [alertMessage, setAlertMessage] = useState(initialMessage);
 
   useEffect(() => {

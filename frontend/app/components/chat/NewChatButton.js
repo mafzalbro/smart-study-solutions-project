@@ -33,7 +33,7 @@ export default function NewChatButton() {
   };
 
   return (
-    <button onClick={createNewChat} className={`w-full p-2 mb-4 bg-orange-600 rounded ${creatingChat ? 'opacity-50 pointer-events-none' : ''}`} disabled={creatingChat}>
+    <button onClick={createNewChat} className={`block md:inline-block py-2 px-4 bg-orange-600 text-black rounded-lg shadow-md hover:bg-orange-700 dark:hover:bg-orange-700 dark:bg-orange-600 my-4 ${creatingChat ? 'opacity-50 pointer-events-none' : ''}`} disabled={creatingChat}>
       {creatingChat ? 'Creating Chat...' : 'New Chat'}
     </button>
   );

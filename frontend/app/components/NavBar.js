@@ -50,7 +50,9 @@ const NavBar = () => {
   return (
     <nav className="bg-background-start dark:bg-gray-900 p-4 shadow-lg text-white font-sans">
       <div className="container mx-auto flex justify-between items-center">
-        <h2 className="text-2xl font-bold">NavBar</h2>
+        <Link href='/'>
+        <h2 className="text-2xl font-bold">Code Innovators</h2>
+        </Link>
         <button
           className="block md:hidden"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -86,18 +88,13 @@ const NavBar = () => {
             </Link>
           </li>
           <li>
-            <Link href="/update-profile" passHref>
+            <Link href="/dashboard" passHref>
               <span className="block md:inline-block text-lg hover:text-blue-500 dark:hover:text-blue-300 py-2 md:py-0">Profile</span>
             </Link>
           </li>
           <li>
             <Link href="/chat" passHref>
               <span className="block md:inline-block text-lg hover:text-blue-500 dark:hover:text-blue-300 py-2 md:py-0">Chat Home</span>
-            </Link>
-          </li>
-          <li>
-            <Link href="/chat/test" passHref>
-              <span className="block md:inline-block text-lg hover:text-blue-500 dark:hover:text-blue-300 py-2 md:py-0">Test API</span>
             </Link>
           </li>
           {isLoggedIn ? (

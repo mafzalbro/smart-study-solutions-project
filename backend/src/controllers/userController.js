@@ -37,7 +37,25 @@ const getAllUsers = async (req, res) => {
 // Get a user by ID
 const getUserById = async (req, res) => {
   const { id } = req.params;
-  // const id = req.user.id;
+  // const id = req.user.id
+  try {
+    const user = await User.findById(id, '-chatOptions -password -__v');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching user' });
+  }
+};
+
+// Get a user
+const getUser = async (req, res) => {
+
+  const id = req.user.id;
+
+
   try {
     const user = await User.findById(id, '-chatOptions -password -__v');
     if (!user) {
@@ -93,6 +111,7 @@ module.exports = {
   // createUser,
   getAllUsers,
   getUserById,
+  getUser,
   updateUserById,
   deleteUserById
 };

@@ -95,6 +95,9 @@ export default function Sidebar({height, chatHistory}) {
 
   return (
     <div className={`w-1/4 h-${height} bg-gray-800 p-4 flex flex-col`}>
+      <Link href="/chat/test">
+        <span className='block md:inline-block py-2 px-4 bg-orange-600 text-black rounded-lg shadow-md hover:bg-orange-700 dark:hover:bg-orange-700 dark:bg-orange-600 my-8'>Test API</span>
+      </Link>
       <Link href='/chat'>
         <h2 className="text-xl mb-4 text-white">Chats</h2>
       </Link>
@@ -116,7 +119,7 @@ export default function Sidebar({height, chatHistory}) {
             ) : (
               <Link href={`/chat/${chat.slug}`} passHref>
                 <span
-                  className={`block p-2 mb-2 bg-gray-700 rounded text-white ${chatSlug === chat.slug ? 'bg-orange-600' : ''}`}
+                  className={`block p-2 mb-2 bg-gray-700 rounded-lg text-white ${chatSlug === chat.slug ? 'bg-orange-600' : ''}`}
                 >
                   {chat.title}
                 </span>
@@ -124,7 +127,7 @@ export default function Sidebar({height, chatHistory}) {
             )}
             {!editingChatSlug && (
               <div className="absolute right-0 top-0 p-2 hidden group-hover:flex space-x-2">
-                <button onClick={() => handleEdit(chat)} className="p-1 bg-gray-600 rounded text-white">
+                <button onClick={() => handleEdit(chat)} className="p-1 bg-gray-600 rounded-lg text-white">
                   Edit
                 </button>
                 <button onClick={() => handleDelete(chat.slug)} className="p-1 bg-red-600 rounded text-white">

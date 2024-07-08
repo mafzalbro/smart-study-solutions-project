@@ -1,26 +1,25 @@
-// Example login function using fetch
-export default async function (username, password) {
-    try {
-      const response = await fetch('http://localhost:3000/api/auth/login', {
-        method: 'POST',
-        credentials: 'include', // Important
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
+// api/loginUser.js
 
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to login');
-      }
-  
-      const userData = await response.json();
-      // Assuming backend returns user data or token upon successful login
-      return userData;
-    } catch (error) {
-      console.error('Error logging in:', error.message);
-      throw new Error('Failed to login');
+const loginUser = async (username, password) => {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username, password }),
+      credentials: 'include' // Include credentials to send cookies or tokens
+    });
+
+    if (!response.ok) {
+      throw new Error('Login failed');
     }
-  };
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error logging in:', error.message);
+    throw error.message;
+  }
+};
+
+export default loginUser;

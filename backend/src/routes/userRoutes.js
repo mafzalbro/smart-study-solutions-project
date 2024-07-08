@@ -5,6 +5,7 @@ const {
 //   createUser,
   getAllUsers,
   getUserById,
+  getUser,
   updateUserById,
   deleteUserById
 } = require('../controllers/userController');
@@ -19,9 +20,13 @@ const { adminAuth } = require('../middlewares/adminAuth');
 // router.get('/', adminAuth, getAllUsers);
 router.get('/', adminAuth, getAllUsers);
 
+
 // Route to get a user by ID
 // router.get('/:id', auth, getUserById);
 router.get('/:id', getUserById);
+
+// Route to get a user
+router.get('/get/one', auth, getUser);
 
 // Route to update a user by ID
 router.put('/:id', auth, updateUserById);

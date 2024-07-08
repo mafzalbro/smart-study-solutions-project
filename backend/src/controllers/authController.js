@@ -134,12 +134,13 @@ const forgotPassword = async (req, res) => {
     await user.save();
 
     // Construct the password reset link
-    const resetLink = `${process.env.BACKEND_ORIGIN}/api/auth/verifyToken?token=${resetToken}`;
+    // const resetLink = `${process.env.FRONTEND_ORIGIN}/api/auth/verifyToken?token=${resetToken}`;
+    const resetLink = `${process.env.FRONTEND_ORIGIN}/reset-password?token=${resetToken}`;
 
     // Send the password reset email
     await sendPasswordResetEmail(user.email, resetLink);
 
-    res.status(200).json({ message: 'Password reset instructions sent to your email' });
+    res.status(200).json({ message: `Password reset instructions sent to your email! Please Check your email: ${email}` });
   } catch (error) {
     console.error('Error in forgotPassword:', error);
     res.status(500).json({ message: 'Failed to process password reset request', error: error.message });
