@@ -2,12 +2,12 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 const AuthCheck = () => {
   const router = useRouter();
+  const path = usePathname();
   const token = useSearchParams().get("token")
-
   
   useEffect(() => {
     const checkAuth = async () => {
@@ -16,7 +16,7 @@ const AuthCheck = () => {
           credentials: 'include'
         });
         console.log(await res.json());
-        if (res.status === 401 && !token) {
+        if (res.status === 401 && !token && !path.includes('/resources') && !path.includes('')) {
             router.push('/login');
         }
       } catch (error) {

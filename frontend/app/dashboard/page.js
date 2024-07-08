@@ -1,21 +1,11 @@
-"use client"
-
-import { useState } from 'react';
-import Sidebar from '../components/dashboard/Sidebar';
-import UserDetails from '../components/dashboard/userDetails';
-
 export default function Dashboard() {
-  const [selectedData, setSelectedData] = useState(null);
-
-  // Function to handle data selection
-  const handleDataSelect = (data) => {
-    setSelectedData(data);
-  };
 
   return (
-    <div className="flex h-screen">
-      <Sidebar height="full" selectedData={selectedData} onSelect={handleDataSelect} />
-      <UserDetails selectedData={selectedData} />
+    <div className="w-3/4 min-h-screen bg-my-bg-1 text-foreground flex items-center justify-center">
+      <div className="w-full max-w-md p-8 bg-my-bg-2 shadow-md rounded-lg">
+        <h2 className="text-2xl font-bold mb-6">Hey, Dear</h2>
+      </div>
     </div>
   );
+
 }

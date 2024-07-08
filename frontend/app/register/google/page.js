@@ -9,7 +9,7 @@ const GoogleLogin = () => {
     window.location.href = googleAuthUrl;
   }, []);
 
-  return <div className='flex h-screen justify-center items-center'>Redirecting to Google Login...</div>;
+  return <div className='flex h-screen justify-center items-center'>Redirecting to Google...</div>;
 };
 
 export default GoogleLogin;

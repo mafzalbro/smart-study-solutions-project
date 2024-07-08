@@ -5,7 +5,7 @@ import Spinner from '../Spinner';
 import UpdateProfile from '../UpdateProfile';
 
 
-export default function UserDetails({ selectedData }) {
+export default function UserDetails() {
   const [loading, setLoading] = useState(true);
   
   // Simulating fetching data
@@ -18,19 +18,13 @@ export default function UserDetails({ selectedData }) {
   }, []);
 
   return (
-    <div className="w-3/4 h-full bg-white p-4 flex flex-col">
-      <h2 className="text-xl mb-4 text-gray-800">User Details</h2>
+    <div className="w-3/4 h-full p-4 flex flex-col">
       <div className="flex-1 overflow-y-auto">
         {loading ? (
           <Spinner />
         ) : (
-          <div className="p-4 bg-gray-200 rounded-lg text-gray-700 mb-4">
-            {selectedData ? (
-              <p>{selectedData}</p>
-            ) : (
-              // <p className="text-center">No data selected.</p>
+          <div className="p-4 rounded-lg text-gray-700 mb-4">
               <UpdateProfile />
-            )}
           </div>
         )}
       </div>

@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from 'react';
-import changePassword from '../api/changePassword';
-import useAlert from '../customHooks/useAlert';
+import changePassword from '../../api/changePassword';
+import useAlert from '../../customHooks/useAlert';
 import { useRouter } from 'next/navigation';
 
 const ChangePassword = () => {
@@ -20,7 +20,6 @@ const ChangePassword = () => {
       setNewPassword('');
       setSuccess(response.message);
       if (response.message.includes('successfully')) {
-        router.push('/login');
       }
     } catch (error) {
       console.error('Password change failed:', error.message);
@@ -29,7 +28,7 @@ const ChangePassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-my-bg-1 text-foreground flex items-center justify-center">
+    <div className="w-3/4 min-h-screen bg-my-bg-1 text-foreground flex items-center justify-center">
       <div className="w-full max-w-md p-8 bg-my-bg-2 shadow-md rounded-lg">
         <h2 className="text-2xl font-bold mb-6">Change Password</h2>
         <form onSubmit={handleChangePassword} className="space-y-4">

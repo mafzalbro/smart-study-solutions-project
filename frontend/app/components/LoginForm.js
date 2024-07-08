@@ -5,6 +5,7 @@ import loginUser from '../api/loginUser';
 import useAlert from '../customHooks/useAlert';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { FcGoogle } from "react-icons/fc";
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');
@@ -103,13 +104,14 @@ const LoginForm = () => {
           <Link href="/forgot-password" className="text-orange-600 hover:underline">Forgot Password?</Link>
           <Link href="/register" className="text-orange-600 hover:underline">Register</Link>
         </div>
-        <hr className="my-6 border-t border-gray-300" />
+        <hr className="my-10 border-t border-orange-300 w-[50%] mx-auto"/>
         <a
           href="/login/google"
-          className="block w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 mt-4 text-center"
+          className="flex justify-center items-center gap-5 w-full py-2 px-4 text-blue-700 font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 mt-4 text-center"
         >
-          Login with Google
+          <FcGoogle className='h-8 w-8'/> <span>Login with Google</span>
         </a>
+
         {success !== '' && (
           <div className="mt-6 bg-green-100 text-green-700 p-4 rounded-lg">
             <p>{success}</p>

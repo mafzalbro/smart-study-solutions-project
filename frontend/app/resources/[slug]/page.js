@@ -1,9 +1,10 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import ResourceCard from '@/app/components/ResourceCard';
 import Spinner from '@/app/components/Spinner';
+import { FaThumbsUp, FaThumbsDown, FaStar } from 'react-icons/fa';
 
 export default function ResourcePage({ params }) {
   const [resource, setResource] = useState(null);
@@ -16,7 +17,7 @@ export default function ResourcePage({ params }) {
   const { slug } = params;
 
   useEffect(() => {
-      const fetchResource = async () => {
+    const fetchResource = async () => {
       if (!slug) return;
 
       setLoading(true);
@@ -28,7 +29,7 @@ export default function ResourcePage({ params }) {
           throw new Error('Failed to fetch resource data');
         }
         const data = await res.json();
-        document.title = data.title
+        document.title = data.title;
         setResource(data);
         setLikes(data.likes);
         setDislikes(data.dislikes);
@@ -40,7 +41,7 @@ export default function ResourcePage({ params }) {
           credentials: 'include'
         });
         if (relatedRes.ok) {
-            const relatedData = await relatedRes.json();
+          const relatedData = await relatedRes.json();
           setRelatedResources(relatedData);
         }
       } catch (error) {
@@ -49,12 +50,11 @@ export default function ResourcePage({ params }) {
         setLoading(false);
       }
     };
-    
+
     fetchResource();
   }, [slug]);
 
   const updateResourceState = (updatedData) => {
-    console.log(updatedData);
     setResource((prevResource) => ({
       ...prevResource,
       ...updatedData,
@@ -80,10 +80,10 @@ export default function ResourcePage({ params }) {
       console.error('Error liking resource:', error);
     }
   };
-  
+
   const handleDislike = async () => {
-      try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/${slug}/dislike`, {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/${slug}/dislike`, {
         method: 'POST',
         credentials: 'include'
       });
@@ -95,7 +95,7 @@ export default function ResourcePage({ params }) {
     } catch (error) {
       console.error('Error disliking resource:', error);
     }
-};
+  };
 
   const handleRating = async (ratingValue) => {
     try {
@@ -106,8 +106,8 @@ export default function ResourcePage({ params }) {
         },
         body: JSON.stringify({ rating: ratingValue }),
         credentials: 'include'
-    });
-    if (!res.ok) {
+      });
+      if (!res.ok) {
         throw new Error('Failed to rate resource');
       }
       const updatedResource = await res.json();
@@ -116,85 +116,77 @@ export default function ResourcePage({ params }) {
       console.error('Error rating resource:', error);
     }
   };
-  
-  console.log(resource);
-  
+
   if (loading) {
-      return <Spinner />;
-    }
+    return <Spinner />;
+  }
 
   if (!resource) {
     return <p className="container mx-auto p-4 text-center text-gray-700">Resource not found</p>;
   }
 
-  console.log("pdf",resource.pdfLink[0]);
   return (
-    <div className="container mx-auto w-[80vw] sm::w-[95vw]">
-        <div className='text-gray-700 bg-white shadow-md bg-clip-border rounded-xl mt-10 p-10'>
-
-      <button className="mt-16 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-orange-600 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none">
-        <Link href="/resources">&larr; &nbsp; Back to Resources</Link>
-      </button>
-      <div className='flex space-x-4 mt-10 font-sans'>
+    <div className="container mx-auto w-[80vw] sm:w-[95vw]">
+      <div className='text-gray-700 bg-white shadow-md bg-clip-border rounded-xl mt-10 p-10'>
+        <Link href="/resources">
+          <span className="block md:inline-block py-2 px-4 bg-orange-600 text-white rounded-lg shadow-sm hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700">
+            &larr; &nbsp; Back to Resources
+          </span> 
+        </Link>
+        <div className='flex space-x-4 mt-10 font-sans'>
           <p className="text-gray-700 mb-2"><strong>Type:</strong> {resource.type}</p>
           <p className="text-gray-700 mb-2"><strong>Tags:</strong> {resource.tags.join(', ')}</p>
           <p className="text-gray-700 mb-2"><strong>Published At:</strong> {new Date(resource.created_at).toLocaleDateString()}</p>
           <p className="text-gray-700 mb-2"><strong>Updated At:</strong> {new Date(resource.updated_at).toLocaleDateString()}</p>
-      </div>
-      <div className="flex">
-        <div className="w-full lg:w-3/4">
-          <h1 className="text-5xl font-bold my-16 text-foreground font-mono">{resource.title}</h1>
-          {resource.profileImage && (
+        </div>
+        <div className="flex">
+          <div className="w-full lg:w-3/4">
+            <h1 className="text-5xl font-bold my-16 text-foreground font-mono">{resource.title}</h1>
+            {resource.profileImage && (
               <img src={resource.profileImage} alt={resource.title} className="mb-4" />
             )}
-
-          <p className="block mb-2 font-sans text-xl antialiased leading-snug tracking-normal text-blue-gray-900 font-normal">{resource.description}</p>
-
-          {resource.pdfLink[0] && (
-              <a href={resource.pdfLink[0]} target='_blank' alt={resource.title} className="my-4 inline-block align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-blue-600 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none cursor-pointer">
+            <p className="block mb-2 font-sans text-xl antialiased leading-snug tracking-normal text-blue-gray-900 font-normal">{resource.description}</p>
+            {resource.pdfLink[0] && (
+              <a href={resource.pdfLink[0]} target='_blank' rel='noopener noreferrer' className="block md:inline-block py-2 px-4 bg-orange-600 text-white rounded-lg shadow-sm hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700">
                 Checkout PDF
-                </a>
-          )}
-
-          <div className="flex items-center my-20">
-            <button
-              onClick={handleLike}
-              className="mr-1 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-blue-600 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"            >
-              Like ({likes})
-            </button>
-            <button
-              onClick={handleDislike}
-              className="m-1 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-orange-600 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none">
-              Dislike ({dislikes})
-            </button>
-            {/* <div className="ml-4">
-              <label className="mr-2">Rate this resource:</label>
-              {[1, 2, 3, 4, 5].map((ratingValue) => (
-                <button
-                key={ratingValue}
-                onClick={() => handleRating(ratingValue)}
-                className={`m-1 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-orange-600 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none ${Math.round(rating) === ratingValue ? 'bg-green-500' : ''}`}
-                >
-                {ratingValue}
-                </button>
+              </a> 
+            )}
+            <div className="flex items-center my-20 space-x-4">
+              <button onClick={handleLike} className="flex items-center text-gray-700">
+                <FaThumbsUp className="mr-2" /> {likes}
+              </button>
+              <button onClick={handleDislike} className="flex items-center text-gray-700">
+                <FaThumbsDown className="mr-2" /> {dislikes}
+              </button>
+            </div>
+            <div className="mt-4">
+              <h2 className="text-lg font-sans mb-2">Ratings: {rating.toFixed(2)} / 5 ({ratingCount} ratings)</h2>
+              <div className="flex items-center">
+                {[1, 2, 3, 4, 5].map((ratingValue) => (
+                  <button
+                    key={ratingValue}
+                    onClick={() => handleRating(ratingValue)}
+                    className="mr-1 flex items-center text-gray-700"
+                  >
+                    <FaStar className={`mr-1 ${Math.round(rating) >= ratingValue ? 'text-yellow-500' : 'text-gray-300'}`} />
+                      {/* {ratingValue} */}
+                  </button>
                 ))}
-                </div> */}
-          </div>
-          <div className="mt-4">
-            <h2 className="text-lg font-sans mb-2">Ratings: {rating.toFixed(2)} / 5 ({ratingCount} ratings)</h2>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-                </div>
-      
-     {relatedResources && <div className="mt-8">
-        <h2 className="text-2xl font-bold text-center my-16 text-foreground font-mono">Related Resources</h2>
-        <div className="flex justify-center gap-2 my-10">
-          {relatedResources.map((related) => (
-            <ResourceCard key={related._id} resource={related} />
-          ))}
+      {relatedResources.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold text-center my-16 text-foreground font-mono">Related Resources</h2>
+          <div className="flex justify-center gap-2 my-10">
+            {relatedResources.map((related) => (
+              <ResourceCard key={related._id} resource={related} />
+            ))}
+          </div>
         </div>
-      </div>}
+      )}
     </div>
   );
 }

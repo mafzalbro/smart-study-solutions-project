@@ -51,7 +51,7 @@ const NavBar = () => {
     <nav className="bg-background-start dark:bg-gray-900 p-4 shadow-lg text-white font-sans">
       <div className="container mx-auto flex justify-between items-center">
         <Link href='/'>
-        <h2 className="text-2xl font-bold">Code Innovators</h2>
+          <h2 className="text-2xl font-bold cursor-pointer">Code Innovators</h2>
         </Link>
         <button
           className="block md:hidden"
@@ -87,21 +87,25 @@ const NavBar = () => {
               <span className="block md:inline-block text-lg hover:text-blue-500 dark:hover:text-blue-300 py-2 md:py-0">Resources</span>
             </Link>
           </li>
-          <li>
-            <Link href="/dashboard" passHref>
-              <span className="block md:inline-block text-lg hover:text-blue-500 dark:hover:text-blue-300 py-2 md:py-0">Profile</span>
-            </Link>
-          </li>
+          {isLoggedIn && (
+            <>
+            <li>
+              <Link href="/dashboard" passHref>
+                <span className="block md:inline-block text-lg hover:text-blue-500 dark:hover:text-blue-300 py-2 md:py-0">Profile</span>
+              </Link>
+            </li>
           <li>
             <Link href="/chat" passHref>
               <span className="block md:inline-block text-lg hover:text-blue-500 dark:hover:text-blue-300 py-2 md:py-0">Chat Home</span>
             </Link>
           </li>
+            </>
+          )}
           {isLoggedIn ? (
             <li>
               <button
                 onClick={handleLogout}
-                className="block md:inline-block py-2 px-4 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 dark:bg-orange-700 dark:hover:bg-orange-600"
+                className="my-8 md:my-0 block md:inline-block py-2 px-4 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 dark:bg-orange-700 dark:hover:bg-orange-600"
               >
                 Log Out
               </button>
@@ -109,7 +113,7 @@ const NavBar = () => {
           ) : (
             <li>
               <Link href="/login" passHref>
-                <button className="block md:inline-block py-2 px-4 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 dark:bg-orange-700 dark:hover:bg-orange-600">
+                <button className="my-8 md:my-0 block md:inline-block py-2 px-4 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 dark:bg-orange-700 dark:hover:bg-orange-600">
                   Log In
                 </button>
               </Link>

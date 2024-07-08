@@ -39,4 +39,8 @@ body {
   }
 }
 
-
+.h-screen, .min-h-screen, .max-h-sreen{
+  height: calc(100vh - 72px);
+  min-height: calc(100vh - 72px);
+  max-height: calc(100vh - 72px);
+}

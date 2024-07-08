@@ -1,10 +1,11 @@
 // app/components/chat/NewChatButton.js
-
+"use client"
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function NewChatButton() {
   const [creatingChat, setCreatingChat] = useState(false);
-
+  const router = useRouter()
   const createNewChat = async () => {
     setCreatingChat(true);
     try {
@@ -21,8 +22,10 @@ export default function NewChatButton() {
         const newChat = await res.json();
         const slug = newChat.chatOption.slug;
         // Redirect to the new chat using window.location.href for client-side navigation
-        window.location.href = `/chat/${slug}`;
+        // window.location.href = `/chat/${slug}`;
+        router.push(`/chat/${slug}`)
       } else {
+        router.push("/login")
         console.error('Failed to create new chat');
       }
     } catch (error) {

@@ -1,4 +1,4 @@
-// hooks/useAlert.js
+// customHooks/useAlert.js
 import { useState, useEffect } from 'react';
 
 const useAlert = (initialMessage = '', duration = 5000) => {

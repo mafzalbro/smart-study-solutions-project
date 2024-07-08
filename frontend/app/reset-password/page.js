@@ -61,7 +61,7 @@ const ResetPassword = () => {
         {showPasswordField ? (
           <form onSubmit={handleResetPassword} className="space-y-4">
             <div>
-              <label className="block mb-2">New Password:</label>
+              <label className="block mb-2">Enter Your New Password:</label>
               <input
                 type="password"
                 value={newPassword}

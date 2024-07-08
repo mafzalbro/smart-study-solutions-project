@@ -13,7 +13,7 @@ export default function ResourcesList() {
   const [hasMore, setHasMore] = useState(true); // State to track if there are more resources to load
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const results = 10
+  const results = 5
   // Debounce function to delay search requests
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
@@ -109,7 +109,7 @@ export default function ResourcesList() {
     )}
 
     {/* Load more button for infinite scroll */}
-    {hasMore && !isLoadingMore && (
+    {resources.length !== 0 && !error && hasMore && !isLoadingMore && (
       <div className="flex justify-center m-10">
         <button
           onClick={handleLoadMore}

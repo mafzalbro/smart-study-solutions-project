@@ -7,7 +7,7 @@ export default function PdfInput({ pdfUrl, setPdfUrl }) {
       value={pdfUrl}
       onChange={(e) => setPdfUrl(e.target.value)}
       placeholder="PDF URL"
-      className="flex-grow p-2 bg-gray-700 rounded outline-none focus:ring-2 focus:ring-orange-600 h-12"
+      className="flex-grow p-2 bg-gray-700 rounded-lg outline-none focus:ring-2 focus:ring-orange-600 h-12"
     />
   );
 }

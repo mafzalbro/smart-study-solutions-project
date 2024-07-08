@@ -54,8 +54,6 @@ const getUserById = async (req, res) => {
 const getUser = async (req, res) => {
 
   const id = req.user.id;
-
-
   try {
     const user = await User.findById(id, '-chatOptions -password -__v');
     if (!user) {
@@ -70,16 +68,27 @@ const getUser = async (req, res) => {
 
 // Update a user by ID
 const updateUserById = async (req, res) => {
-  // const { id } = req.params;
-  const id = req.user.id;
+  const { id } = req.params;
+  const { username, email, favoriteGenre, role, profileImage } = req.body;
   
-  const { username, email, favoriteGenre } = req.body;
   try {
-    const updatedUser = await User.findByIdAndUpdate(id, {
+    if(!username){
+      return res.status(404).json({ message: 'username not found' });
+    }
+    const updateData = {
       username,
       email,
-      favoriteGenre
-    }, { new: true, select: '-chatOptions -password -__v' });
+      favoriteGenre,
+      role
+    };
+
+    if (profileImage !== undefined) {
+      // Process base64 encoded image string
+      updateData.profileImage = profileImage;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true, select: '-chatOptions -password -__v' });
+
     if (!updatedUser) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -89,6 +98,7 @@ const updateUserById = async (req, res) => {
     res.status(500).json({ message: 'Error updating user' });
   }
 };
+
 
 // Delete a user by ID
 const deleteUserById = async (req, res) => {

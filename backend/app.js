@@ -31,7 +31,7 @@ app.use(morgan('dev'));
 
 // CORS middleware
 app.use(cors({
-  origin: process.env.FRONTEND_ORIGIN,
+  origin: [process.env.FRONTEND_ORIGIN, process.env.FRONTEND_ORIGIN_1],
   credentials: true
 }));
 

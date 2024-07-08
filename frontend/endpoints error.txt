@@ -1,0 +1,17 @@
+> Export encountered errors on following paths:
+        /_not-found/page: /_not-found
+        /chat/page: /chat
+        /chat/test/page: /chat/test
+        /dashboard/change-password/page: /dashboard/change-password
+        /dashboard/page: /dashboard
+        /dashboard/profile/page: /dashboard/profile
+        /forgot-password/page: /forgot-password
+        /forum/page: /forum
+        /login/google/page: /login/google
+        /login/page: /login
+        /logout/page: /logout
+        /page: /
+        /register/google/page: /register/google
+        /register/page: /register
+        /reset-password/page: /reset-password
+        /resources/page: /resources

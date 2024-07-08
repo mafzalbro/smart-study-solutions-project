@@ -1,23 +1,31 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import NewChatButton from './NewChatButton';
 import Loader from './Loader';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { MdOutlineDeleteOutline, MdDriveFileRenameOutline } from "react-icons/md";
+import { FiEdit, FiMenu, FiX, FiMoreVertical } from "react-icons/fi";
 
-export default function Sidebar({height, chatHistory}) {
+export default function Sidebar({ height, chatHistory }) {
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
   const [editingChatSlug, setEditingChatSlug] = useState(null);
   const [newTitle, setNewTitle] = useState('');
-  
+  const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
+  const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
+  const [selectedChatSlug, setSelectedChatSlug] = useState(null);
+
+  const router = useRouter();
+  const modalRef = useRef(null);
+
   // Get current chatSlug from URL path
   const path = usePathname();
   const chatSlug = path.split('/chat/')[1]; // Extracts the slug from the URL
-  
+
   // Helper function to fetch chats
   const fetchChats = async () => {
     setLoading(true);
@@ -47,10 +55,24 @@ export default function Sidebar({height, chatHistory}) {
     fetchChats();
   }, [page, chatHistory]);
 
+  // Close modal when clicking outside of it
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setModalVisible(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   // Handle editing chat
   const handleEdit = (chat) => {
     setEditingChatSlug(chat.slug);
-    setNewTitle(chat.title);
+    setNewTitle(chat.title); // Set the current title in newTitle
+    setModalVisible(false);
   };
 
   // Handle deleting chat
@@ -63,6 +85,8 @@ export default function Sidebar({height, chatHistory}) {
       if (res.ok) {
         setChats(chats.filter(chat => chat.slug !== chatSlug));
         setTotalResults(totalResults - 1);
+        setModalVisible(false);
+        router.push('/chat')
       } else {
         console.error('Failed to delete chat');
       }
@@ -93,6 +117,13 @@ export default function Sidebar({height, chatHistory}) {
     }
   };
 
+  const openModal = (event, chatSlug) => {
+    const { clientX, clientY } = event;
+    setModalPosition({ x: clientX, y: clientY });
+    setSelectedChatSlug(chatSlug);
+    setModalVisible(true);
+  };
+
   return (
     <div className={`w-1/4 h-${height} bg-gray-800 p-4 flex flex-col`}>
       <Link href="/chat/test">
@@ -115,6 +146,9 @@ export default function Sidebar({height, chatHistory}) {
                   onKeyDown={(e) => e.key === 'Enter' && handleUpdate(chat.slug)}
                   className="flex-1 p-2 bg-gray-700 rounded text-white"
                 />
+                <button onClick={() => handleUpdate(chat.slug)} className="p-1 bg-gray-600 rounded-lg text-white mx-2">
+                  <MdDriveFileRenameOutline />
+                </button>
               </div>
             ) : (
               <Link href={`/chat/${chat.slug}`} passHref>
@@ -127,11 +161,8 @@ export default function Sidebar({height, chatHistory}) {
             )}
             {!editingChatSlug && (
               <div className="absolute right-0 top-0 p-2 hidden group-hover:flex space-x-2">
-                <button onClick={() => handleEdit(chat)} className="p-1 bg-gray-600 rounded-lg text-white">
-                  Edit
-                </button>
-                <button onClick={() => handleDelete(chat.slug)} className="p-1 bg-red-600 rounded text-white">
-                  Delete
+                <button onClick={(event) => openModal(event, chat.slug)} className="p-1 bg-gray-600 rounded-lg text-white">
+                  <FiMoreVertical />
                 </button>
               </div>
             )}
@@ -143,6 +174,25 @@ export default function Sidebar({height, chatHistory}) {
         <button onClick={() => setPage(page + 1)} className="w-full p-2 mt-4 bg-orange-600 rounded">
           Load More
         </button>
+      )}
+      {modalVisible && (
+        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div
+            ref={modalRef}
+            className="bg-white p-4 rounded-lg shadow-md"
+            style={{ top: modalPosition.y, left: modalPosition.x, position: 'absolute' }}
+          >
+            <button onClick={() => handleEdit({ slug: selectedChatSlug, title: chats.find(chat => chat.slug === selectedChatSlug)?.title })} className="flex items-center w-full text-left p-2 hover:bg-gray-200">
+              <MdDriveFileRenameOutline className="mr-2" /> Rename
+            </button>
+            <button onClick={() => handleDelete(selectedChatSlug)} className="flex items-center w-full text-left p-2 hover:bg-gray-200">
+              <MdOutlineDeleteOutline className="mr-2" /> Delete
+            </button>
+            <button onClick={() => setModalVisible(false)} className="flex items-center w-full text-left p-2 hover:bg-gray-200">
+              <FiX className="mr-2" /> Cancel
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

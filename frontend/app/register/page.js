@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import registerUser from '../api/registerUser';
 import useAlert from '../customHooks/useAlert';
 import { useRouter } from 'next/navigation';
+import { FcGoogle } from 'react-icons/fc';
+import Link from 'next/link';
 
 const RegisterForm = () => {
   const [username, setUsername] = useState('');
@@ -75,17 +77,19 @@ const RegisterForm = () => {
             />
           </div>
           <div>
-            <label className="block mb-2">Role:</label>
-            <input
-              type="text"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600"
-            />
+          <label className="block mb-4">Role:</label>
+          <select
+            value={role || ''}
+            onChange={(e) => setRole(e.target.value)}
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600 mb-4"
+          >
+            <option value="student">Student</option>
+            <option value="teacher">Teacher</option>
+          </select>
           </div>
           <div>
-            <label className="block mb-2">Favorite Genre:</label>
+        <label className="block mb-2">Favorite Genre:</label>
             <input
               type="text"
               value={favoriteGenre}
@@ -101,6 +105,20 @@ const RegisterForm = () => {
             Register
           </button>
         </form>
+
+        <div className="mt-4 flex justify-between">
+          <Link href="/forgot-password" className="text-orange-600 hover:underline">Forgot Password?</Link>
+          <Link href="/login" className="text-orange-600 hover:underline">Login</Link>
+        </div>
+
+        <hr className="my-10 border-t border-orange-300 w-[50%] mx-auto"/>
+        <a
+          href="/register/google"
+          className="flex justify-center items-center gap-5 w-full py-2 px-4 text-blue-700 font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 mt-4 text-center"
+        >
+          <FcGoogle className='h-8 w-8'/> <span>Register with Google</span>
+        </a>
+
         {success !== '' && (
           <div className="mt-6 bg-green-100 text-green-700 p-4 rounded-lg">
             <p>{success}</p>
