@@ -5,8 +5,9 @@ import NewChatButton from './NewChatButton';
 import Loader from './Loader';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { MdOutlineDeleteOutline, MdDriveFileRenameOutline } from "react-icons/md";
+import { MdOutlineDeleteOutline, MdDriveFileRenameOutline, MdOutlineKeyboardDoubleArrowDown, MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { FiEdit, FiMenu, FiX, FiMoreVertical } from "react-icons/fi";
+
 
 export default function Sidebar({ height, chatHistory }) {
   const [chats, setChats] = useState([]);
@@ -53,7 +54,7 @@ export default function Sidebar({ height, chatHistory }) {
   // Fetch chats on initial load and when page changes
   useEffect(() => {
     fetchChats();
-  }, [page, chatHistory]);
+  }, [page, chatHistory, ]);
 
   // Close modal when clicking outside of it
   useEffect(() => {
@@ -125,7 +126,7 @@ export default function Sidebar({ height, chatHistory }) {
   };
 
   return (
-    <div className={`w-1/4 h-${height} bg-gray-800 p-4 flex flex-col`}>
+    <div className={`sidebar w-1/4 h-${height} bg-gray-800 p-4 flex flex-col`}>
       <Link href="/chat/test">
         <span className='block md:inline-block py-2 px-4 bg-orange-600 text-black rounded-lg shadow-md hover:bg-orange-700 dark:hover:bg-orange-700 dark:bg-orange-600 my-8'>Test API</span>
       </Link>
@@ -133,20 +134,20 @@ export default function Sidebar({ height, chatHistory }) {
         <h2 className="text-xl mb-4 text-white">Chats</h2>
       </Link>
       <NewChatButton />
-      <div className="flex-1 overflow-y-auto">
+      <div className="sidebar flex-1 overflow-y-auto">
         {chats.map((chat) => (
           <div key={chat.slug} className="relative group">
             {editingChatSlug === chat.slug ? (
-              <div className="flex items-center mb-2">
+              <div className="flex items-center mb-2 outline-orange-500">
                 <input
                   type="text"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   onBlur={() => handleUpdate(chat.slug)}
                   onKeyDown={(e) => e.key === 'Enter' && handleUpdate(chat.slug)}
-                  className="flex-1 p-2 bg-gray-700 rounded text-white"
+                  className="flex-1 p-2 bg-black rounded-lg text-white"
                 />
-                <button onClick={() => handleUpdate(chat.slug)} className="p-1 bg-gray-600 rounded-lg text-white mx-2">
+                <button onClick={() => handleUpdate(chat.slug)} className="p-1 bg-gray-600 rounded-lg text-white">
                   <MdDriveFileRenameOutline />
                 </button>
               </div>
@@ -158,6 +159,13 @@ export default function Sidebar({ height, chatHistory }) {
                   {chat.title}
                 </span>
               </Link>
+            )}
+            {!editingChatSlug && chatSlug === chat.slug && (
+              <div className="absolute right-0 top-0 p-2 space-x-2">
+                <button onClick={(event) => openModal(event, chat.slug)} className="p-1 bg-orange-500 rounded-lg text-white">
+                  <FiMoreVertical />
+                </button>
+              </div>
             )}
             {!editingChatSlug && (
               <div className="absolute right-0 top-0 p-2 hidden group-hover:flex space-x-2">
@@ -171,12 +179,15 @@ export default function Sidebar({ height, chatHistory }) {
       </div>
       {loading && <Loader />}
       {chats.length < totalResults && (
-        <button onClick={() => setPage(page + 1)} className="w-full p-2 mt-4 bg-orange-600 rounded">
-          Load More
+        // <button onClick={() => setPage(page + 1)} className="w-full p-2 mt-4 bg-orange-600 rounded-lg">
+        //   <MdOutlineKeyboardDoubleArrowDown />
+        // </button>
+        <button onClick={() => setPage(page + 1)} className='inline-flex justify-center '>
+          <MdOutlineKeyboardArrowDown size={30} color='white'/>
         </button>
       )}
       {modalVisible && (
-        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="fixed top-0 left-0 w-full flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div
             ref={modalRef}
             className="bg-white p-4 rounded-lg shadow-md"

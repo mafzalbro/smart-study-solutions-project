@@ -11,7 +11,7 @@ const page = () => {
 
   useEffect(() => {
     handleLogout(router); // This will run when the component mounts
-  }, []);
+  }, [router]);
 
     return (
     <div className='flex items-center justify-center flex-col h-screen'>

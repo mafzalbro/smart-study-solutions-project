@@ -154,7 +154,8 @@ const chatWithPdfBySlug = async (req, res) => {
 
     const apiKey = user.apiKey;
     if (!apiKey) {
-      return res.status(404).json({ message: 'Please add an API key.' });
+      return res.status(404).send(`<p>Please <a href='/chat/test' style='color:lightblue;'>Add API Key</a></p>`);
+      // return res.status(404).json({ message: 'Please add an API key.' });
     }
 
     let chatOption;
@@ -162,7 +163,7 @@ const chatWithPdfBySlug = async (req, res) => {
     if (slug) {
       chatOption = user.chatOptions.find(option => option.slug === slug);
       if (!chatOption) {
-        return res.status(404).json({ message: 'Chat option not found.' });
+        return res.status(404).json({ message: 'Chat not found.' });
       }
     } else {
       chatOption = user.chatOptions[0];
@@ -188,7 +189,7 @@ const chatWithPdfBySlug = async (req, res) => {
 
     // Generate response with combined context or just pdfText if message is null
     const responseStream = pdfText !== ''
-      ? generateChatResponse(`${message} => PDF Document Text: ${pdfText}`, context, apiKey)
+      ? generateChatResponse(`My Query "${message}" ------------- This is the PDF Document Text for Context in which we have to talk so be in the context: ${pdfText}`, context, apiKey)
       : generateChatResponse(message, context, apiKey);
 
     // Set headers for streaming response
@@ -211,12 +212,13 @@ const chatWithPdfBySlug = async (req, res) => {
 
     res.end(); // End the streaming response
   } catch (error) {
-    console.error('Error in chatWithPdfBySlug:', error);
-
     if (!res.headersSent) {
-      res.status(500).json({ message: 'Internal server error' });
+      return res.status(500).json({ message: 'Internal server error' });
     }
+    console.error('Error in chatWithPdfBySlug:', error);
+    return res.status(404).json({ message: 'Error generating response, Sorry.' });
   }
+
 };
 
 

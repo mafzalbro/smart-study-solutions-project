@@ -11,33 +11,42 @@ const RegisterForm = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('');
+  const [role, setRole] = useState('student');
   const [favoriteGenre, setFavoriteGenre] = useState('');
   const [success, setSuccess] = useAlert('', 3000); // 3 seconds
+  const [error, setError] = useAlert('', 3000); // State for error message
 
-  const router = useRouter()
+  const router = useRouter();
 
   const handleRegister = async () => {
     try {
       const userData = await registerUser({ username, email, password, role, favoriteGenre });
-      setUsername('');
-      setEmail('');
-      setPassword('');
-      setRole('');
-      setFavoriteGenre('');
-      setSuccess(userData.message);
-      if(userData.message.includes('successfully')){
+      console.log({ userData });
+      
+      // Check if userData contains a success message
+      if (userData.message && userData.message.includes('successfully')) {
+        setUsername('');
+        setEmail('');
+        setPassword('');
+        setRole('student');
+        setFavoriteGenre('');
+        setSuccess(userData.message);
+        setError(''); // Clear error message on success
         router.push('/login');
+      } else {
+        // Set error message if registration was not successful
+        setError(userData.message || 'Registration failed. Please try again.');
+        setSuccess('');
       }
     } catch (error) {
-      console.error('Registration failed:', error.message);
-      // Handle registration failure (e.g., display error message)
+      setError(error); // Set error message
+      setSuccess(''); // Clear success message on error
     }
   };
 
   return (
-    <div className="min-h-screen bg-my-bg-1 text-foreground flex items-center justify-center">
-      <div className="w-full max-w-md p-8 bg-my-bg-2 shadow-md rounded-lg">
+    <div className="min-h-screen my-10 pt-20 md:pt-32 bg-my-bg-1 text-foreground flex items-center justify-center">
+      <div className="w-full max-w-md p-4 md:p-8 bg-my-bg-2 shadow-md rounded-lg">
         <h2 className="text-2xl font-bold mb-6">Register Form</h2>
         <form
           onSubmit={(e) => {
@@ -77,19 +86,19 @@ const RegisterForm = () => {
             />
           </div>
           <div>
-          <label className="block mb-4">Role:</label>
-          <select
-            value={role || ''}
-            onChange={(e) => setRole(e.target.value)}
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600 mb-4"
-          >
-            <option value="student">Student</option>
-            <option value="teacher">Teacher</option>
-          </select>
+            <label className="block mb-4">Role:</label>
+            <select
+              value={role || ''}
+              onChange={(e) => setRole(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600 mb-4"
+            >
+              <option value="student">Student</option>
+              <option value="teacher">Teacher</option>
+            </select>
           </div>
           <div>
-        <label className="block mb-2">Favorite Genre:</label>
+            <label className="block mb-2">Favorite Genre:</label>
             <input
               type="text"
               value={favoriteGenre}
@@ -111,17 +120,22 @@ const RegisterForm = () => {
           <Link href="/login" className="text-orange-600 hover:underline">Login</Link>
         </div>
 
-        <hr className="my-10 border-t border-orange-300 w-[50%] mx-auto"/>
+        <hr className="my-10 border-t border-orange-300 w-[50%] mx-auto" />
         <a
           href="/register/google"
           className="flex justify-center items-center gap-5 w-full py-2 px-4 text-blue-700 font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 mt-4 text-center"
         >
-          <FcGoogle className='h-8 w-8'/> <span>Register with Google</span>
+          <FcGoogle className='h-8 w-8' /> <span>Register with Google</span>
         </a>
 
         {success !== '' && (
           <div className="mt-6 bg-green-100 text-green-700 p-4 rounded-lg">
             <p>{success}</p>
+          </div>
+        )}
+        {error !== '' && (
+          <div className="mt-6 bg-red-100 text-red-700 p-4 rounded-lg">
+            <p>{error}</p>
           </div>
         )}
       </div>

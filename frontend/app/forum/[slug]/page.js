@@ -1,200 +1,155 @@
-"use client"
+"use client";
 
+import LinkButton from '@/app/components/LinkButton';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import ResourceCard from '@/app/components/ResourceCard';
-import Spinner from '@/app/components/Spinner';
+import { useRouter } from 'next/navigation';
+import AnswerModal from '@/app/components/forum/AnswerModal';
+import AnswerForm from '@/app/components/forum/AnswerForm';
+import QuestionModal from '@/app/components/forum/QuestionModal';
+import QuestionForm from '@/app/components/forum/QuestionForm';
+import ClickButton from '@/app/components/ClickButton';
+import './style.css'
 
-export default function ResourcePage({ params }) {
-  const [resource, setResource] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [relatedResources, setRelatedResources] = useState([]);
-  const [likes, setLikes] = useState(0);
-  const [dislikes, setDislikes] = useState(0);
-  const [rating, setRating] = useState(0);
-  const [ratingCount, setRatingCount] = useState(0);
+const QuestionPage = ({ params }) => {
   const { slug } = params;
+  console.log(slug);
+  const router = useRouter();
+  const [question, setQuestion] = useState(null);
+  const [isAnswerModalOpen, setIsAnswerModalOpen] = useState(false);
+  const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
 
   useEffect(() => {
-      const fetchResource = async () => {
-      if (!slug) return;
+    if (slug) {
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/qna/question/${slug}`, {
+        credentials: 'include'
+      })
+        .then(response =>{ 
+          if(response.status == 401) router.push('/login')
+          return response.json()
+        })
+        .then(data => setQuestion(data))
+        .catch(error => console.error('Error fetching question:', error));
+    }
+  }, [slug, isAnswerModalOpen, isQuestionModalOpen]);
 
-      setLoading(true);
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/${slug}`, {
-          credentials: 'include'
-        });
-        if (!res.ok) {
-          throw new Error('Failed to fetch resource data');
-        }
-        const data = await res.json();
-        document.title = data.title
-        setResource(data);
-        setLikes(data.likes);
-        setDislikes(data.dislikes);
-        setRating(data.rating);
-        setRatingCount(data.ratingCount);
+  if (!question) return <div>Loading...</div>;
 
-        // Fetch related resources
-        const relatedRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/recommend`, {
-          credentials: 'include'
-        });
-        if (relatedRes.ok) {
-            const relatedData = await relatedRes.json();
-          setRelatedResources(relatedData);
-        }
-      } catch (error) {
-        console.error('Error fetching resource:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchResource();
-  }, [slug]);
-
-  const updateResourceState = (updatedData) => {
-    console.log(updatedData);
-    setResource((prevResource) => ({
-      ...prevResource,
-      ...updatedData,
-    }));
-    if (updatedData.likes !== undefined) setLikes(updatedData.likes);
-    if (updatedData.dislikes !== undefined) setDislikes(updatedData.dislikes);
-    if (updatedData.rating !== undefined) setRating(updatedData.rating);
-    if (updatedData.ratingCount !== undefined) setRatingCount(updatedData.ratingCount);
+  const handleAnswerModalClose = () => {
+    setIsAnswerModalOpen(false);
   };
 
-  const handleLike = async () => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/${slug}/like`, {
-        method: 'POST',
-        credentials: 'include'
-      });
-      if (!res.ok) {
-        throw new Error('Failed to like resource');
-      }
-      const updatedResource = await res.json();
-      updateResourceState(updatedResource);
-    } catch (error) {
-      console.error('Error liking resource:', error);
-    }
+  const handleAnswerModalOpen = () => {
+    setIsAnswerModalOpen(true);
   };
-  
-  const handleDislike = async () => {
-      try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/${slug}/dislike`, {
-        method: 'POST',
-        credentials: 'include'
-      });
-      if (!res.ok) {
-        throw new Error('Failed to dislike resource');
-      }
-      const updatedResource = await res.json();
-      updateResourceState(updatedResource);
-    } catch (error) {
-      console.error('Error disliking resource:', error);
-    }
+
+  const handleQuestionModalClose = () => {
+    setIsQuestionModalOpen(false);
+  };
+
+  const handleQuestionModalOpen = () => {
+    setIsQuestionModalOpen(true);
+  };
+
+  return (
+    <section className="p-10">
+      <LinkButton text="&larr; &nbsp;Back to Forum" link="/forum"/>
+      <ClickButton text="Submit Question" onClick={handleQuestionModalOpen} />
+      <h1 className="text-3xl font-bold my-8">{question?.question}</h1>
+      <div className="my-4">
+        {question?.askedBy && <p className="mb-2">Asked by:</p>}
+        <div className="flex items-center">
+          {question?.askedBy?.profileImage && (
+            <img
+              src={question?.askedBy?.profileImage}
+              alt={`${question?.askedBy?.username}'s profile`}
+              className="w-10 h-10 rounded-full mr-4"
+            />
+          )}
+          <div>
+            {question?.askedBy?.username && (
+              <p className="font-semibold">{question?.askedBy?.username}</p>
+            )}
+            {question?.askedBy?.role && (
+              <p className="text-sm text-gray-500">{question?.askedBy?.role}</p>
+            )}
+            {question?.askedBy?.favoriteGenre && (
+              <p className="text-sm text-gray-500">{question?.askedBy?.favoriteGenre}</p>
+            )}
+          </div>
+        </div>
+      </div>
+      <div className="p-5 my-10 rounded-lg">
+        {Array.isArray(question?.answers) && question?.answers?.length > 0 ? (
+          question?.answers?.map((answer, index) => (
+            <div key={index} className="mb-4 bg-white p-8 rounded-lg shadow-md">
+              <h3 className='text-lg font-medium'>Answer:</h3>
+              <hr className='text-orange-200 w-60 my-5'/>
+              <div
+                dangerouslySetInnerHTML={{ __html: answer?.answerText }}
+                className="question-container my-10"
+              ></div>
+              <hr className='text-orange-200 w-60 my-5'/>
+              <div className="mb-2">
+                {answer?.answeredBy && <p className="font-semibold my-4">Answered by:</p>}
+                <div className="flex items-center">
+                  {answer?.answeredBy?.profileImage && (
+                    <img
+                      src={answer?.answeredBy?.profileImage}
+                      alt={`${answer?.answeredBy?.username}'s profile`}
+                      className="w-10 h-10 rounded-full mr-4"
+                    />
+                  )}
+                  <div>
+                    {answer?.answeredBy?.username && (
+                      <p className="font-semibold">{answer?.answeredBy?.username}</p>
+                    )}
+                    {answer?.answeredBy?.role && (
+                      <p className="text-sm text-gray-500">{answer?.answeredBy?.role}</p>
+                    )}
+                    {answer?.answeredBy?.favoriteGenre && (
+                      <p className="text-sm text-gray-500">{answer?.answeredBy?.favoriteGenre}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-gray-500">Answered at: {new Date(answer?.answeredAt).toLocaleString()}</p>
+            </div>
+          ))
+        ) : (
+          <div>No Answers Submitted Yet!</div>
+        )}
+        <div className="flex mt-4">
+          <ClickButton text="Ask New Question" onClick={handleQuestionModalOpen}/>
+          <ClickButton text="Submit Answer" onClick={handleAnswerModalOpen} />
+        </div>
+
+        {isAnswerModalOpen && (
+          <AnswerModal onClose={handleAnswerModalClose}>
+            <AnswerForm
+              questionSlug={slug}
+              onSuccess={() => {
+                setIsAnswerModalOpen(false);
+              }}
+              onClose={handleAnswerModalClose}
+            />
+          </AnswerModal>
+        )}
+
+        {isQuestionModalOpen && (
+          <QuestionModal onClose={handleQuestionModalClose}>
+            <div className="w-[75vw] max-w-3xl">
+              <QuestionForm
+                onSuccess={() => {
+                  setIsQuestionModalOpen(false);
+                }}
+                onClose={handleQuestionModalClose}
+                />
+              </div>
+          </QuestionModal>
+        )}
+      </div>
+    </section>
+  );
 };
 
-  const handleRating = async (ratingValue) => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/${slug}/rate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ rating: ratingValue }),
-        credentials: 'include'
-    });
-    if (!res.ok) {
-        throw new Error('Failed to rate resource');
-      }
-      const updatedResource = await res.json();
-      updateResourceState(updatedResource);
-    } catch (error) {
-      console.error('Error rating resource:', error);
-    }
-  };
-  
-  console.log(resource);
-  
-  if (loading) {
-      return <Spinner />;
-    }
-
-  if (!resource) {
-    return <p className="container mx-auto p-4 text-center text-gray-700">Resource not found</p>;
-  }
-
-  console.log("pdf",resource.pdfLink[0]);
-  return (
-    <div className="container mx-auto w-[80vw] sm::w-[95vw]">
-        <div className='text-gray-700 bg-white shadow-md bg-clip-border rounded-xl mt-10 p-10'>
-
-      <button className="mt-16 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-orange-600 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none">
-        <Link href="/resources">&larr; &nbsp; Back to Resources</Link>
-      </button>
-      <div className='flex space-x-4 mt-10 font-sans'>
-          <p className="text-gray-700 mb-2"><strong>Type:</strong> {resource.type}</p>
-          <p className="text-gray-700 mb-2"><strong>Tags:</strong> {resource.tags.join(', ')}</p>
-          <p className="text-gray-700 mb-2"><strong>Published At:</strong> {new Date(resource.created_at).toLocaleDateString()}</p>
-          <p className="text-gray-700 mb-2"><strong>Updated At:</strong> {new Date(resource.updated_at).toLocaleDateString()}</p>
-      </div>
-      <div className="flex">
-        <div className="w-full lg:w-3/4">
-          <h1 className="text-5xl font-bold my-16 text-foreground font-mono">{resource.title}</h1>
-          {resource.profileImage && (
-              <img src={resource.profileImage} alt={resource.title} className="mb-4" />
-            )}
-
-          <p className="block mb-2 font-sans text-xl antialiased leading-snug tracking-normal text-blue-gray-900 font-normal">{resource.description}</p>
-
-          {resource.pdfLink[0] && (
-              <a href={resource.pdfLink[0]} target='_blank' alt={resource.title} className="my-4 inline-block align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-blue-600 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none cursor-pointer">
-                Checkout PDF
-                </a>
-          )}
-
-          <div className="flex items-center my-20">
-            <button
-              onClick={handleLike}
-              className="mr-1 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-blue-600 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"            >
-              Like ({likes})
-            </button>
-            <button
-              onClick={handleDislike}
-              className="m-1 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-orange-600 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none">
-              Dislike ({dislikes})
-            </button>
-            {/* <div className="ml-4">
-              <label className="mr-2">Rate this resource:</label>
-              {[1, 2, 3, 4, 5].map((ratingValue) => (
-                <button
-                key={ratingValue}
-                onClick={() => handleRating(ratingValue)}
-                className={`m-1 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-orange-600 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none ${Math.round(rating) === ratingValue ? 'bg-green-500' : ''}`}
-                >
-                {ratingValue}
-                </button>
-                ))}
-                </div> */}
-          </div>
-          <div className="mt-4">
-            <h2 className="text-lg font-sans mb-2">Ratings: {rating.toFixed(2)} / 5 ({ratingCount} ratings)</h2>
-          </div>
-        </div>
-      </div>
-                </div>
-      
-     {relatedResources && <div className="mt-8">
-        <h2 className="text-2xl font-bold text-center my-16 text-foreground font-mono">Related Resources</h2>
-        <div className="flex justify-center gap-2 my-10">
-          {relatedResources.map((related) => (
-            <ResourceCard key={related._id} resource={related} />
-          ))}
-        </div>
-      </div>}
-    </div>
-  );
-}
+export default QuestionPage;

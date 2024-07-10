@@ -1,5 +1,7 @@
 import NewChatButton from '../components/chat/NewChatButton';
 import Sidebar from '../components/chat/Sidebar';
+import'./style.css';
+
 
 export default function Home() {
   return (

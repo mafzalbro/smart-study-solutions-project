@@ -2,8 +2,7 @@ const Question = require('../models/qna');
 const Category = require('../models/category');
 const User = require('../models/user');
 const slugify = require('slugify');
-const { questionRecommendation } = require('../services/questionRecommendation');
-const { paginateResults, paginateResultsForArray } = require('../utils/pagination');
+const { paginateResults } = require('../utils/pagination');
 
 // Submit a question
 const submitQuestion = async (req, res) => {
@@ -32,10 +31,10 @@ const submitQuestion = async (req, res) => {
 
 // Answer a question
 const answerQuestion = async (req, res) => {
-  const { id } = req.params;
+  const { slug } = req.params;
   const { answerText } = req.body;
   try {
-    const question = await Question.findById(id);
+    const question = await Question.findOne({ slug });
     if (!question) {
       return res.status(404).json({ message: 'Question not found' });
     }
@@ -93,26 +92,60 @@ const getAllQuestions = async (req, res) => {
       ];
     }
 
-    // Fetch results with pagination and sorting
+    // Fetch results with pagination and sorting, populating askedBy and category fields
     const questions = await paginateResults(
-      Question.find(queryOptions).populate('category'),
+      Question.find(queryOptions)
+        .populate({
+          path: 'askedBy',
+          select: 'username slug _id',
+        })
+        .populate({
+          path: 'category',
+          select: 'name _id',
+        }),
       parseInt(page),
       parseInt(limit),
       sortOptions
     );
 
-    res.status(200).json({ totalResults: questions.totalResults, data: questions.data });
+    // Modify questions data to include the required fields
+    const formattedQuestions = questions.data.map(question => ({
+      _id: question._id,
+      slug: question.slug,
+      question: question.question,
+      askedBy: {
+        _id: question.askedBy._id,
+        username: question.askedBy.username,
+        slug: question.askedBy.slug,
+      },
+      category: {
+        name: question.category.name,
+        _id: question.category._id,
+      },
+    }));
+
+    res.status(200).json({ totalResults: questions.totalResults, data: formattedQuestions });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to retrieve questions' });
   }
 };
 
-// Get a specific question by ID
-const getQuestionById = async (req, res) => {
-  const { id } = req.params;
+// Get a specific question by slug
+const getQuestionBySlug = async (req, res) => {
+  const { slug } = req.params;
   try {
-    const question = await Question.findById(id).populate('category');
+    const question = await Question.findOne({ slug })
+      .populate('category')
+      .populate({
+        path: 'askedBy',
+        select: 'username role profileImage favoriteGenre'
+      })
+      .populate({
+        path: 'answers.answeredBy',
+        select: 'username role profileImage favoriteGenre'
+      });
+
     if (!question) {
       return res.status(404).json({ message: 'Question not found' });
     }
@@ -123,12 +156,12 @@ const getQuestionById = async (req, res) => {
   }
 };
 
-// Update a question
+// Update a question by slug
 const updateQuestion = async (req, res) => {
-  const { id } = req.params;
+  const { slug } = req.params;
   const { question, category, tags } = req.body;
   try {
-    const existingQuestion = await Question.findById(id);
+    const existingQuestion = await Question.findOne({ slug });
     if (!existingQuestion) {
       return res.status(404).json({ message: 'Question not found' });
     }
@@ -148,11 +181,11 @@ const updateQuestion = async (req, res) => {
   }
 };
 
-// Delete a question
+// Delete a question by slug
 const deleteQuestion = async (req, res) => {
-  const { id } = req.params;
+  const { slug } = req.params;
   try {
-    const question = await Question.findByIdAndDelete(id);
+    const question = await Question.findOneAndDelete({ slug });
     if (!question) {
       return res.status(404).json({ message: 'Question not found' });
     }
@@ -163,28 +196,13 @@ const deleteQuestion = async (req, res) => {
   }
 };
 
-// // Get all answers for a specific question
-// const getQuestionAnswers = async (req, res) => {
-//   const { id } = req.params;
-//   try {
-//     const question = await Question.findById(id);
-//     if (!question) {
-//       return res.status(404).json({ message: 'Question not found' });
-//     }
-//     res.status(200).json(question.answers);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Failed to retrieve answers' });
-//   }
-// };
-
 // Update an answer
 const updateAnswer = async (req, res) => {
-  const { id, answerId } = req.params;
+  const { slug, answerId } = req.params;
 
   const { answerText } = req.body;
   try {
-    const question = await Question.findById(id);
+    const question = await Question.findOne({ slug });
     if (!question) {
       return res.status(404).json({ message: 'Question not found' });
     }
@@ -205,9 +223,9 @@ const updateAnswer = async (req, res) => {
 
 // Delete an answer
 const deleteAnswer = async (req, res) => {
-  const { id, answerId } = req.params;
+  const { slug, answerId } = req.params;
   try {
-    const question = await Question.findById(id);
+    const question = await Question.findOne({ slug });
     if (!question) {
       return res.status(404).json({ message: 'Question not found' });
     }
@@ -226,152 +244,88 @@ const deleteAnswer = async (req, res) => {
   }
 };
 
-
-// Get all questions asked by a specific user
+// Function to get all questions by userSlug
 const getUserQuestions = async (req, res) => {
-  const { userId } = req.params;
-  const { page = 1, limit = 10, sortBy, filterBy, query } = req.query;
-  
-  let queryOptions = {};
-  let sortOptions = {};
-
-  try {
-    // Parse sorting options
-    if (sortBy) {
-      const [field, direction] = sortBy.split(':');
-      sortOptions[field] = direction === 'desc' ? -1 : 1;
-    }
-
-    // Parse filtering options
-    if (filterBy) {
-      try {
-        const filter = JSON.parse(filterBy);
-        Object.assign(queryOptions, filter);
-      } catch (error) {
-        return res.status(400).json({ message: 'Invalid filterBy parameter' });
+    const { userSlug } = req.params;
+    try {
+      // Assuming User model has a field 'slug' for userSlug
+      const user = await User.findOne({ slug: userSlug }).populate('questions');
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
       }
+      return res.status(200).json(user.questions);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Server Error' });
     }
-
-    if(query){
-      queryOptions.$or = [
-        { question: { $regex: query, $options: 'i' } },
-      ]
-    }
-
-    // Apply pagination and sorting
-    const paginatedResults = await paginateResults(Question.find({ askedBy: userId, ...queryOptions }).sort(sortOptions).populate('category'), parseInt(page), parseInt(limit));
-
-    res.status(200).json({ totalResults: paginatedResults.totalResults, data: paginatedResults.data });
-    // res.status(200).json(questions);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to retrieve user questions' });
-  }
-};
-
-// Get all answers given by a specific user
-const getUserAnswers = async (req, res) => {
-  const { userId } = req.params;
-  const { page = 1, limit = 10, sortBy, filterBy, query } = req.query;
+  };
   
-  let sortOptions = {};
-
-  try {
-    // Parse sorting options
-    if (sortBy) {
-      const [field, direction] = sortBy.split(':');
-      sortOptions[field] = direction === 'desc' ? -1 : 1;
-    }
-
-    // Initialize query to find questions where user has answered
-    let queryToFindQuestions = { 'answers.answeredBy': userId };
-
-    // Parse filtering options
-    if (filterBy) {
-      try {
-        const filter = JSON.parse(filterBy);
-        Object.assign(queryToFindQuestions, filter);
-      } catch (error) {
-        return res.status(400).json({ message: 'Invalid filterBy parameter' });
+  // Function to get all answers by userSlug
+  const getUserAnswers = async (req, res) => {
+    const { userSlug } = req.params;
+    try {
+      // Assuming User model has a field 'slug' for userSlug
+      const user = await User.findOne({ slug: userSlug }).populate('answers');
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
       }
+      return res.status(200).json(user.answers);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Server Error' });
     }
+  };
+  
 
-    // Fetch questions where user has answered and apply filtering
-    const questions = await Question.find(queryToFindQuestions);
-
-    // Create a list of answers with their corresponding question details
-    let userAnswers = questions.flatMap(q => 
-      q.answers
-        .filter(a => a.answeredBy.toString() === userId.toString())
-        .map(a => ({
-          questionId: q._id,
-          questionSlug: q.slug,
-          question: q.question,
-          answerId: a._id,
-          answerText: a.answerText,
-          answeredAt: a.answeredAt,
-          answeredBy: a.answeredBy
-        }))
-    );
-
-    // Implement searching
-    if (query) {
-      const regex = new RegExp(query, 'i');
-      userAnswers = userAnswers.filter(answer =>
-        regex.test(answer.question) || regex.test(answer.answerText)
-      );
-    }
-
-    // Apply pagination and sorting
-    const paginatedResults = await paginateResultsForArray(userAnswers, parseInt(page), parseInt(limit));
-
-    res.status(200).json({ totalResults: paginatedResults.totalResults, data: paginatedResults.data });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to retrieve user answers' });
-  }
-};
-
-// Recommender system to suggest questions based on user's activity
-const recommendQuestions = async (req, res) => {
-  const userId = req.user.id;
+// Get question recommendations for the authenticated user
+const getQuestionRecommendations = async (req, res) => {
+  const { userId } = req.user;
   try {
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const recommendations = await questionRecommendation(user);
-    res.status(200).json(recommendations);
-  } catch (error) {
-    console.error('Error in recommending questions:', error);
-    res.status(500).json({ message: 'Failed to recommend questions', error: error.message });
-  }
-};
+    // Example recommendation logic (can be replaced with your own)
+    const recommendations = await Question.find({
+      category: { $in: user.favoriteCategories }
+    }).limit(10);
 
-
-// Create a new category
-const createCategory = async (req, res) => {
-  const { name, description } = req.body;
-  try {
-    const existingCategory = await Category.findOne({ name });
-    if (existingCategory) {
-      return res.status(400).json({ message: 'Category already exists' });
-    }
-
-    const newCategory = new Category({ name, description });
-    await newCategory.save();
-    res.status(201).json({ message: 'Category created successfully', newCategory });
+    res.status(200).json({ data: recommendations });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Failed to create category' });
+    res.status(500).json({ message: 'Failed to retrieve recommendations' });
   }
 };
 
-// Get all categories
+
+// Function to create a category
+const createCategory = async (req, res) => {
+    try {
+      const { name, description } = req.body;
+      
+      // Generate slug from name using slugify
+      const slug = slugify(name, { lower: true });
+  
+      // Create new category object
+      const newCategory = new Category({ name, description, slug });
+  
+      // Save new category to database
+      await newCategory.save();
+  
+      // Return successful response with created category
+      res.status(201).json(newCategory);
+    } catch (err) {
+      // Handle any errors
+      console.error(err);
+      res.status(500).json({ error: 'Server Error' });
+    }
+  };
+    
+  // Function to get all categories with pagination, search, filter, and sort
 const getAllCategories = async (req, res) => {
   const { page = 1, limit = 10, sortBy, filterBy, query } = req.query;
-  
+
   let queryOptions = {};
   let sortOptions = {};
 
@@ -394,10 +348,7 @@ const getAllCategories = async (req, res) => {
 
     // Parse search query
     if (query) {
-      queryOptions.$or = [
-        { name: { $regex: query, $options: 'i' } },
-        { description: { $regex: query, $options: 'i' } }
-      ];
+      queryOptions.name = { $regex: query, $options: 'i' };
     }
 
     // Fetch results with pagination and sorting
@@ -409,65 +360,79 @@ const getAllCategories = async (req, res) => {
     );
 
     res.status(200).json({ totalResults: categories.totalResults, data: categories.data });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to retrieve categories' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server Error' });
   }
 };
 
-// Update a category
-const updateCategory = async (req, res) => {
-  const { id } = req.params;
-  const { name, description } = req.body;
-  try {
-    const category = await Category.findById(id);
-    if (!category) {
-      return res.status(404).json({ message: 'Category not found' });
+
+  // Function to get a category by slug
+const getCategoryBySlug = async (req, res) => {
+    const { slug } = req.params;
+    try {
+      const category = await Category.findOne({ slug: slug });
+      if (!category) {
+        return res.status(404).json({ error: 'Category not found' });
+      }
+      res.status(200).json(category);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Server Error' });
     }
+  };
 
-    if (name) category.name = name;
-    if (description) category.description = description;
-
-    await category.save();
-    res.status(200).json({ message: 'Category updated successfully', category });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to update category' });
-  }
-};
-
-// Delete a category
-const deleteCategory = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const category = await Category.findByIdAndDelete(id);
-
-    if (!category) {
-      return res.status(404).json({ message: 'Category not found' });
+  
+  // Function to update a category by slug
+  const updateCategoryBySlug = async (req, res) => {
+    const { slug } = req.params;
+    try {
+      const updatedCategory = await Category.findOneAndUpdate(
+        { slug: slug },
+        { $set: req.body },
+        { new: true }
+      );
+      if (!updatedCategory) {
+        return res.status(404).json({ error: 'Category not found' });
+      }
+      res.status(200).json(updatedCategory);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Server Error' });
     }
-    
-    res.status(200).json({ message: 'Category deleted successfully' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to delete category' });
-  }
-};
+  };
+  
+  // Function to delete a category by slug
+  const deleteCategoryBySlug = async (req, res) => {
+    const { slug } = req.params;
+    try {
+      const deletedCategory = await Category.findOneAndDelete({ slug: slug });
+      if (!deletedCategory) {
+        return res.status(404).json({ error: 'Category not found' });
+      }
+      res.status(200).json(deletedCategory);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Server Error' });
+    }
+  };
 
 module.exports = {
   submitQuestion,
   answerQuestion,
   getAllQuestions,
-  getQuestionById,
+  getQuestionBySlug,
   updateQuestion,
   deleteQuestion,
-  // getQuestionAnswers,
   updateAnswer,
   deleteAnswer,
   getUserQuestions,
   getUserAnswers,
-  recommendQuestions,
+  getQuestionRecommendations,
   createCategory,
   getAllCategories,
-  updateCategory,
-  deleteCategory
+  getCategoryBySlug,
+  updateCategoryBySlug,
+  deleteCategoryBySlug,
+
 };

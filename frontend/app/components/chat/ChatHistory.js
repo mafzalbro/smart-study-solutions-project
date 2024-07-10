@@ -1,13 +1,20 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Loader from './Loader';
 import ChatMessage from './ChatMessage';
 import '../../styles/chatStyles.css';
 
-
 export default function ChatHistory({ chatHistory, pdfUrls, loading }) {
-  console.log(chatHistory);
+  const endOfChatRef = useRef(null);
+
+  // Scroll to the end of chat history when new messages are added
+  useEffect(() => {
+    if (endOfChatRef.current) {
+      endOfChatRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatHistory]);
+
   return (
     <div className="flex-grow overflow-y-auto p-4">
       {loading ? (
@@ -32,11 +39,14 @@ export default function ChatHistory({ chatHistory, pdfUrls, loading }) {
               <ChatMessage key={message._id} message={message} />
             ))
           ) : (
-            <ChatMessage display={"flex justify-center items-center h-[75vh] text-lg"}
+            <ChatMessage
+              display="flex justify-center items-center h-[75vh] text-lg"
               key="no-messages"
               message={{ user_query: 'Nothing to display', model_response: '' }}
             />
           )}
+          {/* Reference to the end of the chat */}
+          <div ref={endOfChatRef}></div>
         </>
       )}
     </div>

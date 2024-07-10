@@ -16,7 +16,7 @@ const AddAPIKey = () => {
   useEffect(() => {
     const fetchApiKey = async () => {
       try {
-        const request = await fetch('http://localhost:3000/api/chat/getApi', {
+      const request = await fetch(`${env.local.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/getApi`, {
           method: 'GET',
           credentials: 'include',
           headers: {

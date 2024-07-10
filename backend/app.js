@@ -18,6 +18,7 @@ const notificationRoutes = require('./src/routes/notificationRoutes');
 const qnaRoutes = require('./src/routes/qnaRoutes');
 const resourceRoutes = require('./src/routes/resourceRoutes');
 const userRoutes = require('./src/routes/userRoutes');
+const contactRoutes = require('./src/routes/contactRoutes');
 
 const app = express();
 
@@ -60,6 +61,8 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/qna', qnaRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/contact', contactRoutes);
+
 
 // Error handling middleware
 app.use(errorHandler);

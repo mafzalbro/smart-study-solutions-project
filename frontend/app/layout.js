@@ -1,26 +1,28 @@
-// app/layout.js
-// import { Inter } from "next/font/google";
-import NavBar from "./components/NavBar";
-import AuthCheck from "./customHooks/useAuth";
-import "./globals.css";
-
-
-// const inter = Inter({ subsets: ["greek"] });
+// layout.js
+import React from 'react';
+import NavBar from './components/NavBar';
+import { AuthProvider } from '@/app/customHooks/AuthContext';
+import './globals.css';
+import Footer from './components/Footer';
 
 export const metadata = {
   title: "Smart Study Solutions",
-  description: "Let's learn anything about your degreen",
+  description: "Let's learn anything about your degree",
 };
 
-export default function RootLayout({ children }) {
+const RootLayout = ({ children }) => {
   return (
     <html lang="en">
-      {/* <body className={inter.className}> */}
       <body className="font-sans">
-        <AuthCheck /> {/* Include the AuthCheck component */}
-        <NavBar />
-        {children}
+        <AuthProvider>
+          <NavBar />
+          {children}
+        </AuthProvider>
+        
+      <Footer />
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;

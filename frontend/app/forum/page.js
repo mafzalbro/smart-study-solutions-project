@@ -1,11 +1,17 @@
-import ResourcesList from '@/app/components/ResourceList'
-import React from 'react'
-const page = () => {
-    return (
-        <>
-        <ResourcesList />
-    </>
-  )
-}
+// ForumPage.js
 
-export default page
+"use client";
+
+import ForumPage from "../components/forum/ForumPage";
+
+
+const page = () => {
+
+  return (
+    <section className="p-8">
+        <ForumPage />
+    </section>
+  );
+};
+
+export default page;

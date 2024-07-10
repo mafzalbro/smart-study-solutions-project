@@ -44,3 +44,76 @@ body {
   min-height: calc(100vh - 72px);
   max-height: calc(100vh - 72px);
 }
+
+
+.quill .ql-toolbar.ql-snow{
+  border: none;
+  background: #ef7e43;
+}
+
+.quill .ql-container.ql-snow, .quill .ql-editor {
+  min-height: 40vh;
+  border: none;
+  background: white;
+}
+
+
+
+button.rounded-lg{
+  border-radius: 100px !important;
+}
+
+span.bg-orange-500.hover\:bg-orange-600.text-white.py-2.px-4.rounded-lg.shadow-sm.transition-colors.duration-300 {
+  border-radius: 100px;
+}
+
+
+
+
+/* Width */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f0f0f0; /* Lighter gray background */
+  border-radius: 6px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #b0b0b0; /* Gray background */
+  border-radius: 6px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #909090; /* Darker gray on hover */
+}
+
+/* Up button */
+::-webkit-scrollbar-button:single-button:vertical:decrement {
+  background-color: #f0f0f0; /* Lighter gray for the up button */
+  height: 16px;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAqUlEQVR4nO3RzwoBURiG8aco8ueOXAYbO3djJa7BBZCslJTkMmSuQmryaepdSOPkzHzK4jz11ixO51dnIJX69wbARSu+f9IYuAGm3YGJJ9AApi/A+xY6U6s2sAkgpq2BVlWkA+y+QEw7AL1YpAvsIxDTjkA/BjlXQEw76TWCFT91VQMxbQs0Q9DcATFt9gkZOSIGPIBhGZQ5QwZcy6AlkDsiue5MpVL49ASK06PUwUVsEwAAAABJRU5ErkJggg==') no-repeat center;
+  background-size: 50%;
+}
+/* Down button */
+::-webkit-scrollbar-button:single-button:vertical:increment {
+  background-color: #f0f0f0; /* Lighter gray for the down button */
+  height: 16px;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAnklEQVR4nO3SQQpBQRzA4U+UkBs5ho2lm7iA5A7WKAspG3ENySmkhNQsxOt5GGUxX/1rFtP8mmZIkiSmEU64RJpTOPPJPmLkEmaXFWrjHDFyDmdmGkQM9fPeqYxxhMgMlVefoo7NF5E1agpqYPlBZIVm0cj9zRZvRObv3ORRFdMCkUnY+5USejmRYfhE0XRwuAsc0fUjLWzD3NZJ8seuXHqjq9Ta1lYAAAAASUVORK5CYII=') no-repeat center;
+  background-size: 50%;
+}
+
+/* Up button on hover */
+::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+  background-color: #d0d0d0; /* Slightly darker gray for the up button on hover */
+}
+
+/* Down button on hover */
+::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+  background-color: #d0d0d0; /* Slightly darker gray for the down button on hover */
+}

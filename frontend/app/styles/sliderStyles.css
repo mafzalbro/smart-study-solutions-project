@@ -1,0 +1,28 @@
+/* styles/slider.css */
+
+.slick-slider{
+  max-width: 75vw !important;
+  margin: 0 auto !important;
+}
+.slick-prev,
+.slick-next {
+  color: #ea580c;
+}
+
+.slick-prev:before,
+.slick-next:before {
+  color: #ea580c;
+  font-size: 20px;
+}
+
+.slick-dots li button:before {
+  color: #ea580c;
+}
+
+.slick-dots li.slick-active button:before {
+  color: #ea580c;
+}
+
+.slick-slider img {
+  border-radius: 15px;
+}

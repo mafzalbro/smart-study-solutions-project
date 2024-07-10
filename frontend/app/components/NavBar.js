@@ -3,53 +3,21 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { useAuth } from '../customHooks/AuthContext';
+
 
 const NavBar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
+  const { isLoggedIn } = useAuth()
+  
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const router = useRouter();
+
   const pathname = usePathname();
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/check-auth`, {
-          credentials: 'include',
-        });
-        if (res.ok) {
-          setIsLoggedIn(true);
-        } else {
-          setIsLoggedIn(false);
-        }
-      } catch (error) {
-        console.error('Error checking auth:', error);
-        setIsLoggedIn(false);
-      }
-    };
-
-    checkLoginStatus();
-  }, [pathname]);
-
-  const handleLogout = async () => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-      if (res.ok) {
-        setIsLoggedIn(false);
-        router.push('/login');
-      } else {
-        console.error('Failed to log out');
-      }
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
-  };
 
   return (
     <nav className="bg-background-start dark:bg-gray-900 p-4 shadow-lg text-white font-sans">
-      <div className="container mx-auto flex justify-between items-center">
+      <div className="container mx-auto flex justify-between items-center text-base">
         <Link href='/'>
           <h2 className="text-2xl font-bold cursor-pointer">Code Innovators</h2>
         </Link>
@@ -79,36 +47,47 @@ const NavBar = () => {
         >
           <li>
             <Link href="/" passHref>
-              <span className="block md:inline-block text-lg hover:text-blue-500 dark:hover:text-blue-300 py-2 md:py-0">Home</span>
+              <span className="block md:inline-block hover:text-blue-500 dark:hover:text-blue-300 py-2 md:py-0">Home</span>
             </Link>
           </li>
           <li>
             <Link href="/resources" passHref>
-              <span className="block md:inline-block text-lg hover:text-blue-500 dark:hover:text-blue-300 py-2 md:py-0">Resources</span>
+              <span className="block md:inline-block hover:text-blue-500 dark:hover:text-blue-300 py-2 md:py-0">Resources</span>
             </Link>
           </li>
           {isLoggedIn && (
             <>
+          <li>
+            <Link href="/chat" passHref>
+              <span className="block md:inline-block hover:text-blue-500 dark:hover:text-blue-300 py-2 md:py-0">Ask AI</span>
+            </Link>
+          </li>
             <li>
               <Link href="/dashboard" passHref>
-                <span className="block md:inline-block text-lg hover:text-blue-500 dark:hover:text-blue-300 py-2 md:py-0">Profile</span>
+                <span className="block md:inline-block hover:text-blue-500 dark:hover:text-blue-300 py-2 md:py-0">Profile</span>
               </Link>
             </li>
           <li>
-            <Link href="/chat" passHref>
-              <span className="block md:inline-block text-lg hover:text-blue-500 dark:hover:text-blue-300 py-2 md:py-0">Chat Home</span>
+            <Link href="/forum" passHref>
+              <span className="block md:inline-block hover:text-blue-500 dark:hover:text-blue-300 py-2 md:py-0">Forum</span>
             </Link>
           </li>
             </>
           )}
+              {
+                pathname.includes('/forum') && <Link href="/forum/submit" passHref>
+                <button className="my-8 md:my-0 block md:inline-block py-2 px-4 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 dark:bg-orange-700 dark:hover:bg-orange-600">
+                  Add Question
+                </button>
+              </Link>
+              }
           {isLoggedIn ? (
             <li>
-              <button
-                onClick={handleLogout}
-                className="my-8 md:my-0 block md:inline-block py-2 px-4 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 dark:bg-orange-700 dark:hover:bg-orange-600"
-              >
-                Log Out
-              </button>
+              <Link href="/logout" passHref>
+                <button className="my-8 md:my-0 block md:inline-block py-2 px-4 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 dark:bg-orange-700 dark:hover:bg-orange-600">
+                  Log Out
+                </button>
+              </Link>
             </li>
           ) : (
             <li>

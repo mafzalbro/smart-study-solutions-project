@@ -2,6 +2,8 @@
 "use client"
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { CiEdit } from "react-icons/ci";
+
 
 export default function NewChatButton() {
   const [creatingChat, setCreatingChat] = useState(false);
@@ -37,7 +39,7 @@ export default function NewChatButton() {
 
   return (
     <button onClick={createNewChat} className={`block md:inline-block py-2 px-4 bg-orange-600 text-black rounded-lg shadow-md hover:bg-orange-700 dark:hover:bg-orange-700 dark:bg-orange-600 my-4 ${creatingChat ? 'opacity-50 pointer-events-none' : ''}`} disabled={creatingChat}>
-      {creatingChat ? 'Creating Chat...' : 'New Chat'}
+      {creatingChat ? 'Creating Chat...' : <span className='flex justify-center items-center gap-1'><CiEdit /> <span>Create New Chat</span></span>}
     </button>
   );
 }

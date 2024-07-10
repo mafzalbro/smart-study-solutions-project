@@ -73,9 +73,13 @@ export default function ResourcesList() {
 
   return (
     <div>
-    <h1 className="text-5xl font-bold text-center my-16 text-foreground font-mono">
-      Resources List
+    <h1 className="text-5xl font-bold text-center my-16 text-foreground font-mono mx-10">
+      <span className="text-orange-600">Books, Past Papers, Notes</span> For Punjab University
     </h1>
+    <p className="text-lg text-center my-16 w-4/6 mx-auto">
+    Welcome to our comprehensive academic forum! Access past papers, university notes, books, and essential study materials for your BS 4-year program. Join a community dedicated to learning and sharing knowledge. Explore, download, and contribute to enrich your academic journey with us today!
+
+</p>
 
     {/* Search input */}
     <div className="flex justify-center mb-20">
@@ -84,9 +88,9 @@ export default function ResourcesList() {
         placeholder="Search resources..."
         value={searchTerm}
         onChange={handleSearchChange}
-        className="p-2 border border-gray-300 rounded-md w-full max-w-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-        style={{ maxWidth: "400px" }}
-      />
+        className="py-5 px-10 border border-gray-300 rounded-full w-full max-w-md focus:outline-none ring-2 focus:ring-4 ring-orange-500"
+        style={{ maxWidth: "600px" }}
+    />
     </div>
 
     {/* List of resources */}

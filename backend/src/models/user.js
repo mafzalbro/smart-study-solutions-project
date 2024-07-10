@@ -45,6 +45,10 @@ const userSchema = new Schema({
     type: String,
     default: null,
   },
+  slug: {
+    type: String,
+    default: null,
+  },
   apiKey: {
     type: String,
     default: null,

@@ -1,8 +1,9 @@
 // api/registerUser.js
 
 const registerUser = async (userData) => {
+  let response;
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/register`, {
+    response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -16,8 +17,7 @@ const registerUser = async (userData) => {
 
     return await response.json();
   } catch (error) {
-    console.error('Error registering user:', error.message);
-    throw error.message;
+    return response.json()
   }
 };
 

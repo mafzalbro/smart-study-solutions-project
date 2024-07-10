@@ -6,7 +6,11 @@ const nextConfig = {
     experimental: {
       missingSuspenseWithCSRBailout: false,
     },
-   
+    images: {
+      domains: ['images.pexels.com'],
+    },
+  
+  
 //     // Optional: Change links `/me` -> `/me/` and emit `/me.html` -> `/me/index.html`
 //     // trailingSlash: true,
    

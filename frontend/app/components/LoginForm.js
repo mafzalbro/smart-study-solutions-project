@@ -3,9 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import loginUser from '../api/loginUser';
 import useAlert from '../customHooks/useAlert';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { FcGoogle } from "react-icons/fc";
+
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');
@@ -13,10 +14,14 @@ const LoginForm = () => {
   const [success, setSuccess] = useAlert('', 1000); // 1000ms = 1 second
   const [error, setError] = useState('');
   const [validationError, setValidationError] = useState('');
-
+  
+  // const path = usePathname()
+  
   const router = useRouter();
+  
+  // if (path.includes('/login')) router.push('/')
 
-  useEffect(() => {
+  useEffect(() => { 
     if (error) {
       const timer = setTimeout(() => {
         setError('');
@@ -24,7 +29,7 @@ const LoginForm = () => {
       return () => clearTimeout(timer);
     }
   }, [error]);
-
+  
   const validateInput = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{5,}$/;
@@ -42,12 +47,12 @@ const LoginForm = () => {
     setValidationError('');
     return true;
   };
-
+  
   const handleLogin = async () => {
     if (!validateInput()) {
       return;
     }
-
+    
     try {
       const userData = await loginUser(username, password);
       setUsername('');

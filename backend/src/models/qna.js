@@ -11,6 +11,7 @@ const answerSchema = new Schema({
 // QnA Schema
 const qnaSchema = new Schema({
   question: { type: String, required: true },
+  description: { type: String },
   askedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
   tags: [{ type: String }],
