@@ -8,6 +8,6 @@ const router = express.Router();
 router.post('/', createContactMessage);
 router.get('/all', getAllContacts);
 router.get('/user/:userId', auth, getContactByUserId);
-router.get('/newsletter', subscribeToNewsletter);
+router.post('/newsletter', subscribeToNewsletter);
 
 module.exports = router;

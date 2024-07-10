@@ -20,7 +20,6 @@ const messages = [
   'Still working on it...',
 ];
 
-
 export default function MessageInput({ chatId, addMessageToChatHistory, chatHistory }) {
   const [message, setMessage] = useState('');
   const [reply, setReply] = useState('');
@@ -53,6 +52,13 @@ export default function MessageInput({ chatId, addMessageToChatHistory, chatHist
       endOfChatRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [reply]);
+
+  useEffect(() => {
+    // Focus on the input field when component mounts or after a message is sent
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isSending]); // Trigger when isSending changes
 
   const isValidPdfUrl = (url) => {
     try {

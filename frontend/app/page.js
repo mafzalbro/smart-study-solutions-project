@@ -13,8 +13,12 @@ import WhatWeOffer from './components/WhatWeOffer';
 import Features from './components/Features';
 import Testimonials from './components/Testimonials';
 import ContactUs from './components/ContactUs';
+import { useAuth } from './customHooks/AuthContext';
+import LinkButton from './components/LinkButton';
+
 
 const LandingPage = () => {
+  const { isLoggedIn } = useAuth()
   const settings = {
     dots: true,
     infinite: true,
@@ -33,10 +37,13 @@ const LandingPage = () => {
           <h1 className="text-5xl font-bold font-mono">
             <span className="text-orange-600">Welcome PU Students,</span> You are At the Right Place!
           </h1>
-          <p className="text-base w-4/6 md:mx-0 inline-block my-5">
+          <div className="text-base w-4/6 md:mx-0 inline-block my-5">
             Discover, discuss, and learn with us. Join engaging conversations, ask questions, and share your knowledge across a wide range of topics.
             <span className="text-orange-600 font-semibold mt-2"> Start exploring and connecting today!</span>
+          <p className='mt-10'>
+              {!isLoggedIn ? <LinkButton link="/login" text="Get Started"/> : <><LinkButton link="/chat" text="AI Chat"/> <LinkButton link="/forum/submit" text="Ask Questions"/></>}
           </p>
+          </div>
         </div>
         <div className="md:w-2/5 h[50vh]">
           <Slider {...settings}>

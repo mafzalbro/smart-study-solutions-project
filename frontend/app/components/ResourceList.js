@@ -72,7 +72,7 @@ export default function ResourcesList() {
   };
 
   return (
-    <div>
+    <div className="p-8">
     <h1 className="text-5xl font-bold text-center my-16 text-foreground font-mono mx-10">
       <span className="text-orange-600">Books, Past Papers, Notes</span> For Punjab University
     </h1>
@@ -82,16 +82,16 @@ export default function ResourcesList() {
 </p>
 
     {/* Search input */}
-    <div className="flex justify-center mb-20">
-      <input
-        type="text"
-        placeholder="Search resources..."
-        value={searchTerm}
-        onChange={handleSearchChange}
-        className="py-5 px-10 border border-gray-300 rounded-full w-full max-w-md focus:outline-none ring-2 focus:ring-4 ring-orange-500"
-        style={{ maxWidth: "600px" }}
-    />
-    </div>
+    <div className="flex justify-center my-20 mx-10">
+        <input
+          type="text"
+          placeholder="Search questions..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+          className="py-5 px-10 border border-gray-300 rounded-full w-full max-w-md focus:outline-none ring-2 focus:ring-4 ring-orange-500"
+          style={{ maxWidth: "600px" }}
+        />
+      </div>
 
     {/* List of resources */}
     {isLoading && resources.length === 0 ? (
@@ -105,7 +105,7 @@ export default function ResourcesList() {
     ) : resources.length === 0 ? (
       <p className="text-center text-gray-500 mt-5">Nothing here.</p>
     ) : (
-      <div className="flex flex-wrap justify-center gap-5 m-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-10">
         {resources.map((resource) => (
           <ResourceCard key={resource._id} resource={resource} />
         ))}

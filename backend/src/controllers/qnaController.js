@@ -1,5 +1,6 @@
 const Question = require('../models/qna');
 const Category = require('../models/category');
+const Notification = require('../models/notification');
 const User = require('../models/user');
 const slugify = require('slugify');
 const { paginateResults } = require('../utils/pagination');
@@ -132,6 +133,7 @@ const getAllQuestions = async (req, res) => {
 };
 
 // Get a specific question by slug
+// Get a specific question by slug
 const getQuestionBySlug = async (req, res) => {
   const { slug } = req.params;
   try {
@@ -149,13 +151,37 @@ const getQuestionBySlug = async (req, res) => {
     if (!question) {
       return res.status(404).json({ message: 'Question not found' });
     }
-    res.status(200).json(question);
+
+    // Calculate number of upvotes and downvotes
+    const upvotesCount = question.upvotedBy.length;
+    const downvotesCount = question.downvotedBy.length;
+
+    // Prepare the response object including upvotes and downvotes
+    const response = {
+      _id: question._id,
+      slug: question.slug,
+      question: question.question,
+      answers: question.answers,
+      askedBy: {
+        _id: question.askedBy._id,
+        username: question.askedBy.username,
+        slug: question.askedBy.slug,
+      },
+      category: {
+        name: question.category.name,
+        _id: question.category._id,
+      },
+      upvotesCount,
+      downvotesCount,
+      // Add other fields as needed
+    };
+
+    res.status(200).json(response);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to retrieve question' });
   }
 };
-
 // Update a question by slug
 const updateQuestion = async (req, res) => {
   const { slug } = req.params;
@@ -299,6 +325,231 @@ const getQuestionRecommendations = async (req, res) => {
 };
 
 
+// Upvote a question
+const upvoteQuestion = async (req, res) => {
+  const { slug } = req.params;
+  try {
+    const question = await Question.findOne({ slug });
+    if (!question) {
+      return res.status(404).json({ message: 'Question not found' });
+    }
+
+    // Remove user from downvotedBy if they had previously downvoted
+    question.downvotedBy = question.downvotedBy.filter(
+      (userId) => userId.toString() !== req.user.id.toString()
+    );
+
+    // Add user to upvotedBy if they haven't already upvoted
+    if (!question.upvotedBy.includes(req.user.id)) {
+      question.upvotedBy.push(req.user.id);
+    }
+
+    await question.save();
+
+    // Calculate upvotes and downvotes counts
+    const upvotesCount = question.upvotedBy.length;
+    const downvotesCount = question.downvotedBy.length;
+
+    // Check if current user has upvoted or downvoted this question
+    const isUpvoted = question.upvotedBy.includes(req.user.id);
+    const isDownvoted = question.downvotedBy.includes(req.user.id);
+
+    res.status(200).json({ message: 'Question upvoted successfully', upvotesCount, downvotesCount, isUpvoted, isDownvoted });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to upvote question' });
+  }
+};
+
+// Downvote a question
+const downvoteQuestion = async (req, res) => {
+  const { slug } = req.params;
+  try {
+    const question = await Question.findOne({ slug });
+    if (!question) {
+      return res.status(404).json({ message: 'Question not found' });
+    }
+
+    // Remove user from upvotedBy if they had previously upvoted
+    question.upvotedBy = question.upvotedBy.filter(
+      (userId) => userId.toString() !== req.user.id.toString()
+    );
+
+    // Add user to downvotedBy if they haven't already downvoted
+    if (!question.downvotedBy.includes(req.user.id)) {
+      question.downvotedBy.push(req.user.id);
+    }
+
+    await question.save();
+
+    // Calculate upvotes and downvotes counts
+    const upvotesCount = question.upvotedBy.length;
+    const downvotesCount = question.downvotedBy.length;
+
+    // Check if current user has upvoted or downvoted this question
+    const isUpvoted = question.upvotedBy.includes(req.user.id);
+    const isDownvoted = question.downvotedBy.includes(req.user.id);
+
+    res.status(200).json({ message: 'Question downvoted successfully', upvotesCount, downvotesCount, isUpvoted, isDownvoted });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to downvote question' });
+  }
+};
+
+
+
+// Report a question
+const reportQuestion = async (req, res) => {
+  const { slug } = req.params;
+  const { description } = req.body;
+  try {
+    const question = await Question.findOne({ slug });
+    if (!question) {
+      return res.status(404).json({ message: 'Question not found' });
+    }
+
+    // Add report details to the question
+    question.reports.push({ reportedBy: req.user.id, description });
+
+    // Create a new notification for the report
+    const notification = new Notification({
+      user_id: req.user.id,
+      type: 'report',
+      message: `Question reported: ${description}`,
+      questionId: question._id,
+    });
+
+    await question.save();
+    await notification.save();
+    res.status(200).json({ message: 'Question reported successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to report question' });
+  }
+};
+
+
+const upvoteAnswer = async (req, res) => {
+  const { questionId, answerId } = req.params;
+  try {
+    const question = await Question.findById(questionId);
+    if (!question) {
+      return res.status(404).json({ message: 'Question not found' });
+    }
+
+    const answer = question.answers.id(answerId);
+    if (!answer) {
+      return res.status(404).json({ message: 'Answer not found' });
+    }
+
+    // Remove user from downvotedBy if they had previously downvoted
+    answer.downvotedBy = answer.downvotedBy.filter(
+      (userId) => userId.toString() !== req.user.id.toString()
+    );
+
+    // Add user to upvotedBy if they haven't already upvoted
+    if (!answer.upvotedBy.includes(req.user.id)) {
+      answer.upvotedBy.push(req.user.id);
+    }
+
+    await question.save();
+
+    // Calculate upvotes and downvotes counts
+    const upvotesCount = answer.upvotedBy.length;
+    const downvotesCount = answer.downvotedBy.length;
+
+    // Check if current user has upvoted or downvoted this answer
+    const isUpvoted = answer.upvotedBy.includes(req.user.id);
+    const isDownvoted = answer.downvotedBy.includes(req.user.id);
+
+    res.status(200).json({ message: 'Answer upvoted successfully', upvotesCount, downvotesCount, isUpvoted, isDownvoted });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to upvote answer' });
+  }
+};
+
+
+const downvoteAnswer = async (req, res) => {
+  const { questionId, answerId } = req.params;
+  try {
+    const question = await Question.findById(questionId);
+    if (!question) {
+      return res.status(404).json({ message: 'Question not found' });
+    }
+
+    const answer = question.answers.id(answerId);
+    if (!answer) {
+      return res.status(404).json({ message: 'Answer not found' });
+    }
+
+    // Remove user from upvotedBy if they had previously upvoted
+    answer.upvotedBy = answer.upvotedBy.filter(
+      (userId) => userId.toString() !== req.user.id.toString()
+    );
+
+    // Add user to downvotedBy if they haven't already downvoted
+    if (!answer.downvotedBy.includes(req.user.id)) {
+      answer.downvotedBy.push(req.user.id);
+    }
+
+    await question.save();
+
+    // Calculate upvotes and downvotes counts
+    const upvotesCount = answer.upvotedBy.length;
+    const downvotesCount = answer.downvotedBy.length;
+
+    // Check if current user has upvoted or downvoted this answer
+    const isUpvoted = answer.upvotedBy.includes(req.user.id);
+    const isDownvoted = answer.downvotedBy.includes(req.user.id);
+
+    res.status(200).json({ message: 'Answer downvoted successfully', upvotesCount, downvotesCount, isUpvoted, isDownvoted });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to downvote answer' });
+  }
+};
+
+
+// Report an answer
+const reportAnswer = async (req, res) => {
+  const { questionId, answerId } = req.params;
+  const { description } = req.body;
+  try {
+    const question = await Question.findById(questionId);
+    if (!question) {
+      return res.status(404).json({ message: 'Question not found' });
+    }
+
+    const answer = question.answers.id(answerId);
+    if (!answer) {
+      return res.status(404).json({ message: 'Answer not found' });
+    }
+
+    // Add report details to the answer
+    answer.reports.push({ reportedBy: req.user.id, description });
+
+    // Create a new notification for the report
+    const notification = new Notification({
+      user_id: req.user.id,
+      type: 'report',
+      message: `Answer reported: ${description}`,
+      questionId: question._id,
+      answerId: answer._id,
+    });
+
+    await question.save();
+    await notification.save();
+    res.status(200).json({ message: 'Answer reported successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to report answer' });
+  }
+};
+
+
+
 // Function to create a category
 const createCategory = async (req, res) => {
     try {
@@ -429,6 +680,12 @@ module.exports = {
   getUserQuestions,
   getUserAnswers,
   getQuestionRecommendations,
+  upvoteQuestion,
+  downvoteQuestion,
+  reportQuestion,
+  upvoteAnswer,
+  downvoteAnswer,
+  reportAnswer,
   createCategory,
   getAllCategories,
   getCategoryBySlug,

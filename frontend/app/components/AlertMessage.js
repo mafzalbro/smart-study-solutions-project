@@ -17,7 +17,7 @@ const AlertMessage = ({ message, type, onClose }) => {
   };
 
   return (
-    <div className={`fixed bottom-5 right-5 bg-white border border-gray-300 shadow-lg rounded-lg p-4 z-50 ${alertClasses[type]}`}>
+    <div className={`fixed top-50 right-10 bg-white border border-gray-300 shadow-lg rounded-lg p-4 z-50 ${alertClasses[type]}`}>
       <p className="text-sm">{message}</p>
     </div>
   );

@@ -1,27 +1,22 @@
-import Link from "next/link";
+import Link from 'next/link';
 
-const ResourceCard = ({ resource }) => (
-  <div className="relative flex flex-col text-gray-700 bg-white shadow-md bg-clip-border rounded-xl">
-    <div className="p-6">
-      <h5 className="block mb-2 font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-blue-gray-900">
-        {resource.title}
-      </h5>
-      <p className="block font-sans text-base antialiased font-light leading-relaxed text-inherit">
-        {resource.description}
-      </p>
-    </div>
-    <div className="p-6 pt-0">
-    <Link href={`/resources/${resource.slug}`}>
-      <button
-        // className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-orange-600 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"
-        className="block md:inline-block py-2 px-4 bg-orange-600 text-white rounded-lg shadow-sm hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700"
-        type="button"
-        >
-        Read More
-      </button>
+const ResourceCard = ({ resource }) => {
+  return (
+    <div className="p-8 bg-white rounded-lg shadow-md">
+      <h2 className="text-3xl font-semibold text-gray-800 my-6">{resource.title}</h2>
+      <p className="mt-2 text-gray-600 font-medium">{resource.description}</p>
+      <div className="flex mt-10">
+        <Link href={`/resources/${resource.slug}`}>
+          <button
+            className="bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-lg shadow-sm transition-colors duration-300"
+            type="button"
+          >
+            Read More
+          </button>
         </Link>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default ResourceCard;

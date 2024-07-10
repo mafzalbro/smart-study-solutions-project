@@ -1,12 +1,15 @@
-import Link from 'next/link'
-import React from 'react'
+import React from 'react';
 
-const ClickButton = ({onClick, text}) => {
+const ClickButton = ({ onClick, text, icon }) => {
   return (
-    <button onClick={onClick}>
-      <span className="mr-2 my-5 md:my-2 inline-block py-2 px-4 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700">{text}</span>
-  </button>
-  )
-}
+    <span
+      onClick={onClick}
+      className="inline-flex cursor-pointer items-center space-x-2 py-2 px-4 bg-orange-600 text-white rounded-lg shadow-md hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700"
+    >
+      {icon && <span className="text-lg">{icon}</span>}
+      <span>{text}</span>
+    </span>
+  );
+};
 
-export default ClickButton
+export default ClickButton;

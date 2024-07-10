@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import 'react-quill/dist/quill.snow.css';
 import { fetcher } from '@/app/utils/fetcher';
 import ReactQuill from 'react-quill';
+import AlertMessage from '@/app/components/AlertMessage';
 
 const AnswerForm = ({ questionSlug, onSuccess, onClose }) => {
   const [editorHtml, setEditorHtml] = useState('');
-  const [message, setMessage] = useState('');
+  const [alertMessage, setAlertMessage] = useState({ message: '', type: 'info' });
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -16,19 +17,29 @@ const AnswerForm = ({ questionSlug, onSuccess, onClose }) => {
         'POST',
         { answerText: editorHtml }
       );
-      setMessage('Question answered successfully');
+      setAlertMessage({ message: 'Question answered successfully', type: 'success' });
       setEditorHtml(''); // Reset editor content
       onSuccess && onSuccess(data);
       onClose && onClose(); // Close the modal after submission
     } catch (error) {
       console.error('Error submitting answer:', error);
-      setMessage(error.message || 'Failed to answer question');
+      setAlertMessage({ message: error.message || 'Failed to answer question', type: 'error' });
     }
+  };
+
+  const handleAlertClose = () => {
+    setAlertMessage({ message: '', type: 'info' });
   };
 
   return (
     <div className="text-center w-full">
-      {message && <p className="mb-4 text-red-600">{message}</p>}
+      {alertMessage.message && (
+        <AlertMessage
+          message={alertMessage.message}
+          type={alertMessage.type}
+          onClose={handleAlertClose}
+        />
+      )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="editor-container border bg-white border-orange-300 rounded-lg overflow-auto h-[50vh]">
           <ReactQuill

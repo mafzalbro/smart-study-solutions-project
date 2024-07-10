@@ -109,13 +109,8 @@ const subscribeToNewsletter = async (req, res) => {
 };
 
 module.exports = {
-  subscribeToNewsletter,
-  // other controllers...
-};
-  
-module.exports = {
   createContactMessage,
   getAllContacts,
   getContactByUserId,
-  subscribeToNewsletter
+  subscribeToNewsletter,
 };

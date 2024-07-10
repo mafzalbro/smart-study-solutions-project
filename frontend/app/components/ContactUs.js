@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from 'react';
 import useAlert from '../customHooks/useAlert'; // Adjust the path as per your project structure
 
@@ -48,7 +50,7 @@ const ContactUs = () => {
 
   return (
     <div className="my-16">
-      <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-8 rounded-lg ring-2 ring-orange-200">
+      <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-8 rounded-lg shadow-md ring-orange-200">
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
             Name
@@ -58,7 +60,7 @@ const ContactUs = () => {
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-3 py-2 border border-orange-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600"
+            className="w-full px-3 py-2 border border-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600"
             placeholder="Your Name"
             required
           />
@@ -72,7 +74,7 @@ const ContactUs = () => {
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-3 py-2 border border-orange-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600"
+            className="w-full px-3 py-2 border border-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600"
             placeholder="Your Email"
             required
           />
@@ -85,7 +87,7 @@ const ContactUs = () => {
             id="message"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="w-full px-3 py-2 border border-orange-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600 max-h-52 min-h-52"
+            className="w-full px-3 py-2 border border-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600 max-h-52 min-h-52"
             rows="4"
             placeholder="Your Message"
             required

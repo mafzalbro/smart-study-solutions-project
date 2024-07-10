@@ -144,18 +144,12 @@ const chatWithPdfBySlug = async (req, res) => {
     const userId = req?.user?.id;
 
     if (!userId) {
-      return res.status(401).json({ message: 'Please log in to continue.' });
+      return res.status(401).send('<p>Please log in to continue.</p>');
     }
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: 'User not found. You must be logged in' });
-    }
-
-    const apiKey = user.apiKey;
-    if (!apiKey) {
-      return res.status(404).send(`<p>Please <a href='/chat/test' style='color:lightblue;'>Add API Key</a></p>`);
-      // return res.status(404).json({ message: 'Please add an API key.' });
+      return res.status(404).send('<p>User not found. You must be logged in.</p>');
     }
 
     let chatOption;
@@ -163,10 +157,17 @@ const chatWithPdfBySlug = async (req, res) => {
     if (slug) {
       chatOption = user.chatOptions.find(option => option.slug === slug);
       if (!chatOption) {
-        return res.status(404).json({ message: 'Chat not found.' });
+        return res.status(404).send('<p>Chat option not found.</p>');
       }
     } else {
       chatOption = user.chatOptions[0];
+    }
+
+    // Check for API key
+    const apiKey = user.apiKey;
+    if (!apiKey) {
+      // If no API key, redirect to /chat/test in a new tab
+      return res.send('<p>Please <a href="/chat/test" style="color: lightblue;" target="_blank">Enter API Key</a></p>');
     }
 
     // Update chatOption with title and pdfUrls
@@ -185,13 +186,26 @@ const chatWithPdfBySlug = async (req, res) => {
       pdfText = chatOption.pdfText;
     }
 
-    const context = chatOption.chatHistory || [];
+    const context = [...chatOption.chatHistory] || [];
 
-    // Generate response with combined context or just pdfText if message is null
-    const responseStream = pdfText !== ''
-      ? generateChatResponse(`My Query "${message}" ------------- This is the PDF Document Text for Context in which we have to talk so be in the context: ${pdfText}`, context, apiKey)
-      : generateChatResponse(message, context, apiKey);
+    let initialMessage;
+    
+    // If context has entries, update the first user query with pdfText
+    if (context.length > 0 && pdfText) {
+      context[0].user_query += ` -------- (PDF Document Text: ${pdfText}) -----------`;
+    }else if(pdfText){
+      initialMessage = `${message} -------- (PDF Document Text: ${pdfText}) -----------`;
+    }
 
+    let responseStream;
+
+    if(initialMessage){
+      // Generate response with updated context or just message if context is empty
+      responseStream = generateChatResponse(initialMessage, context, apiKey);
+    } else{
+      responseStream = generateChatResponse(message, context, apiKey);
+    }
+      
     // Set headers for streaming response
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.setHeader('Transfer-Encoding', 'chunked');
@@ -212,14 +226,15 @@ const chatWithPdfBySlug = async (req, res) => {
 
     res.end(); // End the streaming response
   } catch (error) {
-    if (!res.headersSent) {
-      return res.status(500).json({ message: 'Internal server error' });
-    }
     console.error('Error in chatWithPdfBySlug:', error);
-    return res.status(404).json({ message: 'Error generating response, Sorry.' });
-  }
 
+    if (!res.headersSent) {
+      // Send HTML error response
+      res.status(500).send('<p>Internal server error</p>');
+    }
+  }
 };
+
 
 
 const updateChatOption = async (req, res) => {

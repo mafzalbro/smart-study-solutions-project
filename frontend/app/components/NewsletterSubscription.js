@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from 'react';
 import AlertMessage from './AlertMessage';
 
@@ -11,6 +9,7 @@ const NewsletterSubscription = () => {
   const handleSubscribe = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/contact/newsletter`, {
         method: 'POST',
@@ -19,7 +18,9 @@ const NewsletterSubscription = () => {
         },
         body: JSON.stringify({ email }),
       });
+
       const data = await response.json();
+
       if (data.success) {
         setAlertMessage({ message: 'Subscribed successfully!', type: 'success' });
         setEmail('');
@@ -39,7 +40,7 @@ const NewsletterSubscription = () => {
     <div className="text-white pb-20 pt-10">
       <div className="container mx-auto px-4">
         <h3 className="text-xl font-bold mb-4">Newsletter</h3>
-        <p className="mb-4">Subscribe to our newsletter to stay updated.</p>
+        <p className="mb-5 text-gray-400">Subscribe to our newsletter to stay updated.</p>
         <form onSubmit={handleSubscribe} className="flex flex-col md:flex-row">
           <input
             type="email"

@@ -1,5 +1,7 @@
 const Admin = require('../models/admin');
 
+console.log(process.env.FRONTEND_ORIGIN);
+
 // middlewares/auth.js
 const auth = async (req, res, next) => {
     if (req.isAuthenticated()) {
@@ -10,6 +12,7 @@ const auth = async (req, res, next) => {
         return next();
       }
     } else{
+      // res.redirect(`${process.env.FRONTEND_ORIGIN}/login`);
       res.status(401).json({ message: 'Unauthorized' });
     }
     

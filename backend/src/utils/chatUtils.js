@@ -28,8 +28,9 @@ const generateChatResponse = async function* (message, context, apiKey) {
       yield chunk.text();
     }
   } catch (error) {
-    console.error('Error generating chat response:', error);
-    throw new Error('An error occurred while processing your request.');
+    return error
+    // console.error('Error generating chat response:', error);
+    // throw new Error('An error occurred while processing your request.');
   }
 };
 

@@ -12,6 +12,12 @@ const {
   getUserQuestions,
   getUserAnswers,
   getQuestionRecommendations,
+  upvoteQuestion,
+  downvoteQuestion,
+  reportQuestion,
+  upvoteAnswer,
+  downvoteAnswer,
+  reportAnswer,
   createCategory,
   getAllCategories, 
   getCategoryBySlug, 
@@ -32,6 +38,21 @@ router.delete('/question/:slug/answers/:answerId', auth, deleteAnswer); // Updat
 router.get('/user/:userSlug/questions', getUserQuestions); // Updated endpoint to use userSlug
 router.get('/user/:userSlug/answers', getUserAnswers); // Updated endpoint to use userSlug
 router.get('/recommendations', auth, getQuestionRecommendations);
+
+router.post('/question/:slug/upvote', auth, upvoteQuestion);
+router.post('/question/:slug/downvote', auth, downvoteQuestion);
+router.post('/question/:slug/report', auth, reportQuestion);
+
+// Upvote an answer
+router.put('/questions/:questionId/answers/:answerId/upvote', upvoteAnswer);
+
+// Downvote an answer
+router.put('/questions/:questionId/answers/:answerId/downvote', downvoteAnswer);
+
+// Report an answer
+router.post('/questions/:questionId/answers/:answerId/report', reportAnswer);
+
+
 
 // Category routes
 router.post('/category', auth, createCategory);

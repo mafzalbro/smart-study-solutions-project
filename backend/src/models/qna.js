@@ -1,24 +1,32 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-// Answer Schema
+const reportSchema = new Schema({
+  reportedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  description: { type: String, required: true },  
+  createdAt: { type: Date, default: Date.now },
+});
+
 const answerSchema = new Schema({
   answerText: { type: String, required: true },
   answeredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  answeredAt: { type: Date, default: Date.now }
+  upvotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  downvotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  reports: [reportSchema],
+  createdAt: { type: Date, default: Date.now },
 });
 
-// QnA Schema
-const qnaSchema = new Schema({
+const questionSchema = new Schema({
   question: { type: String, required: true },
-  description: { type: String },
   askedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
-  tags: [{ type: String }],
-  slug: { type: String, unique: true },
-  answers: [answerSchema]
-}, { timestamps: true });
+  tags: [String],
+  slug: { type: String, required: true, unique: true },
+  answers: [answerSchema],
+  upvotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  downvotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  reports: [reportSchema],
+  createdAt: { type: Date, default: Date.now },
+});
 
-const Question = mongoose.model('Question', qnaSchema);
-
-module.exports = Question;
+module.exports = mongoose.model('Question', questionSchema);
