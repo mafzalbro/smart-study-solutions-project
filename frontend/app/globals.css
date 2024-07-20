@@ -3,21 +3,40 @@
 @tailwind utilities;
 
 :root {
+/* --background-start-rgb: rgb(255, 187, 0); */
+--background-start-rgb: rgb(241, 241, 241);
+}
+
+
+:root {
   --foreground-rgb: 51, 51, 51;
-  --my-bg-1: 255 222 204;
-  --my-bg-2: 255 238 228;
-  /* --background-start-rgb: rgb(255, 187, 0); */
+  --my-bg-1: 235 235 235;
+  --my-bg-2: 241 241 241;
   --background-start-rgb: var(--my-bg-1);
   --background-end-rgb: var(--my-bg-2);
 }
+/* :root {
+  --foreground-rgb: 51, 51, 51;
+  --my-bg-1: 255 222 204;
+  --my-bg-2: 255 238 228;
+  --background-start-rgb: var(--my-bg-1);
+  --background-end-rgb: var(--my-bg-2);
+} */
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 51, 51, 51;
     --background-start-rgb: var(--my-bg-1);
     --background-end-rgb: var(--my-bg-2);
   }
-}
+} */
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 51, 51, 51;
+    --background-start-rgb: var(--my-bg-1);
+    --background-end-rgb: var(--my-bg-2);
+  }
+} */
 
 body {
   color: rgb(var(--foreground-rgb));
@@ -48,7 +67,8 @@ body {
 
 .quill .ql-toolbar.ql-snow{
   border: none;
-  background: #ef7e43;
+  /* background: #ef7e43; */
+  background: #000;
 }
 
 .quill .ql-container.ql-snow, .quill .ql-editor {
@@ -117,3 +137,39 @@ span.bg-orange-500.hover\:bg-orange-600.text-white.py-2.px-4.rounded-lg.shadow-s
 ::-webkit-scrollbar-button:single-button:vertical:increment:hover {
   background-color: #d0d0d0; /* Slightly darker gray for the down button on hover */
 }
+
+
+
+.bg-orange-200, .bg-orange-300, .bg-orange-400, .bg-orange-500, .bg-orange-600 {
+  background-color: rgb(255 255 255) !important;
+  /* background: #000 !important; */
+}
+
+.bg-gray-800, .bg-gray-900 {
+  background: #000;
+}
+
+.ring-orange-500, .ring-orange-600, .ring-orange-700, .ring-orange-800, .ring-orange-900 {
+  --tw-ring-color:  rgb(0, 0, 0) !important;
+}
+
+.text-orange-200, .text-orange-300, .text-orange-400, .text-orange-500, .text-orange-600 {
+  color: #888 !important;
+}
+
+span.text-white, button.text-white {
+  color: #000 !important
+}
+
+form {
+  background: #fff;
+  border-radius: 10px;
+}
+/* 
+@media (prefers-color-scheme: dark) {
+  .dark\:bg-orange-600 {
+    background-color: rgb(255 255 255) !important;
+  }
+} */
+
+
