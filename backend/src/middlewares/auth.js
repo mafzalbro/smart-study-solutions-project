@@ -1,6 +1,6 @@
 const Admin = require('../models/admin');
 
-console.log(process.env.FRONTEND_ORIGIN);
+// console.log(process.env.FRONTEND_ORIGIN);
 
 // middlewares/auth.js
 const auth = async (req, res, next) => {

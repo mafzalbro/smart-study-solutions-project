@@ -42,7 +42,8 @@ app.use(session({
   secret: process.env.JWT_SECRET,
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
+  // store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI, dbName: "books_library"}),
+  store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI}),
   // cookie: { maxAge: 3600000, secure: false } // Session expires after 1 hour
 }));
 

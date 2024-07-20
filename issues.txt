@@ -1,0 +1,7 @@
+Backend
+
+-- known in contacts is not sync that must check all loggedIn users
+
+Frontend
+
+-- Date is not showing

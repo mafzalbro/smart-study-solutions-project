@@ -10,8 +10,8 @@ const ChatSchema = new Schema({
   title: { type: String, required: true, default: "New Chat" },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
-  pdfText: {type: String, default: ''},
-  pdfUrls: {type: Array, default: [], unique: true},
+  pdfText: { type: String, default: '' },
+  pdfUrls: { type: [String], default: [] }, // Remove unique constraint
 
   chatHistory: [
     {
