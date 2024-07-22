@@ -2,6 +2,7 @@ Backend
 
 -- known in contacts is not sync that must check all loggedIn users
 -- add two plans (faster retreival, deep analysis)
+-- add validation to frontend too
 
 Frontend
 

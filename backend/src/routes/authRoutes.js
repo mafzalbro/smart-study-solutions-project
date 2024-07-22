@@ -3,6 +3,7 @@ const router = express.Router();
 const passport = require('../config/passport')
 const { changePassword, registerUser, loginUser, logoutUser, forgotPassword, verifyToken, resetPassword, checkAuth } = require('../controllers/authController');
 const { auth } = require('../middlewares/auth');
+const { noCache } = require('../middlewares/noCache');
 
 // Register a new user
 router.post('/register', registerUser);
@@ -26,7 +27,8 @@ router.get('/verifyToken', verifyToken);
 router.post('/resetPassword', resetPassword);
 
 //check status that it is logged in or not
-router.get('/check-auth', checkAuth);
+
+router.get('/check-auth', noCache, checkAuth);
 
 // Route to initiate Google OAuth authentication
 router.get('/google', (req, res, next) => {

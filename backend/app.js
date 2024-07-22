@@ -4,12 +4,15 @@ const MongoStore = require('connect-mongo');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const { errorHandler } = require('./src/middlewares/errorHandler');
+const { noCache } = require('./src/middlewares/noCache');
 const passport = require('./src/config/passport');
 const { connect } = require('./src/config/db');
 require('dotenv').config();
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('./swagger-output.json'); // Import the generated swagger file
+
+
 
 const app = express();
 
@@ -37,6 +40,9 @@ app.use(cors({
   origin: [process.env.FRONTEND_ORIGIN, process.env.FRONTEND_ORIGIN_1],
   credentials: true
 }));
+
+// No-Cache middleware
+app.use(noCache);
 
 // Session configuration
 app.use(session({

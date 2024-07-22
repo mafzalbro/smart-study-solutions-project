@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
+    "build": "echo 'No build step necessary for this project'",
     "swagger": "node swagger.js"
   },
   "author": "Muhammad Afzal",
@@ -36,6 +37,8 @@
     "whatsapp-web.js": "^1.24.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4"
+    "nodemon": "^3.1.4",
+    "vercel": "^35.1.0",
+    "yarn": "^1.22.22"
   }
 }
