@@ -8,6 +8,10 @@ const passport = require('./src/config/passport');
 const { connect } = require('./src/config/db');
 require('dotenv').config();
 const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
+const swaggerFile = require('./swagger-output.json'); // Import the generated swagger file
+
+const app = express();
 
 // Import Routes
 const adminAuthRoutes = require('./src/routes/adminAuthRoutes');
@@ -19,8 +23,6 @@ const qnaRoutes = require('./src/routes/qnaRoutes');
 const resourceRoutes = require('./src/routes/resourceRoutes');
 const userRoutes = require('./src/routes/userRoutes');
 const contactRoutes = require('./src/routes/contactRoutes');
-
-const app = express();
 
 // Database Connection
 connect(); // Connect to MongoDB
@@ -37,37 +39,33 @@ app.use(cors({
 }));
 
 // Session configuration
-
 app.use(session({
   secret: process.env.JWT_SECRET,
   resave: false,
   saveUninitialized: false,
-  // store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI, dbName: "books_library"}),
-  store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI}),
-  // cookie: { maxAge: 3600000, secure: false } // Session expires after 1 hour
+  store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
 }));
-
 
 // Initialize Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-
 // Routes
 app.use('/api/admin', adminAuthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
-app.use('/api/chat', chatWithPdfRoutes); // Adjusted to match your route path
+app.use('/api/chat', chatWithPdfRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/qna', qnaRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/contact', contactRoutes);
 
-
 // Error handling middleware
 app.use(errorHandler);
 
+// Swagger UI setup
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // Start the server
 const PORT = process.env.PORT || 3000;

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "next build -p 8080",
+    "build": "next build",
     "dev": "next dev -p 8080",
     "start": "next start -p 8080",
     "lint": "next lint"

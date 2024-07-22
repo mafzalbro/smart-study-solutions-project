@@ -1,7 +1,11 @@
 Backend
 
 -- known in contacts is not sync that must check all loggedIn users
+-- add two plans (faster retreival, deep analysis)
 
 Frontend
 
 -- Date is not showing
+-- Add PDF viewer with chatbot
+-- limit the titles of chatbot when saving
+------------------------------------
