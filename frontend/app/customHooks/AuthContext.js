@@ -3,6 +3,7 @@
 // AuthContext.js
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation'; // Adjust import based on Next.js version
+import next from 'next';
 
 export const AuthContext = createContext();
 
@@ -16,7 +17,8 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/check-auth`, {
-          credentials: 'include'
+          credentials: 'include',
+          cache: 'no-store'
         });
         const data = await res.json();
         
@@ -31,10 +33,10 @@ export const AuthProvider = ({ children }) => {
         setIsLoggedIn(false);
       }
     };
-
+  
     checkAuth();
   }, [router, path, token]);
-
+  
   return (
     <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
       {children}

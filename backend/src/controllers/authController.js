@@ -52,16 +52,20 @@ const loginUser = (req, res, next) => {
       console.error(err);
       return res.status(500).json({ message: 'Internal server error', error: err.message });
     }
-    if (!user) return res.status(400).json({ message: info.message });
 
+    if (!user) return res.status(400).json({ message: info.message });
+    
     // Log in the user
     req.logIn(user, (err) => {
       if (err) {
         console.error(err);
         return res.status(500).json({ message: 'Internal server error', error: err.message });
       }
+      // console.log(req?.user);
       res.status(200).json({ message: 'Logged in successfully' });
     });
+
+
   })(req, res, next);
 };
 
@@ -205,11 +209,14 @@ const resetPassword = async (req, res) => {
 };
 
 const checkAuth = (req, res) => {
+  // console.log("Session data:", req.session);
+  // console.log("User authenticated:", req.isAuthenticated());
+
   if (req.isAuthenticated()) {
-    res.status(200).json({ auth: true });
-  } else {
-    res.status(401).json({ auth: false });
+    return res.status(200).json({ auth: true });
   }
+  return res.status(401).json({ auth: false });
 };
+
 
 module.exports = { registerUser, loginUser, logoutUser, changePassword, forgotPassword, verifyToken, resetPassword, checkAuth };

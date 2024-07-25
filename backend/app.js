@@ -4,7 +4,6 @@ const MongoStore = require('connect-mongo');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const { errorHandler } = require('./src/middlewares/errorHandler');
-const { noCache } = require('./src/middlewares/noCache');
 const passport = require('./src/config/passport');
 const { connect } = require('./src/config/db');
 require('dotenv').config();
@@ -35,14 +34,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
+
 // CORS middleware
 app.use(cors({
   origin: [process.env.FRONTEND_ORIGIN, process.env.FRONTEND_ORIGIN_1],
   credentials: true
 }));
 
-// No-Cache middleware
-app.use(noCache);
 
 // Session configuration
 app.use(session({
@@ -50,7 +48,17 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
+  // cookie: {
+  //   secure: true,
+  //   // httpOnly: true,
+  //   // sameSite: 'None',
+  //   maxAge: 1000 * 60 * 60 * 24 // 1 day
+  // }
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24, // 1 day
+  },
 }));
+
 
 // Initialize Passport
 app.use(passport.initialize());
@@ -75,6 +83,7 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // Start the server
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

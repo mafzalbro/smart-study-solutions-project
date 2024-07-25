@@ -28,7 +28,7 @@ router.post('/resetPassword', resetPassword);
 
 //check status that it is logged in or not
 
-router.get('/check-auth', noCache, checkAuth);
+router.get('/check-auth', checkAuth);
 
 // Route to initiate Google OAuth authentication
 router.get('/google', (req, res, next) => {
@@ -38,7 +38,7 @@ router.get('/google', (req, res, next) => {
 // Route to handle Google OAuth callback
 router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
   const user = req.user;
-  console.log(user);
+  // console.log(user);
 
   // Check if user has missing credentials
   const hasMissingCredentials = !user.username || !user.email || !user.role || !user.favoriteGenre || !user.password;

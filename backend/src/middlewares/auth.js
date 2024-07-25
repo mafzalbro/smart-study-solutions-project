@@ -4,6 +4,7 @@ const Admin = require('../models/admin');
 
 // middlewares/auth.js
 const auth = async (req, res, next) => {
+  console.log({ID: req?.user?.id});
     if (req.isAuthenticated()) {
       const admin = await Admin.findOne({ username: req.user.username });
       if (admin) {
