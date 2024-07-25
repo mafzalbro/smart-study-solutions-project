@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // console.log(process.env.NEXT_PUBLIC_BACKEND_ORIGIN);
         const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/check-auth`, {
           credentials: 'include',
           cache: 'no-store'

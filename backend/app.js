@@ -34,7 +34,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
-
 // CORS middleware
 app.use(cors({
   origin: [process.env.FRONTEND_ORIGIN, process.env.FRONTEND_ORIGIN_1],
@@ -48,17 +47,12 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
-  // cookie: {
-  //   secure: true,
-  //   // httpOnly: true,
-  //   // sameSite: 'None',
-  //   maxAge: 1000 * 60 * 60 * 24 // 1 day
-  // }
-  cookie: {
-    maxAge: 1000 * 60 * 60 * 24, // 1 day
-  },
+  cookie: {maxAge: 3600000,
+    // sameSite: None,
+    // secure: true,
+    // httpOnly: true
+  }
 }));
-
 
 // Initialize Passport
 app.use(passport.initialize());
