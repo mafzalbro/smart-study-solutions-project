@@ -110,22 +110,22 @@ const getAllQuestions = async (req, res) => {
     );
 
     // Modify questions data to include the required fields
-    const formattedQuestions = questions.data.map(question => ({
-      _id: question._id,
+    const formattedQuestions = questions?.data.map(question => ({
+      _id: question?._id,
       slug: question.slug,
       question: question.question,
       askedBy: {
-        _id: question.askedBy._id,
+        _id: question.askedBy?._id,
         username: question.askedBy.username,
         slug: question.askedBy.slug,
       },
       category: {
         name: question.category.name,
-        _id: question.category._id,
+        _id: question.category?._id,
       },
     }));
 
-    res.status(200).json({ totalResults: questions.totalResults, data: formattedQuestions });
+    res.status(200).json({ totalResults: questions?.totalResults, data: formattedQuestions });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to retrieve questions' });
@@ -158,18 +158,18 @@ const getQuestionBySlug = async (req, res) => {
 
     // Prepare the response object including upvotes and downvotes
     const response = {
-      _id: question._id,
+      _id: question?._id,
       slug: question.slug,
       question: question.question,
       answers: question.answers,
       askedBy: {
-        _id: question.askedBy._id,
+        _id: question.askedBy?._id,
         username: question.askedBy.username,
         slug: question.askedBy.slug,
       },
       category: {
         name: question.category.name,
-        _id: question.category._id,
+        _id: question.category?._id,
       },
       upvotesCount,
       downvotesCount,
@@ -417,7 +417,7 @@ const reportQuestion = async (req, res) => {
       user_id: req.user.id,
       type: 'report',
       message: `Question reported: ${description}`,
-      questionId: question._id,
+      questionId: question?._id,
     });
 
     await question.save();
@@ -535,8 +535,8 @@ const reportAnswer = async (req, res) => {
       user_id: req.user.id,
       type: 'report',
       message: `Answer reported: ${description}`,
-      questionId: question._id,
-      answerId: answer._id,
+      questionId: question?._id,
+      answerId: answer?._id,
     });
 
     await question.save();

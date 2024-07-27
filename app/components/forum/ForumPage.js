@@ -80,7 +80,7 @@ const ForumPage = () => {
       <div className="flex justify-center my-20">
         <input
           type="text"
-          placeholder="Search questions..."
+          placeholder="Search questions?..."
           value={searchTerm}
           onChange={handleSearchChange}
           className="py-5 px-10 border border-gray-300 rounded-full w-full max-w-md focus:outline-none ring-2 focus:ring-4 ring-orange-500"
@@ -88,7 +88,7 @@ const ForumPage = () => {
         />
       </div>
 
-      {isLoading && questions.length === 0 ? (
+      {isLoading && questions?.length === 0 ? (
         <div className="flex justify-center m-10">
           <Spinner />
         </div>
@@ -96,17 +96,17 @@ const ForumPage = () => {
         <p className="text-center text-red-500 mt-5">
           Error fetching questions: {error.message}
         </p>
-      ) : questions.length === 0 ? (
+      ) : questions?.length === 0 ? (
         <p className="text-center text-gray-500 mt-5">No questions found.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {questions.map(question => (
-            <ForumCard key={question._id} question={question} />
+          {questions?.map(question => (
+            <ForumCard key={question?._id} question={question} />
           ))}
         </div>
       )}
 
-      {questions.length !== 0 && !error && hasMore && !isLoadingMore && (
+      {questions?.length !== 0 && !error && hasMore && !isLoadingMore && (
         <div className="flex justify-center m-10">
           <button
             onClick={handleLoadMore}

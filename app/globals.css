@@ -1,0 +1,176 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+/* --background-start-rgb: rgb(255, 187, 0); */
+--background-start-rgb: rgb(241, 241, 241);
+}
+
+
+/* :root {
+  --foreground-rgb: 51, 51, 51;
+  --my-bg-1: 235 235 235;
+  --my-bg-2: 241 241 241;
+  --background-start-rgb: var(--my-bg-1);
+  --background-end-rgb: var(--my-bg-2);
+} */
+/* :root {
+  --foreground-rgb: 51, 51, 51;
+  --my-bg-1: 255 222 204;
+  --my-bg-2: 255 238 228;
+  --background-start-rgb: var(--my-bg-1);
+  --background-end-rgb: var(--my-bg-2);
+} */
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 51, 51, 51;
+    --background-start-rgb: var(--my-bg-1);
+    --background-end-rgb: var(--my-bg-2);
+  }
+} */
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 51, 51, 51;
+    --background-start-rgb: var(--my-bg-1);
+    --background-end-rgb: var(--my-bg-2);
+  }
+} */
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    ),
+    rgb(var(--background-start-rgb));
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+.relative.flex.flex-col.text-gray-700.bg-white.shadow-md.bg-clip-border.rounded-xl {
+    width: 400px;
+}
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+.h-screen, .min-h-screen, .max-h-sreen{
+  height: calc(100vh - 72px);
+  min-height: calc(100vh - 72px);
+  max-height: calc(100vh - 72px);
+}
+
+
+.quill .ql-toolbar.ql-snow{
+  border: none;
+  /* background: #ef7e43; */
+  /* background: #000; */
+  background: #ef7e4320;
+}
+
+.quill .ql-container.ql-snow, .quill .ql-editor {
+  min-height: 40vh;
+  border: none;
+  background: white;
+}
+
+
+
+button.rounded-lg{
+  border-radius: 100px !important;
+}
+
+span.bg-orange-500.hover\:bg-orange-600.text-white.py-2.px-4.rounded-lg.shadow-sm.transition-colors.duration-300 {
+  border-radius: 100px;
+}
+
+
+
+
+/* Width */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f0f0f0; /* Lighter gray background */
+  border-radius: 6px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #b0b0b0; /* Gray background */
+  border-radius: 6px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #909090; /* Darker gray on hover */
+}
+
+/* Up button */
+::-webkit-scrollbar-button:single-button:vertical:decrement {
+  background-color: #f0f0f0; /* Lighter gray for the up button */
+  height: 16px;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAqUlEQVR4nO3RzwoBURiG8aco8ueOXAYbO3djJa7BBZCslJTkMmSuQmryaepdSOPkzHzK4jz11ixO51dnIJX69wbARSu+f9IYuAGm3YGJJ9AApi/A+xY6U6s2sAkgpq2BVlWkA+y+QEw7AL1YpAvsIxDTjkA/BjlXQEw76TWCFT91VQMxbQs0Q9DcATFt9gkZOSIGPIBhGZQ5QwZcy6AlkDsiue5MpVL49ASK06PUwUVsEwAAAABJRU5ErkJggg==') no-repeat center;
+  background-size: 50%;
+}
+/* Down button */
+::-webkit-scrollbar-button:single-button:vertical:increment {
+  background-color: #f0f0f0; /* Lighter gray for the down button */
+  height: 16px;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAnklEQVR4nO3SQQpBQRzA4U+UkBs5ho2lm7iA5A7WKAspG3ENySmkhNQsxOt5GGUxX/1rFtP8mmZIkiSmEU64RJpTOPPJPmLkEmaXFWrjHDFyDmdmGkQM9fPeqYxxhMgMlVefoo7NF5E1agpqYPlBZIVm0cj9zRZvRObv3ORRFdMCkUnY+5USejmRYfhE0XRwuAsc0fUjLWzD3NZJ8seuXHqjq9Ta1lYAAAAASUVORK5CYII=') no-repeat center;
+  background-size: 50%;
+}
+
+/* Up button on hover */
+::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+  background-color: #d0d0d0; /* Slightly darker gray for the up button on hover */
+}
+
+/* Down button on hover */
+::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+  background-color: #d0d0d0; /* Slightly darker gray for the down button on hover */
+}
+
+
+
+/* .bg-orange-200, .bg-orange-300, .bg-orange-400, .bg-orange-500, .bg-orange-600 {
+  background-color: rgb(255 255 255) !important;
+  background: #000 !important;
+}
+
+.bg-gray-800, .bg-gray-900 {
+  background: #000;
+}
+
+.ring-orange-500, .ring-orange-600, .ring-orange-700, .ring-orange-800, .ring-orange-900 {
+  --tw-ring-color:  rgb(0, 0, 0) !important;
+}
+
+.text-orange-200, .text-orange-300, .text-orange-400, .text-orange-500, .text-orange-600 {
+  color: #888 !important;
+}
+
+span.text-white, button.text-white {
+  color: #000 !important
+}
+
+form {
+  background: #fff;
+  border-radius: 10px;
+} */
+/* 
+@media (prefers-color-scheme: dark) {
+  .dark\:bg-orange-600 {
+    background-color: rgb(255 255 255) !important;
+  }
+} */
+
+
