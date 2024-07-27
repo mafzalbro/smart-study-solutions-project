@@ -3,12 +3,13 @@
 //  */
 const nextConfig = {
     // output: 'export',
+    // useFileSystemPublicRoutes: false,
     experimental: {
       missingSuspenseWithCSRBailout: false,
     },
     images: {
       domains: ['images.pexels.com'],
-    },
+    }
   
   
 //     // Optional: Change links `/me` -> `/me/` and emit `/me.html` -> `/me/index.html`

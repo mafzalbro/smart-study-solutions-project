@@ -40,7 +40,8 @@ app.prepare().then(() => {
     store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
     cookie: {
       maxAge: 3600000,
-      // sameSite: None,
+      // Uncomment if needed
+      // sameSite: 'None',
       // secure: true,
       // httpOnly: true
     }
@@ -61,6 +62,7 @@ app.prepare().then(() => {
   const userRoutes = require('./backend/src/routes/userRoutes');
   const contactRoutes = require('./backend/src/routes/contactRoutes');
 
+  // Define API routes
   server.use('/api/admin', adminAuthRoutes);
   server.use('/api/auth', authRoutes);
   server.use('/api/books', bookRoutes);
