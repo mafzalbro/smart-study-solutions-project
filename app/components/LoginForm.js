@@ -2,75 +2,77 @@
 
 import React, { useState, useEffect } from 'react';
 import loginUser from '../api/loginUser';
-import useAlert from '../customHooks/useAlert';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FcGoogle } from "react-icons/fc";
-
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { MdEmail } from "react-icons/md";
+import { IoMdLock } from "react-icons/io";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import SubmitButton from '../components/SubmitButton';
+import TextInputField from '../components/TextInputField';
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [success, setSuccess] = useAlert('', 1000); // 1000ms = 1 second
-  const [error, setError] = useState('');
-  const [validationError, setValidationError] = useState('');
-  
-  // const path = usePathname()
-  
+  const [loading, setLoading] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const router = useRouter();
-  
-  // if (path.includes('/login')) router.push('/')
 
-  useEffect(() => { 
-    if (error) {
-      const timer = setTimeout(() => {
-        setError('');
-      }, 3000); // Clear error after 3 seconds
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
-  
+  useEffect(() => {
+    const handleErrors = (error) => {
+      if (error) {
+        toast.error(error);
+      }
+    };
+
+    handleErrors();
+  }, []);
+
   const validateInput = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{5,}$/;
 
     if (emailRegex.test(username)) {
-      setValidationError('Username must not be an email address.');
+      toast.error('Username must not be an email address.');
       return false;
     }
 
     if (!passwordRegex.test(password)) {
-      setValidationError('Password must be at least 5 characters long and contain both letters and numbers.');
+      toast.error('Password must be at least 5 characters long and contain both letters and numbers.');
       return false;
     }
 
-    setValidationError('');
     return true;
   };
-  
+
   const handleLogin = async () => {
     if (!validateInput()) {
       return;
     }
     
+    setLoading(true);
+
     try {
       const userData = await loginUser(username, password);
       setUsername('');
       setPassword('');
-      setSuccess(userData.message);
-      setError('');
+      toast.success(userData.message);
       if (userData.message.includes('successfully')) {
         router.push('/');
       }
     } catch (error) {
-      setError('Login failed'); // Set the error message
+      toast.error('Login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-my-bg-1 text-foreground flex items-center justify-center">
-      <div className="w-full max-w-md p-8 bg-my-bg-2 shadow-md rounded-lg">
-        <h2 className="text-2xl font-bold mb-6">Login Form</h2>
+    <div className="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md p-6 bg-secondary dark:bg-neutral-800 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold mb-6 text-primary dark:text-secondary">Welcome Back to Login!</h2>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -78,60 +80,59 @@ const LoginForm = () => {
           }}
           className="space-y-4"
         >
-          <div>
-            <label className="block mb-2">Username:</label>
-            <input
-              type="text"
+          <div className="relative">
+            <MdEmail className="absolute left-4 top-1/3 transform -translate-y-1/4 text-gray-400 dark:text-gray-500" size={20} />
+            <TextInputField
               value={username}
+              type="text"
               onChange={(e) => setUsername(e.target.value)}
+              placeholder="Username"
+              className="pl-12"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600"
             />
           </div>
-          <div>
-            <label className="block mb-2">Password:</label>
-            <input
-              type="password"
+          <div className="relative">
+            <IoMdLock className="absolute left-4 top-1/3 transform -translate-y-1/4 text-gray-400 dark:text-gray-500 border-none outline-none" size={20} />
+            <TextInputField
+              type={passwordVisible ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              className="pl-12"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600"
             />
+            <button
+              type="button"
+              onClick={() => setPasswordVisible(!passwordVisible)}
+              className="absolute right-4 top-1/3 transform -translate-y-1/4 text-gray-400 dark:text-gray-500"
+            >
+              {passwordVisible ? <AiFillEyeInvisible size={20} /> : <AiFillEye size={20} />}
+            </button>
           </div>
-          <button
-            type="submit"
-            className="w-full py-2 px-4 bg-orange-600 text-white font-semibold rounded-lg shadow-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600"
-          >
-            Login
-          </button>
+          <SubmitButton
+            onClick={handleLogin}
+            disabled={loading || username.trim() === '' || password.trim() === ''}
+            processing={loading}
+          />
         </form>
         <div className="mt-4 flex justify-between">
-          <Link href="/forgot-password" className="text-orange-600 hover:underline">Forgot Password?</Link>
-          <Link href="/register" className="text-orange-600 hover:underline">Register</Link>
+          <Link href="/register" className="text-link hover:underline">Register</Link>
+          <Link href="/forgot-password" className="text-link hover:underline">Forgot Password?</Link>
         </div>
-        <hr className="my-10 border-t border-orange-300 w-[50%] mx-auto"/>
-        <a
+        <div className="mt-4 flex justify-between items-center">
+          <label className="flex items-center">
+            <input type="checkbox" className="form-checkbox text-accent-600" />
+            <span className="ml-2">Remember Me</span>
+          </label>
+        </div>
+        <hr className="my-10 border-t border-accent-300 w-[50%] mx-auto"/>
+        <Link
           href="/login/google"
-          className="flex justify-center items-center gap-5 w-full py-2 px-4 text-blue-700 font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 mt-4 text-center"
+          className="flex justify-center items-center gap-5 w-full py-2 px-4 bg-blue-700 text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 mt-4 text-center hover:bg-blue-800"
         >
           <FcGoogle className='h-8 w-8'/> <span>Login with Google</span>
-        </a>
+        </Link>
 
-        {success !== '' && (
-          <div className="mt-6 bg-green-100 text-green-700 p-4 rounded-lg">
-            <p>{success}</p>
-          </div>
-        )}
-        {error !== '' && (
-          <div className="mt-6 bg-red-100 text-red-700 p-4 rounded-lg">
-            <p>{error}</p>
-          </div>
-        )}
-        {validationError !== '' && (
-          <div className="mt-6 bg-red-100 text-red-700 p-4 rounded-lg">
-            <p>{validationError}</p>
-          </div>
-        )}
       </div>
     </div>
   );

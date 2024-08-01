@@ -13,8 +13,9 @@ const auth = async (req, res, next) => {
         return next();
       }
     } else{
-      res.redirect(`${process.env.FRONTEND_ORIGIN}/login`);
-      // res.status(401).json({ message: 'Unauthorized' });
+      // res.redirect(`${process.env.FRONTEND_ORIGIN}/login`);
+      // res.redirect('/login');
+      res.status(401).json({ message: 'Unauthorized' });
     }
     
   };

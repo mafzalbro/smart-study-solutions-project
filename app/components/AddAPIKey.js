@@ -1,39 +1,34 @@
-"use client"
+"use client";
 
-import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import useAlert from '../customHooks/useAlert'; // Adjust the path as per your project structure
+import { ToastContainer, toast } from 'react-toastify';
+import { TbExternalLink } from "react-icons/tb";
+import 'react-toastify/dist/ReactToastify.css';
 import Spinner from './Spinner';
+import { getApiKey, addApiKey } from '@/app/services/api';
+import TextInputField from './TextInputField';
+import SubmitButton from './SubmitButton';
 
 const AddAPIKey = () => {
   const [apiKey, setApiKey] = useState('');
   const [valid, setValid] = useState(null);
   const [initialLoad, setInitialLoad] = useState(true);
-
-  // Initialize useAlert hook
-  const [message, setMessage] = useAlert('', 5000);
+  const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
     const fetchApiKey = async () => {
       try {
-      const request = await fetch(`${env.local.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/getApi`, {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        const response = await request.json();
+        const response = await getApiKey();
         if (response.apiKey) {
           setApiKey(response.apiKey);
-          setMessage('API Key is valid.');
+          toast.success('API Key is valid.');
           setValid(true);
         } else {
-          setMessage('No API Key found.');
+          toast.info('No API Key found.');
           setValid(false);
         }
       } catch (error) {
-        setMessage('Error fetching API Key.');
+        toast.error('Error fetching API Key.');
         setValid(false);
       } finally {
         setInitialLoad(false);
@@ -41,80 +36,63 @@ const AddAPIKey = () => {
     };
 
     fetchApiKey();
-  }, [setMessage]);
+  }, []);
 
   const handleApiKeyChange = (e) => {
     setApiKey(e.target.value);
-    // Clear message when input changes
-    setMessage('');
   };
 
   const handleSubmit = async () => {
     if (!apiKey.trim()) {
-      setMessage('Please enter an API Key.');
+      toast.error('Please enter an API Key.');
       return;
     }
 
+    setProcessing(true);
     try {
-      const request = await fetch('http://localhost:3000/api/chat/addApi', {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ apiKey }),
-      });
-      const response = await request.json();
+      const response = await addApiKey(apiKey);
       if (response.valid) {
-        setMessage('API Key is valid.');
+        toast.success('API Key is valid.');
         setValid(true);
       } else {
-        setMessage('API Key is invalid.');
+        toast.error('API Key is invalid.');
         setValid(false);
       }
     } catch (error) {
-      setMessage('Error validating API Key.');
+      toast.error('Error validating API Key.');
       setValid(false);
+    } finally {
+      setProcessing(false);
     }
   };
 
-  
-
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="p-6 rounded-lg shadow-lg w-96">
-        <Link href="/chat" className='mb-5 text-black inline-block'>&larr; Go to Chat Home</Link>
-        <h1 className="text-2xl font-bold mb-4 text-black">API Key Validator</h1>
+    <div className="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 px-4 sm:px-6 lg:px-8">
+      <div className="p-6 bg-secondary dark:bg-neutral-800 rounded-lg shadow-lg max-w-md w-full">
+        <h1 className="text-2xl font-bold mb-6 text-primary dark:text-secondary">API Key Validator</h1>
         {initialLoad ? (
           <Spinner />
         ) : valid && apiKey ? (
-          <div className="mt-4 p-2 bg-green-100 text-green-700 rounded-lg">{apiKey}</div>
+          <div className="mt-4 p-4 bg-accent-50 text-accent-700 rounded-lg truncate">
+            {apiKey}
+          </div>
         ) : (
           <>
-            <input
-              required
-              type="text"
+            <TextInputField
               value={apiKey}
               onChange={handleApiKeyChange}
               placeholder="Enter API Key"
-              className="p-2 w-full border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
-            <button
+            <SubmitButton
               onClick={handleSubmit}
-              className={`block md:inline-block py-2 px-4 bg-orange-600 text-black rounded-lg shadow-md hover:bg-orange-700 dark:hover:bg-orange-700 dark:bg-orange-600 w-full text-center ${apiKey.trim().length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={apiKey.trim().length === 0}
-            >
-              Test API Key
-            </button>
-            <p className='text-black mt-8'>Visit and get free api key <a href="https://aistudio.google.com/app/apikey" target='_blank' rel='noopener noreferrer' className='text-blue-400'>Google AI Studio</a></p>
+              processing={processing}
+            />
+            <p className="text-primary dark:text-secondary mt-6 text-sm sm:text-base flex gap-1">
+              Visit and get a free API key  <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-link hover:text-link-hover underline flex gap-2">
+                Google AI Studio <TbExternalLink /></a>
+            </p>
           </>
-        )}
-        {message && (
-          <p
-            className={`mt-4 p-2 rounded-lg ${valid ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
-          >
-            {message}
-          </p>
         )}
       </div>
     </div>

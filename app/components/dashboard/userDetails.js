@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Spinner from '../Spinner';
 import UpdateProfile from '../UpdateProfile';
+import { ToastContainer } from 'react-toastify';
 
 
 export default function UserDetails() {

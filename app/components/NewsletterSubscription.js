@@ -1,9 +1,11 @@
+"use client";
+
 import { useState } from 'react';
-import AlertMessage from './AlertMessage';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const NewsletterSubscription = () => {
   const [email, setEmail] = useState('');
-  const [alertMessage, setAlertMessage] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubscribe = async (e) => {
@@ -22,44 +24,42 @@ const NewsletterSubscription = () => {
       const data = await response.json();
 
       if (data.success) {
-        setAlertMessage({ message: 'Subscribed successfully!', type: 'success' });
+        toast.success('Subscribed successfully!');
         setEmail('');
       } else {
-        setAlertMessage({ message: 'Failed to subscribe.', type: 'error' });
+        toast.error('Failed to subscribe.');
       }
     } catch (error) {
-      setAlertMessage({ message: 'Error subscribing.', type: 'error' });
+      toast.error('Error subscribing.');
     } finally {
       setLoading(false);
     }
   };
 
-  const closeAlert = () => setAlertMessage(null);
-
   return (
-    <div className="text-white pb-20 pt-10">
+    <div className="text-neutral-100">
       <div className="container mx-auto px-4">
-        <h3 className="text-xl font-bold mb-4">Newsletter</h3>
-        <p className="mb-5 text-gray-400">Subscribe to our newsletter to stay updated.</p>
-        <form onSubmit={handleSubscribe} className="flex flex-col md:flex-row">
+        <h3 className="text-lg font-semibold mb-4">Newsletter</h3>
+        <p className="mb-5 text-neutral-300">Subscribe to our newsletter to stay updated.</p>
+        <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row">
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mb-2 md:mb-0 md:mr-2 px-3 py-2 outline-none focus:ring-orange-600 rounded-lg text-black"
+            className="mb-2 sm:mb-0 sm:mr-2 px-4 py-2 rounded-lg border border-neutral-600 bg-neutral-900 text-neutral-100 outline-none focus:ring-2 focus:ring-accent-500"
             placeholder="Your Email"
             required
             disabled={loading}
           />
           <button
             type="submit"
-            className={`bg-orange-600 text-white py-2 px-4 rounded-lg hover:bg-orange-700 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`bg-accent-600 text-neutral-100 py-2 px-4 rounded-lg hover:bg-accent-700 transition-colors duration-300 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={loading}
           >
             {loading ? 'Subscribing...' : 'Subscribe'}
           </button>
         </form>
-        {alertMessage && <AlertMessage message={alertMessage.message} type={alertMessage.type} onClose={closeAlert} />}
+        <ToastContainer />
       </div>
     </div>
   );

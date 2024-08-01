@@ -22,12 +22,18 @@ export const AuthProvider = ({ children }) => {
           cache: 'no-store'
         });
         const data = await res.json();
+
         
-        if (res.status === 401 && !token && !path.includes('/resources') && path.includes('/submit') && !path.includes('')) {
-          router.push('/login');
-        } else if (res.status === 200 && (path.includes('/login') || path.includes('/login/google') || path.includes('/register') || path.includes('/register/google'))) {
-          router.push('/');
-        }
+        console.log(path !== process.env.NEXT_PUBLIC_FRONTEND_ORIGIN);
+        console.log(path, process.env.NEXT_PUBLIC_FRONTEND_ORIGIN);
+        
+
+        // if (res.status === 401 && !token && !path.includes('/resources') && path !== new URL(process.env.NEXT_PUBLIC_FRONTEND_ORIGIN).pathname) {
+        //   router.push('/login');
+        // } else if (res.status === 200 && (path.includes('/login') || path.includes('/login/google') || path.includes('/register') || path.includes('/register/google'))) {
+        //   router.push('/');
+        // }
+
         setIsLoggedIn(res.status === 200 && data.auth);
       } catch (error) {
         console.error('Error checking auth:', error);

@@ -1,9 +1,8 @@
 // components/Spinner.js
-import React from 'react';
 
 const Spinner = () => (
-  <div className="flex justify-center items-center min-h-96">
-    <div className="w-14 h-14 border-0 border-b-2 border-orange-600 rounded-full animate-spin"></div>
+  <div className="flex justify-center items-center min-h-24">
+    <div className="w-8 h-8 border-2 border-accent-600 border-t-transparent border-r-transparent border-b-transparent rounded-full animate-spin-fast"></div>
   </div>
 );
 

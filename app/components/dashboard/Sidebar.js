@@ -1,7 +1,9 @@
-"use client"
+"use client";
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 export default function Sidebar({ height, selectedData }) {
   const [loading, setLoading] = useState(true);
@@ -15,34 +17,53 @@ export default function Sidebar({ height, selectedData }) {
     }, 100); // Simulating loading time
   }, []);
 
-  document.title = 'User Dashboard'
   return (
-    <div className={`w-1/4 h-screen bg-gray-800 p-4 flex flex-col gap-10`}>
-      <h2 className="text-xl mb-4 text-white">User Dashboard</h2>
-      <Link href="/dashboard/profile">
-        <span className='text-orange-400'>Update Profile</span>
-      </Link>
-      <Link href="/dashboard/change-password">
-        <span className='text-orange-400'>Change Password</span>
-      </Link>
-
-      <Link href='/dashboard/liked-resources'>
-        <span className='text-orange-400'>Liked Resources</span>
-      </Link>
-
-      <Link href='/dashboard/questions'>
-        <span className='text-orange-400'>Your Questions</span>
-      </Link>
-      <Link href='/dashboard/answers'>
-        <span className='text-orange-400'>Your Answers</span>
-      </Link>
-
-      <Link href='/dashboard/catagories'>
-        <span className='text-orange-400'>Your Catagories</span>
-      </Link>
-      <Link href='/logout'>
-        <span className='block md:inline-block py-2 px-4 bg-orange-600 text-black rounded-lg shadow-md hover:bg-orange-700 dark:hover:bg-orange-700 dark:bg-orange-600 my-8 w-full text-center'>Logout</span>
-      </Link>
+    <div className={`w-1/4 h-screen bg-black p-4 flex flex-col gap-10`}>
+      {loading ? (
+        <>
+          <Skeleton height={40} width={120} />
+          <Skeleton height={20} count={6} />
+        </>
+      ) : (
+        <>
+          <h2 className="text-xl mb-4 text-white">User Dashboard</h2>
+          <Link href="/dashboard/profile">
+            <span className={`block py-2 px-4 rounded-lg ${selectedData === 'profile' ? 'bg-blue-500 text-white' : 'text-gray-400 hover:bg-gray-700'}`}>
+              Update Profile
+            </span>
+          </Link>
+          <Link href="/dashboard/change-password">
+            <span className={`block py-2 px-4 rounded-lg ${selectedData === 'change-password' ? 'bg-blue-500 text-white' : 'text-gray-400 hover:bg-gray-700'}`}>
+              Change Password
+            </span>
+          </Link>
+          <Link href='/dashboard/liked-resources'>
+            <span className={`block py-2 px-4 rounded-lg ${selectedData === 'liked-resources' ? 'bg-blue-500 text-white' : 'text-gray-400 hover:bg-gray-700'}`}>
+              Liked Resources
+            </span>
+          </Link>
+          <Link href='/dashboard/questions'>
+            <span className={`block py-2 px-4 rounded-lg ${selectedData === 'questions' ? 'bg-blue-500 text-white' : 'text-gray-400 hover:bg-gray-700'}`}>
+              Your Questions
+            </span>
+          </Link>
+          <Link href='/dashboard/answers'>
+            <span className={`block py-2 px-4 rounded-lg ${selectedData === 'answers' ? 'bg-blue-500 text-white' : 'text-gray-400 hover:bg-gray-700'}`}>
+              Your Answers
+            </span>
+          </Link>
+          <Link href='/dashboard/catagories'>
+            <span className={`block py-2 px-4 rounded-lg ${selectedData === 'catagories' ? 'bg-blue-500 text-white' : 'text-gray-400 hover:bg-gray-700'}`}>
+              Your Categories
+            </span>
+          </Link>
+          <Link href='/logout'>
+            <span className='block py-2 px-4 bg-orange-600 text-black rounded-lg shadow-md hover:bg-orange-700 dark:hover:bg-orange-700 dark:bg-orange-600 my-8 w-full text-center'>
+              Logout
+            </span>
+          </Link>
+        </>
+      )}
     </div>
   );
 }

@@ -1,7 +1,12 @@
-"use client"
+"use client";
 
 import { useState } from 'react';
-import useAlert from '../customHooks/useAlert'; // Adjust the path as per your project structure
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { MdEmail, MdPerson, MdMessage } from 'react-icons/md';
+import SubmitButton from '@/app/components/SubmitButton';
+import TextInputField from '@/app/components/TextInputField';
+import TextAreaField from '@/app/components/TextAreaField';
 
 const ContactUs = () => {
   const [name, setName] = useState('');
@@ -9,17 +14,13 @@ const ContactUs = () => {
   const [message, setMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
 
-  // Initialize useAlert hook
-  const [alertMessage, setAlertMessage] = useAlert('', 5000);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSending(true); // Set isSending to true when form is being submitted
+    setIsSending(true);
     
-    // Validate fields
     if (!name.trim() || !email.trim() || !message.trim()) {
-      setAlertMessage('Please fill out all fields.');
-      setIsSending(false); // Reset isSending on validation failure
+      toast.error('Please fill out all fields.');
+      setIsSending(false);
       return;
     }
     
@@ -34,82 +35,70 @@ const ContactUs = () => {
       const data = await response.json();
       
       if (response.ok) {
-        setAlertMessage('Message sent successfully.');
+        toast.success('Message sent successfully.');
         setName('');
         setEmail('');
         setMessage('');
       } else {
-        setAlertMessage('Failed to send message.');
+        toast.error('Failed to send message.');
       }
     } catch (error) {
-      setAlertMessage('Error sending message.');
+      toast.error('Error sending message.');
     } finally {
-      setIsSending(false); // Reset isSending after request completes (success or failure)
+      setIsSending(false);
     }
   };
 
   return (
-    <div className="my-16">
-      <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-8 rounded-lg shadow-md ring-orange-200">
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
-            Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600"
-            placeholder="Your Name"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600"
-            placeholder="Your Email"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="message">
-            Message
-          </label>
-          <textarea
-            id="message"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600 max-h-52 min-h-52"
-            rows="4"
-            placeholder="Your Message"
-            required
-          ></textarea>
-        </div>
-        <div className="text-center">
-          <button
-            type="submit"
-            disabled={isSending} // Disable button while isSending is true
-            className="bg-orange-600 text-white py-2 px-4 rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600"
+    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md p-6 bg-secondary dark:bg-neutral-800 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold mb-6 text-primary dark:text-secondary">Contact Us</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="relative">
+            <MdPerson className="absolute left-4 top-1/3 transform -translate-y-1/4 text-gray-400 dark:text-gray-500" size={20} />
+            <TextInputField
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your Name"
+              label="Name"
+              className="pl-12"
+              required={true}
+            />
+          </div>
+          <div className="relative">
+            <MdEmail className="absolute left-4 top-1/3 transform -translate-y-1/4 text-gray-400 dark:text-gray-500" size={20} />
+            <TextInputField
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Your Email"
+              label="Email"
+              className="pl-12"
+              required={true}
+            />
+          </div>
+          <div className="relative">
+            <MdMessage className="absolute left-4 top-1/3 transform -translate-y-1/4 text-gray-400 dark:text-gray-500" size={20} />
+            <TextAreaField
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Your Message"
+              label="Message"
+              className="pl-12"
+              rows="4"
+              required={true}
+            />
+          </div>
+          <SubmitButton
+            onClick={handleSubmit}
+            disabled={isSending || message === '' || email === '' || message === ''}
+            processing={isSending}
           >
-            {isSending ? 'Sending...' : 'Submit'} {/* Show 'Sending...' text while isSending is true */}
-          </button>
-        </div>
-      </form>
-
-      {/* Display alert message */}
-      {alertMessage && (
-        <div className={`fixed bottom-5 right-5 bg-white border border-gray-300 shadow-lg rounded-lg p-4 z-50`}>
-          <p className="text-sm">{alertMessage}</p>
-        </div>
-      )}
+            {isSending ? 'Sending...' : 'Submit'}
+          </SubmitButton>
+        </form>
+      </div>
     </div>
   );
 };

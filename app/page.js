@@ -26,9 +26,11 @@ const LandingPage = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    // autoplaySpeed: 3000,
-    // swipeToSlide: true,
+    autoplaySpeed: 3000,
+    swipeToSlide: true,
+    arrows: false,
   };
+  
 
   return (
     <div className="container mx-auto my-20 p-10">
