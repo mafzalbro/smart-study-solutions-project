@@ -16,7 +16,6 @@ const UpdateProfile = () => {
   const [user, setUser] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
   const [imageBase64, setImageBase64] = useState(null);
-  const [alertMessage, setAlertMessage] = useState('');
 
   useEffect(() => {
     // Fetch user details using fetcher function)
@@ -76,8 +75,9 @@ const UpdateProfile = () => {
 
   if (!user) {
     return (
-      <div className="w-3/4 min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground flex items-center justify-center">
-        <div className="w-full max-w-sm p-8 bg-white dark:bg-neutral-800 shadow-md rounded-lg">
+      // <div className="bg-neutral-100 dark:bg-neutral-900 text-foreground flex items-center justify-center">
+      <div className="text-foreground flex items-center justify-center">
+        <div className="w-full max-w-sm p-8">
           <h2 className="text-2xl font-bold mb-6 text-primary dark:text-secondary">
             <Skeleton width={200} />
           </h2>
@@ -90,8 +90,9 @@ const UpdateProfile = () => {
   }
 
   return (
-    <div className="w-3/4 min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground flex items-center justify-center">
-      <form onSubmit={handleSubmit} className="w-full max-w-sm p-8 bg-white dark:bg-neutral-800 shadow-md rounded-lg">
+    // <div className="bg-neutral-100 dark:bg-neutral-900 text-foreground flex items-center justify-center">
+    <div className="text-foreground flex items-center justify-center">
+      <form onSubmit={handleSubmit} className="w-full max-w-sm p-8">
         <h2 className="text-2xl font-bold mb-6 text-primary dark:text-secondary">Update Profile</h2>
         <label className="block mb-4">
           Profile Image:

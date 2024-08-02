@@ -1,8 +1,8 @@
 "use client"
 
-import Sidebar from '../components/chat/Sidebar';
+import Sidebar from './chat/Sidebar';
 import { useEffect, useState } from 'react';
-import Loader from '../components/LoadingSpinner';
+import Loader from './LoadingSpinner';
 
 export default function Home() {
   const [chats, setChats] = useState([]);

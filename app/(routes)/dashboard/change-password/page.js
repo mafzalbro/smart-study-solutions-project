@@ -34,8 +34,8 @@ const ChangePassword = () => {
   // <div className="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 px-4 sm:px-6 lg:px-8">
     {/* <div className="w-full max-w-md p-6 bg-secondary dark:bg-neutral-800 rounded-lg shadow-lg"> */}
   return (
-    <div className='flex items-center justify-center basis-2/3'>
-    <div className='w-full'>
+    <div className='mt-16 flex justify-center basis-2/3'>
+    <div className='w-3/4'>
         <h2 className="text-2xl font-bold mb-6 text-primary dark:text-secondary">Change Password</h2>
         <form onSubmit={handleChangePassword} className="space-y-4">
           <div className="relative">

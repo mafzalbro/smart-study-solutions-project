@@ -32,7 +32,7 @@ const GoBackButton = () => {
   return (
     <button
       onClick={goBack}
-      className="flex items-center text-link hover:text-link-hover mb-4 text-sm sm:text-base"
+      className="flex items-center text-link hover:text-link-hover m-4 text-sm sm:text-base"
     >
       <FaArrowLeft className="mr-2" />
       Go Back

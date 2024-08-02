@@ -60,14 +60,14 @@ const NavBar = () => {
           <h2 className="text-2xl font-bold cursor-pointer">Code <span className='text-accent-500'>Innovators</span></h2>
         </Link>
         <div className="flex items-center">
-          <ul
+        <ul
             className={`${
               isMobileMenuOpen ? 'block' : 'hidden'
-            } md:flex md:space-x-6 md:items-center absolute md:static bg-secondary dark:bg-neutral-800 top-16 left-0 w-full md:w-auto shadow-lg md:shadow-none p-4 md:p-0`}
+            } md:flex md:space-x-6 md:items-center absolute md:static bg-secondary dark:bg-neutral-800 top-16 left-0 w-full md:w-auto shadow-lg md:shadow-none`}
           >
             <li>
               <Link href="/" passHref>
-                <span className="block md:inline-block relative group py-2 md:py-0">
+                <span className="inline-block relative group py-2 md:py-0">
                   Home
                   <span className="block h-0.5 bg-link-hover absolute left-0 bottom-0 w-0 group-hover:w-full transition-all duration-300"></span>
                 </span>
@@ -75,7 +75,7 @@ const NavBar = () => {
             </li>
             <li>
               <Link href="/resources" passHref>
-                <span className="block md:inline-block relative group py-2 md:py-0">
+                <span className="inline-block relative group py-2 md:py-0">
                   Resources
                   <span className="block h-0.5 bg-link-hover absolute left-0 bottom-0 w-0 group-hover:w-full transition-all duration-300"></span>
                 </span>
@@ -83,7 +83,7 @@ const NavBar = () => {
             </li>
             <li>
               <Link href="/forum" passHref>
-                <span className="block md:inline-block relative group py-2 md:py-0">
+                <span className="inline-block relative group py-2 md:py-0">
                   Forum
                   <span className="block h-0.5 bg-link-hover absolute left-0 bottom-0 w-0 group-hover:w-full transition-all duration-300"></span>
                 </span>
@@ -93,7 +93,7 @@ const NavBar = () => {
               <>
                 <li>
                   <Link href="/chat" passHref>
-                    <span className="block md:inline-block relative group py-2 md:py-0">
+                    <span className="inline-block relative group py-2 md:py-0">
                       Ask AI
                       <span className="block h-0.5 bg-link-hover absolute left-0 bottom-0 w-0 group-hover:w-full transition-all duration-300"></span>
                     </span>
@@ -109,6 +109,7 @@ const NavBar = () => {
               </Link>
             )}
           </ul>
+          
           {isLoggedIn ? (
             <div className="relative ml-4">
               <div
@@ -143,6 +144,25 @@ const NavBar = () => {
               </button>
             </Link>
           )}
+          <button
+        className="block md:hidden ml-4"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M4 6h16M4 12h16m-7 6h7"
+          ></path>
+        </svg>
+      </button>
         </div>
       </div>
     </nav>

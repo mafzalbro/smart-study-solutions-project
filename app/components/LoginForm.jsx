@@ -10,8 +10,8 @@ import { MdEmail } from "react-icons/md";
 import { IoMdLock } from "react-icons/io";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import SubmitButton from '../components/SubmitButton';
-import TextInputField from '../components/TextInputField';
+import SubmitButton from './SubmitButton';
+import TextInputField from './TextInputField';
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');
