@@ -1,27 +1,16 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import LinkButton from '../../components/LinkButton';
-import ForumItem from '../../components/forum/ForumItem';
-import Spinner from '../../components/Spinner';
+import LinkButton from '@/app/components/LinkButton';
+import ForumItem from '@/app/components/forum/ForumItem';
+import Spinner from '@/app/components/Spinner';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import TextInputField from '@/app/components/TextInputField';
-
-const fetcher = async (url) => {
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    toast.error('Failed to fetch data');
-    throw error;
-  }
-};
+import { fetcher } from '@/app/utils/fetcher';
+import Sidebar from '@/app/components/forum/MainSidebar';
+import StylishTitle from '@/app/components/StylishTitle';
 
 const ForumPage = () => {
   const [questions, setQuestions] = useState([]);
@@ -87,15 +76,17 @@ const ForumPage = () => {
   };
 
   return (
-      <section className="p-8 dark:bg-neutral-900 dark:text-white w-full">
-        <ToastContainer />
+    <>
+    <section className="p-8 dark:text-white w-full">
+      <ToastContainer />
+      <main className="flex-1 ml-6">
         <LinkButton text="Ask Question" link="/forum/submit" />
-        <h1 className="text-5xl my-10 text-center">
-          <span className="text-accent-500">Ask Anything</span> From Your Teachers
-        </h1>
-        <p className="text-lg text-center my-16 w-4/6 mx-auto">
+        <StylishTitle colored='Ask Anything' simple='From Your Teacher' className='text-center'/>
+        
+        {/* <p className="text-lg text-center my-16 w-4/6 mx-auto">
           Welcome to our dynamic forum community! Discover, discuss, and learn with us. Join engaging conversations, ask questions, and share your knowledge across a wide range of topics. Start exploring and connecting today!
-        </p>
+        </p> */}
+        
         <div className="flex justify-center my-20">
           <TextInputField
             type="text"
@@ -108,32 +99,41 @@ const ForumPage = () => {
         </div>
 
         {isLoading && questions?.length === 0 ? (
-          <SkeletonTheme>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Array(results).fill().map((_, i) => (
-                <Skeleton key={i} height={250} />
-              ))}
+            <div className="flex h-full w-full gap-4">
+              <SkeletonTheme>
+                <div className='hidden md:flex flex-col md:w-1/4 h-full'>
+                  <Skeleton height={500} width="100%" />
+                </div>
+                <div className='flex flex-col md:w-3/4 w-full h-full'>
+                  <Skeleton height={500} width="100%" />
+                </div>
+              </SkeletonTheme>
+              {/* <div className="absolute inset-0 flex items-center justify-center">
+                <Spinner />
+              </div> */}
             </div>
-          </SkeletonTheme>
-        ) : error ? (
+          ) : error ? (
           <p className="text-center text-red-500 mt-5">
             Error fetching questions: {error.message}
           </p>
         ) : questions?.length === 0 ? (
           <p className="text-center text-gray-500 mt-5">No questions found.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className='md:space-x-6 flex flex-col md:flex-row'>
+            <Sidebar />
+          <div className="flex flex-wrap w-3/4 flex-shrink-0">
             {questions?.map(question => (
               <ForumItem key={question?._id} question={question} />
             ))}
           </div>
+            </div>
         )}
 
         {questions?.length !== 0 && !error && hasMore && !isLoadingMore && (
           <div className="flex justify-center m-10">
             <button
               onClick={handleLoadMore}
-              className="text-accent-500 hover:text-accent-700 font-bold py-2 px-4 rounded"
+              className="border border-neutral-300 rounded-full text-accent-500 hover:text-accent-700 font-bold py-4 px-6 dark:border-neutral-700"
             >
               Load More
             </button>
@@ -145,7 +145,9 @@ const ForumPage = () => {
             <Spinner />
           </div>
         )}
-      </section>
+      </main>
+    </section>
+    </>
   );
 };
 

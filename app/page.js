@@ -9,15 +9,16 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Announcements from './components/Announcements';
 import MainHeading from './components/MainHeading.jsx';
+import StylishTitle from './components/StylishTitle';
 
 const LandingPage = () => {
   return (
     <div className="container mx-auto mt-20 md:my-20">
       <div className="flex flex-col md:flex-row items-center justify-center gap-20">
         <div className="md:w-1/2 text-center md:text-left">
-          <h1 className="text-5xl leading-tight">
-            <span className="text-accent-500">Hey PU Buddy,</span> <br/> You are At the Right Place!
-          </h1>
+
+          <StylishTitle colored='Hey PU Buddy,' addBr simple='You are At the Right Place!' />
+
           <div className="text-base w-4/6 md:mx-0 inline-block my-5">
             Discover, discuss, and learn with us. Join engaging conversations, ask questions.
             <span className="text-accent-500"> Start exploring and connecting today!</span>

@@ -38,6 +38,7 @@ const QuestionPage = ({ params }) => {
     })
       .then(response => {
         if (response.status === 401) router.push('/login');
+        if (response.status === 404) router.push('/forum');
         return response.json();
       })
       .then(data => {

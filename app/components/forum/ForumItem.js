@@ -1,11 +1,10 @@
-import Link from 'next/link';
 import LinkText from '../LinkText';
+import { FaArrowRight } from 'react-icons/fa';
 
 const ForumItem = ({ question }) => {
-  console.log(question);
-
   return (
-    <div className="p-6 border-b border-neutral-300 dark:border-neutral-600">
+    <div className="p-6 border-b border-neutral-300 dark:border-neutral-600 md:basis-2/4">
+    {/* <div className="p-6"> */}
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 my-2">{question.question}</h2>
       <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">
         Asked by: <span className='font-normal'>{question.askedBy?.username}</span>
@@ -15,7 +14,7 @@ const ForumItem = ({ question }) => {
       </p>
       <p className="mt-2 text-gray-600 dark:text-gray-400 text-sm">{question.description}</p>
       <div className="flex mt-4">
-        <LinkText text="Read More" link={`/forum/${question.slug}`} />
+        <LinkText text="Read More" link={`/forum/${question.slug}`} icon={<FaArrowRight />} />
       </div>
     </div>
   );
