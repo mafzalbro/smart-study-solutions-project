@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { MdOutlineCloudUpload, MdDelete } from "react-icons/md";
-import Image from 'next/image';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Skeleton from 'react-loading-skeleton';
@@ -16,6 +15,7 @@ const UpdateProfile = () => {
   const [user, setUser] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
   const [imageBase64, setImageBase64] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     // Fetch user details using fetcher function)
@@ -23,6 +23,7 @@ const UpdateProfile = () => {
       .then(data => {
         if (data) {
           setUser(data);
+          console.log(data);
         } else {
           console.error('User data not found');
         }
@@ -47,6 +48,9 @@ const UpdateProfile = () => {
   const handleRemoveImage = () => {
     setProfileImage(null);
     setImageBase64(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''; // Reset the file input element
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -63,7 +67,7 @@ const UpdateProfile = () => {
 
       const response = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/user/${user._id}`, 'PUT', updatedUserData);
 
-      if (response.ok) {
+      if (response) {
         toast.success('Profile updated successfully');
       } else {
         toast.error(`Error updating profile: ${response.message || 'Unknown error'}`);
@@ -75,9 +79,8 @@ const UpdateProfile = () => {
 
   if (!user) {
     return (
-      // <div className="bg-neutral-100 dark:bg-neutral-900 text-foreground flex items-center justify-center">
       <div className="text-foreground flex items-center justify-center">
-        <div className="w-full max-w-sm p-8">
+        <div className="w-full md:w-3/4 max-w-sm p-8">
           <h2 className="text-2xl font-bold mb-6 text-primary dark:text-secondary">
             <Skeleton width={200} />
           </h2>
@@ -90,9 +93,8 @@ const UpdateProfile = () => {
   }
 
   return (
-    // <div className="bg-neutral-100 dark:bg-neutral-900 text-foreground flex items-center justify-center">
     <div className="text-foreground flex items-center justify-center">
-      <form onSubmit={handleSubmit} className="w-full max-w-sm p-8">
+      <form onSubmit={handleSubmit} className="w-full md:w-3/4 max-w-sm p-8">
         <h2 className="text-2xl font-bold mb-6 text-primary dark:text-secondary">Update Profile</h2>
         <label className="block mb-4">
           Profile Image:
@@ -102,21 +104,23 @@ const UpdateProfile = () => {
             onChange={handleImageUpload}
             className="hidden"
             id="fileInput"
+            ref={fileInputRef} // Attach the ref to the file input element
           />
           <label
             htmlFor="fileInput"
-            className="flex items-center gap-4 w-full mt-1 py-2 px-4 border rounded-lg cursor-pointer focus:ring-2 focus:ring-accent-600 outline-none bg-white dark:bg-neutral-700 text-gray-800 dark:text-gray-300"
+            className="flex items-center gap-4 w-full md:w-3/4 mt-1 py-4 px-4 border rounded-lg cursor-pointer focus:ring-2 focus:ring-accent-600 outline-none bg-white dark:bg-neutral-700 text-gray-800 dark:text-gray-300"
           >
             <MdOutlineCloudUpload className="text-accent-600" /> <span>Choose File</span>
           </label>
+
           {profileImage ? (
             <div className="relative">
-              <Image
+              <img
                 src={profileImage}
                 alt="Profile Preview"
                 width={300}
                 height={300}
-                className="block my-10 rounded-lg border mx-auto"
+                className="block my-10 rounded-lg border mx-auto h-auto w-[100%]"
                 style={{ maxWidth: '300px' }}
               />
               <button
@@ -129,7 +133,7 @@ const UpdateProfile = () => {
             </div>
           ) : user.profileImage ? (
             <div className="relative">
-              <Image
+              <img
                 src={user.profileImage}
                 alt="Profile"
                 width={300}
@@ -137,13 +141,6 @@ const UpdateProfile = () => {
                 className="block my-10 rounded-lg border mx-auto"
                 style={{ maxWidth: '300px' }}
               />
-              <button
-                type="button"
-                onClick={handleRemoveImage}
-                className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600"
-              >
-                <MdDelete />
-              </button>
             </div>
           ) : (
             <span>No profile image available</span>
@@ -169,7 +166,7 @@ const UpdateProfile = () => {
             value={user.role || ''}
             onChange={(e) => setUser({ ...user, role: e.target.value })}
             required
-            className="block w-full mt-1 py-2 px-4 border rounded-lg focus:ring-2 focus:ring-accent-600 outline-none bg-white dark:bg-neutral-700 text-gray-800 dark:text-gray-300"
+            className="block w-full md:w-3/4 mt-1 py-4 px-4 border rounded-lg focus:ring-2 focus:ring-accent-600 outline-none bg-white dark:bg-neutral-700 text-gray-800 dark:text-gray-300"
           >
             <option value="student">Student</option>
             <option value="teacher">Teacher</option>
@@ -183,7 +180,7 @@ const UpdateProfile = () => {
           required
         />
         {/* Additional Fields */}
-        <TextInputField
+        {/* <TextInputField
           type="tel"
           value={user.phone || ''}
           onChange={(e) => setUser({ ...user, phone: e.target.value })}
@@ -194,7 +191,7 @@ const UpdateProfile = () => {
           value={user.address || ''}
           onChange={(e) => setUser({ ...user, address: e.target.value })}
           placeholder="Address"
-        />
+        /> */}
         <button type="submit" className="w-full py-2 px-4 bg-accent-600 text-white font-semibold rounded-lg shadow-md hover:bg-accent-700 focus:outline-none focus:ring-2 focus:ring-accent-600">
           Update Profile
         </button>

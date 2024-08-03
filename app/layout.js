@@ -1,29 +1,33 @@
-// layout.js
-import { Poppins, Outfit } from 'next/font/google'
+import { Poppins, Outfit } from 'next/font/google';
 import NavBar from '@/app/components/navbar/NavBar';
 import { AuthProvider } from '@/app/customHooks/AuthContext';
+import { AppStateProvider } from '@/app/customHooks/AppStateProvider'; // Ensure this path is correct
+import ProgressBar from '@/app/customHooks/ProgressBar'; // Import the provider
 import './globals.css';
 import Footer from './components/Footer';
+import { ToastContainer } from 'react-toastify';
 
 export const metadata = {
   title: "Smart Study Solutions",
   description: "Let's learn anything about your degree",
 };
 
-// const poppins = Poppins({ subsets: ["latin"], weight: ['400', '700'], display: "swap"});
-const font = Outfit({ subsets: ["latin"], weight: ['400', '700'], display: "block"});
+const font = Outfit({ subsets: ["latin"], weight: ['400', '700'], display: "block" });
 
 const RootLayout = ({ children }) => {
   return (
     <html lang="en">
-      {/* <body className="font-sans"> */}
-      <body className={`${font.className} bg-neutral-100 dark:bg-neutral-900`}>
+      <body className={`${font.className}`}>
         <AuthProvider>
-          <NavBar />
-          {children}
+          <AppStateProvider>
+            <ProgressBar>
+              <NavBar />
+              {children}
+            </ProgressBar>
+          </AppStateProvider>
         </AuthProvider>
-        
-      <Footer />
+        <ToastContainer stacked />
+        <Footer />
       </body>
     </html>
   );

@@ -6,6 +6,8 @@ import SyncLoader from 'react-spinners/SyncLoader';
 import Image from 'next/image';
 import randomInteger from '@/app/utils/randomNo';
 import useAlert from '@/app/customHooks/useAlert';
+import TextInputField from '@/app/components/TextInputField';
+
 
 const messages = [
   'Waiting for response...',
@@ -140,78 +142,61 @@ export default function MessageInput({ chatId, addMessageToChatHistory, chatHist
 
   return (
     <>
-      {isSending && (
-        <Modal isOpen={isSending} onClose={() => setIsSending(false)}>
-          <div className="w-full flex items-center justify-center">
-            <svg
-              className="animate-spin h-10 w-10 text-orange-600"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 2.42.876 4.63 2.292 6.292l1.415-1.415zm12.707 1.415A7.962 7.962 0 0120 12h-4a8 8 0 01-8 8v4c2.42 0 4.63-.876 6.292-2.292l1.415-1.415z"
-              ></path>
-            </svg>
-            <Image src="https://cdn.svgator.com/images/2023/03/simple-svg-animated-loaders.svg" width={100} height={100} alt="loader" />
-          </div>
-          <div className="text-white text-center mt-4">
-            {messages[waitingMessageIndex]}
-          </div>
-        </Modal>
-      )}
-      <AddPdfModel
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        onCreateNewChat={() => {
-          setShowModal(false);
-          // Add logic to create a new chat here
-        }}
-      />
-      {error && (
-        <div className="text-red-600 m-4">{error}</div>
-      )}
-      <div className="fixed bottom-0 left-0 right-0 text-white bg-gray-800 p-4 flex items-center justify-between sm:justify-start space-x-2">
-        <input
-          ref={inputRef}
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Type a message"
-          className="flex-grow p-2 bg-gray-700 rounded-lg outline-none focus:ring-2 focus:ring-orange-600 h-12"
-          disabled={isSending}
-        />
-        {showPdfInput && <PdfInput pdfUrl={pdfUrl} setPdfUrl={setPdfUrl} />}
-        <div className="flex space-x-2">
-          <button
-            onClick={handlePdfButtonClick}
-            className="flex-grow p-2 bg-gray-700 rounded-lg outline-none focus:ring-2 focus:ring-orange-600 h-12"
-          >
-            Add PDF
-          </button>
-          <button
-            onClick={sendMessage}
-            disabled={message.trim() === '' || isSending}
-            className={`p-2 bg-orange-600 rounded-lg text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 h-12 ${
-              message.trim() === '' || isSending ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-          >
-            {isSending ? <SyncLoader color="#ffffff" size={4} /> : 'Send'}
-          </button>
+    {isSending && (
+      <Modal isOpen={isSending} onClose={() => setIsSending(false)}>
+        <div className="w-full flex items-center justify-center">
+          <SyncLoader color="#6B7280" size={8} />
+          <Image src="https://cdn.svgator.com/images/2023/03/simple-svg-animated-loaders.svg" width={100} height={100} alt="loader" />
         </div>
+        <div className="text-neutral-500 text-center mt-4">
+          {messages[waitingMessageIndex]}
+        </div>
+      </Modal>
+    )}
+    <AddPdfModel
+      isOpen={showModal}
+      onClose={() => setShowModal(false)}
+      onCreateNewChat={() => {
+        setShowModal(false);
+        // Add logic to create a new chat here
+      }}
+    />
+    {error && (
+      <div className="text-red-500 m-4">{error}</div>
+    )}
+    <div className="relative bottom-0 left-0 right-0 bg-secondary dark:bg-neutral-800 p-1 flex items-center justify-between space-x-2">
+      <TextInputField
+        ref={inputRef}
+        type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        onKeyPress={handleKeyPress}
+        placeholder="Type a message"
+        disabled={isSending}
+        noMargin
+        padding='p-3'
+      />
+      {showPdfInput && <PdfInput pdfUrl={pdfUrl} setPdfUrl={setPdfUrl} />}
+      <div className="flex space-x-2">
+        <button
+          onClick={handlePdfButtonClick}
+          className="p-2 bg-accent-100 dark:bg-neutral-700 rounded-lg dark:text-secondary dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-accent-600"
+        >
+          Add PDF
+        </button>
+        <button
+          onClick={sendMessage}
+          disabled={message.trim() === '' || isSending}
+          className={`p-2 bg-accent-500 rounded-lg text-white hover:bg-accent-400 focus:outline-none focus:ring-2 focus:ring-accent-600 ${
+            message.trim() === '' || isSending ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+        >
+          {isSending ? <SyncLoader color="#ffffff" size={4} /> : 'Send'}
+        </button>
       </div>
-      <div ref={endOfChatRef}></div>
-    </>
+    </div>
+    <div ref={endOfChatRef}></div>
+  </>
+
   );
 }

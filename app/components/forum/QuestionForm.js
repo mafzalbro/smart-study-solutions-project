@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { fetcher } from '@/app/utils/fetcher';
 import AlertMessage from '@/app/components/AlertMessage';
+import TextInputField from '@/app/components/TextInputField';
+import TextAreaField from '@/app/components/TextAreaField';
+import WhiteContainer from '../WhiteContainer';
 
 const QuestionForm = ({ onSuccess, onClose }) => {
   const [question, setQuestion] = useState('');
@@ -14,7 +17,7 @@ const QuestionForm = ({ onSuccess, onClose }) => {
     const fetchCategories = async () => {
       try {
         const data = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/qna/categories`);
-        setCategories(data.data); // Assuming data.data contains the array of categories
+        setCategories(data.data);
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
@@ -50,7 +53,7 @@ const QuestionForm = ({ onSuccess, onClose }) => {
   };
 
   return (
-    <div>
+    <WhiteContainer>
       {alertMessage.message && (
         <AlertMessage
           message={alertMessage.message}
@@ -58,33 +61,28 @@ const QuestionForm = ({ onSuccess, onClose }) => {
           onClose={handleAlertClose}
         />
       )}
-      <form onSubmit={handleSubmit} className="space-y-6 p-6 bg-white rounded-lg shadow-md w-full">
+      <form onSubmit={handleSubmit} className="space-y-6 p-6 w-full">
+        <TextInputField
+          type="text"
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          placeholder="Enter your question"
+          label="Question"
+          required
+        />
+        <TextAreaField
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Provide more details about your question"
+          label="Description"
+          rows={4}
+        />
         <div>
-          <label className="block text-gray-700 font-semibold mb-2">Question</label>
-          <input
-            type="text"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            className="w-full p-2 border border-gray-100 outline-orange-600 rounded-lg"
-            placeholder="Enter your question"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700 font-semibold mb-2">Description</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="max-h-52 min-h-40 w-full p-2 border border-gray-100 outline-orange-600 rounded-lg"
-            placeholder="Provide more details about your question"
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700 font-semibold mb-2">Category</label>
+          <label className="block text-secondary font-bold mb-2">Category</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full p-2 border border-gray-100 outline-orange-600 rounded-lg"
+            className="w-full px-3 py-2 border dark:text-secondary dark:bg-neutral-800 border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-600"
           >
             <option value="">Select a category</option>
             {categories.map(cat => (
@@ -92,24 +90,21 @@ const QuestionForm = ({ onSuccess, onClose }) => {
             ))}
           </select>
         </div>
-        <div>
-          <label className="block text-gray-700 font-semibold mb-2">Tags</label>
-          <input
-            type="text"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-            className="w-full p-2 border border-gray-100 outline-orange-600 rounded-lg"
-            placeholder="Comma-separated tags here"
-          />
-        </div>
+        <TextInputField
+          type="text"
+          value={tags}
+          onChange={(e) => setTags(e.target.value)}
+          placeholder="Comma-separated tags here"
+          label="Tags"
+        />
         <button
           type="submit"
-          className="block w-full py-2 px-4 bg-orange-600 text-white font-semibold rounded-lg shadow-sm hover:bg-orange-700 transition-colors"
+          className="block w-full py-2 px-4 bg-accent-500 text-white font-semibold rounded-lg shadow-sm hover:bg-accent-700 transition-colors"
         >
           Submit
         </button>
       </form>
-    </div>
+    </WhiteContainer>
   );
 };
 

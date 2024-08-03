@@ -1,5 +1,12 @@
+"use client"
+
 import React from 'react';
 import Slider from 'react-slick';
+import { SlUserFemale, SlUser } from "react-icons/sl";
+import { FaQuoteLeft, FaQuoteRight } from 'react-icons/fa';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import '@/app/styles/sliderStyles.css'; // Adjust the path as necessary
 
 const Testimonials = () => {
   const settings = {
@@ -9,25 +16,45 @@ const Testimonials = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
+    arrows: false,
   };
 
+  const testimonials = [
+    {
+      quote: "Smart Study Solutions has transformed my study habits. The AI Chatbot is incredibly helpful!",
+      author: "Student A",
+      gender: "female"
+    },
+    {
+      quote: "The Q&A Forum allows me to get answers quickly and the community is very supportive.",
+      author: "Student B",
+      gender: "male"
+    },
+    {
+      quote: "Notifications keep me updated on the latest resources. It's a game changer!",
+      author: "Student C",
+      gender: "female"
+    }
+  ];
+
   return (
-    <div className="my-16">
+    <>
       <Slider {...settings}>
-        <div className="p-6">
-          <p className="text-lg italic">"Smart Study Solutions has transformed my study habits. The AI Chatbot is incredibly helpful!"</p>
-          <span className="block mt-4 text-right font-semibold">- Student A</span>
-        </div>
-        <div className="p-6">
-          <p className="text-lg italic">"The Q&A Forum allows me to get answers quickly and the community is very supportive."</p>
-          <span className="block mt-4 text-right font-semibold">- Student B</span>
-        </div>
-        <div className="p-6">
-          <p className="text-lg italic">"Notifications keep me updated on the latest resources. It's a game changer!"</p>
-          <span className="block mt-4 text-right font-semibold">- Student C</span>
-        </div>
+        {testimonials.map((testimonial, index) => (
+          <div key={index} className="p-8 bg-secondary dark:bg-neutral-800 rounded-lg">
+            <div className="flex items-center justify-center mb-4">
+              <FaQuoteLeft className="text-3xl text-accent-600 mr-2" />
+              <p className="text-lg italic text-primary dark:text-secondary text-center">{testimonial.quote}</p>
+              <FaQuoteRight className="text-3xl text-accent-600 ml-2" />
+            </div>
+            <div className="flex items-center justify-end mt-8">
+              {testimonial.gender === "female" ? <SlUserFemale className="text-accent-600 mr-2" /> : <SlUser className="text-accent-600 mr-2" />}
+              <span className="text-accent-500 text-sm">{testimonial.author}</span>
+            </div>
+          </div>
+        ))}
       </Slider>
-    </div>
+    </>
   );
 };
 

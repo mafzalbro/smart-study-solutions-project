@@ -1,9 +1,8 @@
-"use client"
+"use client";
 
 // AuthContext.js
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { useSearchParams, usePathname, useRouter } from 'next/navigation'; // Adjust import based on Next.js version
-import next from 'next';
+import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 
 export const AuthContext = createContext();
 
@@ -16,34 +15,38 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // console.log(process.env.NEXT_PUBLIC_BACKEND_ORIGIN);
         const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/check-auth`, {
           credentials: 'include',
           cache: 'no-store'
         });
         const data = await res.json();
 
-        
-        console.log(path !== process.env.NEXT_PUBLIC_FRONTEND_ORIGIN);
-        console.log(path, process.env.NEXT_PUBLIC_FRONTEND_ORIGIN);
-        
-
-        // if (res.status === 401 && !token && !path.includes('/resources') && path !== new URL(process.env.NEXT_PUBLIC_FRONTEND_ORIGIN).pathname) {
-        //   router.push('/login');
-        // } else if (res.status === 200 && (path.includes('/login') || path.includes('/login/google') || path.includes('/register') || path.includes('/register/google'))) {
-        //   router.push('/');
-        // }
-
-        setIsLoggedIn(res.status === 200 && data.auth);
+        if (res.status === 200 && data.auth) {
+          setIsLoggedIn(true);
+          localStorage.setItem('isLoggedIn', 'true');
+        } else {
+          setIsLoggedIn(false);
+          localStorage.setItem('isLoggedIn', 'false');
+        }
       } catch (error) {
         console.error('Error checking auth:', error);
         setIsLoggedIn(false);
+        localStorage.setItem('isLoggedIn', 'false');
       }
     };
-  
+
     checkAuth();
   }, [router, path, token]);
-  
+
+  useEffect(() => {
+    const storedIsLoggedIn = localStorage.getItem('isLoggedIn');
+    console.log(storedIsLoggedIn);
+    
+    if (storedIsLoggedIn) {
+      setIsLoggedIn(storedIsLoggedIn === 'true');
+    }
+  }, []);
+
   return (
     <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
       {children}

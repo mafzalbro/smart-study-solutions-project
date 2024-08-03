@@ -6,8 +6,10 @@ import Loader from './Loader';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { MdOutlineDeleteOutline, MdDriveFileRenameOutline, MdOutlineKeyboardDoubleArrowDown, MdOutlineKeyboardArrowDown } from "react-icons/md";
-import { FiEdit, FiMenu, FiX, FiMoreVertical } from "react-icons/fi";
+import { FiX, FiMoreVertical } from "react-icons/fi";
+import { MdOutlineArrowBackIosNew, MdOutlineArrowForwardIos } from 'react-icons/md';
 
+import { fetcher } from '@/app/utils/fetcher';
 
 export default function Sidebar({ height, chatHistory }) {
   const [chats, setChats] = useState([]);
@@ -19,6 +21,13 @@ export default function Sidebar({ height, chatHistory }) {
   const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
   const [selectedChatSlug, setSelectedChatSlug] = useState(null);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true); 
+
+  
+  const toggleSidebar = () => {
+    setIsSidebarVisible(!isSidebarVisible);
+  };
+
 
   const router = useRouter();
   const modalRef = useRef(null);
@@ -31,11 +40,7 @@ export default function Sidebar({ height, chatHistory }) {
   const fetchChats = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/titles?page=${page}&limit=15`, {
-        credentials: 'include',
-      });
-      const data = await res.json();
-
+      const data = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/titles?page=${page}&limit=15`);
       if (data.data) {
         // Sort chats by updatedAt descending
         const sortedChats = data.data.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
@@ -72,7 +77,7 @@ export default function Sidebar({ height, chatHistory }) {
   // Handle editing chat
   const handleEdit = (chat) => {
     setEditingChatSlug(chat.slug);
-    setNewTitle(chat.title); // Set the current title in newTitle
+    setNewTitle(chat.title.slice(0, 20) + '...'); // Set the current title in newTitle
     setModalVisible(false);
   };
 
@@ -99,15 +104,8 @@ export default function Sidebar({ height, chatHistory }) {
   // Handle updating chat
   const handleUpdate = async (chatSlug) => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/${chatSlug}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ title: newTitle }),
-      });
-      if (res.ok) {
+      const res = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/${chatSlug}`, 'PUT', JSON.stringify({ title: newTitle }));
+      if (res) {
         setChats(chats.map(chat => (chat.slug === chatSlug ? { ...chat, title: newTitle } : chat)));
         setEditingChatSlug(null);
       } else {
@@ -126,9 +124,10 @@ export default function Sidebar({ height, chatHistory }) {
   };
 
   return (
-    <div className={`sidebar w-1/4 h-${height} bg-gray-800 p-4 flex flex-col`}>
-      <Link href="/chat/test">
-        <span className='block md:inline-block py-2 px-4 bg-orange-600 text-black rounded-lg shadow-md hover:bg-orange-700 dark:hover:bg-orange-700 dark:bg-orange-600 my-8'>Test API</span>
+    <>
+    <div className={`sidebar md:w-1/4 ${!isSidebarVisible ? 'w-0 overflow-hidden p-0 ': 'overflow-auto p-4 fixed md:relative w-full h-full'} bg-gray-800 md:p-4 flex flex-col gap-10 transition-all ease-in-out duration-200 z-20 shadow-2xl`}>
+      <Link href="/chat/test-api">
+        <span className='block md:inline-block py-2 px-4 bg-accent-600 text-secondary rounded-lg shadow-md hover:bg-accent-700 dark:hover:bg-accent-700 dark:bg-accent-600 my-8'>Test API</span>
       </Link>
       <Link href='/chat'>
         <h2 className="text-xl mb-4 text-white">Chats</h2>
@@ -138,7 +137,7 @@ export default function Sidebar({ height, chatHistory }) {
         {chats.map((chat) => (
           <div key={chat.slug} className="relative group">
             {editingChatSlug === chat.slug ? (
-              <div className="flex items-center mb-2 outline-orange-500">
+              <div className="flex items-center mb-2 outline-accent-500">
                 <input
                   type="text"
                   value={newTitle}
@@ -154,15 +153,16 @@ export default function Sidebar({ height, chatHistory }) {
             ) : (
               <Link href={`/chat/${chat.slug}`} passHref>
                 <span
-                  className={`block p-2 mb-2 bg-gray-700 rounded-lg text-white ${chatSlug === chat.slug ? 'bg-orange-600' : ''}`}
+                title={chat.title}
+                  className={`block p-2 mb-2 bg-gray-700 rounded-lg text-white ${chatSlug === chat.slug ? 'bg-accent-600' : ''}`}
                 >
-                  {chat.title}
+                  {chat.title.slice(0, 15) + '...'}
                 </span>
               </Link>
             )}
             {!editingChatSlug && chatSlug === chat.slug && (
               <div className="absolute right-0 top-0 p-2 space-x-2">
-                <button onClick={(event) => openModal(event, chat.slug)} className="p-1 bg-orange-500 rounded-lg text-white">
+                <button onClick={(event) => openModal(event, chat.slug)} className="p-1 bg-accent-500 rounded-lg text-white">
                   <FiMoreVertical />
                 </button>
               </div>
@@ -179,7 +179,7 @@ export default function Sidebar({ height, chatHistory }) {
       </div>
       {loading && <Loader />}
       {chats.length < totalResults && (
-        // <button onClick={() => setPage(page + 1)} className="w-full p-2 mt-4 bg-orange-600 rounded-lg">
+        // <button onClick={() => setPage(page + 1)} className="w-full p-2 mt-4 bg-accent-600 rounded-lg">
         //   <MdOutlineKeyboardDoubleArrowDown />
         // </button>
         <button onClick={() => setPage(page + 1)} className='inline-flex justify-center '>
@@ -190,21 +190,25 @@ export default function Sidebar({ height, chatHistory }) {
         <div className="fixed top-0 left-0 w-full flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div
             ref={modalRef}
-            className="bg-white p-4 rounded-lg shadow-md"
+            className="bg-white dark:bg-accent-700 p-4 rounded-lg shadow-md"
             style={{ top: modalPosition.y, left: modalPosition.x, position: 'absolute' }}
           >
-            <button onClick={() => handleEdit({ slug: selectedChatSlug, title: chats.find(chat => chat.slug === selectedChatSlug)?.title })} className="flex items-center w-full text-left p-2 hover:bg-gray-200">
+            <button onClick={() => handleEdit({ slug: selectedChatSlug, title: chats.find(chat => chat.slug === selectedChatSlug)?.title })} className="flex items-center w-full text-left p-2 hover:bg-gray-200 dark:hover:bg-accent-800">
               <MdDriveFileRenameOutline className="mr-2" /> Rename
             </button>
-            <button onClick={() => handleDelete(selectedChatSlug)} className="flex items-center w-full text-left p-2 hover:bg-gray-200">
+            <button onClick={() => handleDelete(selectedChatSlug)} className="flex items-center w-full text-left p-2 hover:bg-gray-200 dark:hover:bg-accent-800">
               <MdOutlineDeleteOutline className="mr-2" /> Delete
             </button>
-            <button onClick={() => setModalVisible(false)} className="flex items-center w-full text-left p-2 hover:bg-gray-200">
+            <button onClick={() => setModalVisible(false)} className="flex items-center w-full text-left p-2 hover:bg-gray-200 dark:hover:bg-accent-800">
               <FiX className="mr-2" /> Cancel
             </button>
           </div>
         </div>
       )}
     </div>
+    <button onClick={toggleSidebar} className={`fixed z-20 transition-all ease-in-out duration-200 rounded-full m-4 p-2 bg-accent-50 text-primary mt-2 ${!isSidebarVisible ? 'left-0' : 'left-[45%]'} md:hidden  transition-all ease-in-out duration-200`}>
+      {isSidebarVisible ? <MdOutlineArrowBackIosNew /> : <MdOutlineArrowForwardIos />}
+    </button>
+    </>
   );
 }

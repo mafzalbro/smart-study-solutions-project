@@ -1,28 +1,52 @@
 /* styles/slider.css */
 
-.slick-slider{
+.slick-slider {
   max-width: 75vw !important;
   margin: 0 auto !important;
 }
 .slick-prev,
 .slick-next {
-  color: #ea580c;
+  color: #000000;
 }
 
 .slick-prev:before,
 .slick-next:before {
-  color: #ea580c;
+  color: #000000;
   font-size: 20px;
 }
 
 .slick-dots li button:before {
-  color: #ea580c;
+  color: #000000;
 }
 
 .slick-dots li.slick-active button:before {
-  color: #ea580c;
+  color: #000000;
 }
 
 .slick-slider img {
   border-radius: 15px;
+}
+
+/* Dark mode styles */
+html.dark .slick-prev,
+html.dark .slick-next {
+  color: #ffffff;
+}
+
+html.dark .slick-prev:before,
+html.dark .slick-next:before {
+  color: #ffffff;
+}
+
+html.dark .slick-dots li button:before {
+  color: #ffffff;
+}
+
+html.dark .slick-dots li.slick-active button:before {
+  color: #ffffff;
+}
+
+html.dark .slick-slider img {
+  border-radius: 15px;
+  filter: brightness(0.8); /* Optional: Adjust brightness for images in dark mode */
 }

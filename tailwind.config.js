@@ -10,7 +10,8 @@ module.exports = {
         primary: '#000000',
         secondary: '#ffffff',
         link: '#1e3a8a', // Link color
-        'link-hover': '#2563eb', // Link hover color  
+        'link-hover': '#2563eb', // Link hover color
+        'radial-circles': 'radial-gradient(circle at 20% 20%, rgba(0, 0, 255, 0.05) 0%, rgba(0, 0, 255, 0) 100%), radial-gradient(circle at 80% 80%, rgba(255, 0, 0, 0.05) 0%, rgba(255, 0, 0, 0) 100%), radial-gradient(circle at 50% 50%, rgba(255, 165, 0, 0.05) 0%, rgba(255, 165, 0, 0) 100%), radial-gradient(circle at 30% 70%, rgba(255, 192, 203, 0.05) 0%, rgba(255, 192, 203, 0) 100%)',
         neutral: {
           50: '#f9fafb',
           100: '#f3f4f6',
@@ -59,6 +60,12 @@ module.exports = {
       animation: {
         'spin-fast': 'spin 0.4s linear infinite',
       },
+    },
+  },
+  variants: {
+    extend: {
+      opacity: ['disabled'],
+      cursor: ['disabled'],
     },
   },
   darkMode: 'class',

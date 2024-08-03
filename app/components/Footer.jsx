@@ -1,11 +1,15 @@
+"use client"
+
 import NewsletterSubscription from "./NewsletterSubscription";
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import Link from "next/link";
 import { getPathFromReferer } from "@/app/services/server/server";
+import { usePathname } from "next/navigation";
 
-const Footer = async (props) => {
-  // const pathname = usePathname();
-  const pathname = await getPathFromReferer();
+// const Footer = async () => {
+const Footer = () => {
+  const pathname = usePathname();
+  // const pathname = await getPathFromReferer();
 
   // If the pathname includes "/chat", do not render the footer
   if (pathname?.includes("/chat")) {
@@ -13,15 +17,16 @@ const Footer = async (props) => {
   }
 
   return (
-    <footer className="bg-neutral-800 text-neutral-100 p-6">
+    <footer className="bg-neutral-800 text-neutral-100 p-6 text-center">
       <div className="flex flex-col items-center mt-6 mb-10">
         <NewsletterSubscription />
       </div>
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-6">
           <div>
             <h2 className="text-lg font-semibold mb-4 text-neutral-200">Smart Study Solutions</h2>
             <p className="mb-4 text-neutral-400">Your go-to platform for academic resources and support.</p>
+            <div className="flex items-center justify-center">
             <div className="flex space-x-4 text-neutral-400">
               <Link href="https://facebook.com" className="hover:text-neutral-200">
                 <FaFacebookF />
@@ -35,6 +40,7 @@ const Footer = async (props) => {
               <Link href="https://linkedin.com" className="hover:text-neutral-200">
                 <FaLinkedinIn />
               </Link>
+            </div>
             </div>
           </div>
           <div>

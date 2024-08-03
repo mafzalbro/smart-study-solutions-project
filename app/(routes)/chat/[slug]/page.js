@@ -42,9 +42,9 @@ export default function Chat({ params }) {
   };
 
   return (
-    <div className='flex'>
-      <Sidebar chatHistory={chatHistory} height="[85vh]"/>
-      <div className="flex flex-col h-[85vh] w-3/4">
+    <div className='chat-home flex h-screen'>
+      <Sidebar chatHistory={chatHistory} />
+      <div className="flex flex-col w-full md:w-3/4">
         <ChatHistory chatHistory={chatHistory} pdfUrls={pdfUrls} loading={loading} />
         <MessageInput chatId={slug} addMessageToChatHistory={addMessageToChatHistory} chatHistory={chatHistory}/>
       </div>

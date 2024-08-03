@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CiEdit } from "react-icons/ci";
 
-
 export default function NewChatButton() {
   const [creatingChat, setCreatingChat] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
+
   const createNewChat = async () => {
     setCreatingChat(true);
     try {
@@ -16,18 +16,16 @@ export default function NewChatButton() {
         credentials: 'include',
         cache: 'no-cache',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ title: 'New Chat' })
+        body: JSON.stringify({ title: 'New Chat' }),
       });
       if (res.ok) {
         const newChat = await res.json();
         const slug = newChat.chatOption.slug;
-        // Redirect to the new chat using window.location.href for client-side navigation
-        // window.location.href = `/chat/${slug}`;
-        router.push(`/chat/${slug}`)
+        router.push(`/chat/${slug}`);
       } else {
-        router.push("/login")
+        router.push("/login");
         console.error('Failed to create new chat');
       }
     } catch (error) {
@@ -38,7 +36,11 @@ export default function NewChatButton() {
   };
 
   return (
-    <button onClick={createNewChat} className={`block md:inline-block py-2 px-4 bg-orange-600 text-black rounded-lg shadow-md hover:bg-orange-700 dark:hover:bg-orange-700 dark:bg-orange-600 my-4 ${creatingChat ? 'opacity-50 pointer-events-none' : ''}`} disabled={creatingChat}>
+    <button 
+      onClick={createNewChat} 
+      className={`block md:inline-block py-2 px-4 bg-accent-600 text-secondary rounded-lg shadow-md hover:bg-accent-700 dark:hover:bg-accent-700 dark:bg-accent-600 my-4 ${creatingChat ? 'opacity-50 pointer-events-none' : ''}`} 
+      disabled={creatingChat}
+    >
       {creatingChat ? 'Creating Chat...' : <span className='flex justify-center items-center gap-1'><CiEdit /> <span>Create New Chat</span></span>}
     </button>
   );
