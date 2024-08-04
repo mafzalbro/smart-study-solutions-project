@@ -89,6 +89,8 @@ const deleteResourceBySlug = async (req, res) => {
 const getAllResources = async (req, res) => {
   const { page = 1, limit = 5, sortBy, filterBy, query } = req.query;
 
+  console.log({ page, limit, sortBy, filterBy, query });
+
   let queryOptions = {};
   let sortOptions = {};
 
@@ -102,7 +104,8 @@ const getAllResources = async (req, res) => {
     // Parse filtering options
     if (filterBy) {
       try {
-        const filter = JSON.parse(filterBy);
+        const filter = JSON.parse(decodeURIComponent(filterBy));
+        console.log(filter);
         Object.assign(queryOptions, filter);
       } catch (error) {
         return res.status(400).json({ message: 'Invalid filterBy parameter' });
@@ -132,6 +135,7 @@ const getAllResources = async (req, res) => {
     res.status(500).json({ message: 'Error fetching resources' });
   }
 };
+
 
 // Like a resource by slug
 const likeResource = async (req, res) => {

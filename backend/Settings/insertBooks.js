@@ -6,7 +6,7 @@ const { connect } = require('../src/config/db')
 // Database connection
 connect()
 // Read books data from JSON file
-const booksData = JSON.parse(fs.readFileSync('src/sample data/booksData.json', 'utf-8'));
+const booksData = JSON.parse(fs.readFileSync('backend\Settings\sample data\booksData.json', 'utf-8'));
 
 // Insert books data into the database
 const insertBooks = async () => {

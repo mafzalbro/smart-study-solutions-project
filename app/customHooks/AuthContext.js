@@ -21,6 +21,14 @@ export const AuthProvider = ({ children }) => {
         });
         const data = await res.json();
 
+
+        if (res.status === 401 && !token && !path.includes('/resources') && !path.includes('/forum') && path !== new URL(process.env.NEXT_PUBLIC_FRONTEND_ORIGIN).pathname) {
+          router.push(`${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/login`);
+        } else if (res.status === 200 && (path.includes('/login') || path.includes('/login/google') || path.includes('/register') || path.includes('/register/google'))) {
+          router.push('/');
+        }
+      
+
         if (res.status === 200 && data.auth) {
           setIsLoggedIn(true);
           localStorage.setItem('isLoggedIn', 'true');

@@ -11,6 +11,7 @@ import Skeleton from 'react-loading-skeleton';
 import { ToastContainer } from 'react-toastify';
 
 import 'react-loading-skeleton/dist/skeleton.css';
+import StylishSpan from '../StylishSpan';
 
 const NavBar = () => {
   let { isLoggedIn } = useAuth();
@@ -98,7 +99,7 @@ const NavBar = () => {
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/">
           <h2 className="text-2xl font-bold cursor-pointer">
-            Code <span className="text-accent-500">Innovators</span>
+            Code <StylishSpan>Boss</StylishSpan>
           </h2>
         </Link>
         <div className="flex items-center">

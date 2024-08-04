@@ -11,17 +11,9 @@ export default function NewChatButton() {
   const createNewChat = async () => {
     setCreatingChat(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/create`, {
-        method: 'POST',
-        credentials: 'include',
-        cache: 'no-cache',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ title: 'New Chat' }),
-      });
-      if (res.ok) {
-        const newChat = await res.json();
+      const newChat = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/create`, 'POST', { title: 'New Chat' });
+      if (newChat) {
+        // const newChat = await res.json();
         const slug = newChat.chatOption.slug;
         router.push(`/chat/${slug}`);
       } else {

@@ -5,7 +5,7 @@ const { paginateResultsForArray } = require('../utils/pagination');
 const { getAIMessage } = require('../utils/getAIMessage');
 
 const createChatOption = async (req, res) => {
-  const { title } = req.body;
+  const { title, pdfUrl } = req.body;
 
   try {
     const user = req.user;
@@ -24,8 +24,23 @@ const createChatOption = async (req, res) => {
       });
     }
 
-    // Create a new chat option if no empty one exists
+    // If pdfUrl is provided, check if there is an existing chat option with the same PDF URL
+    if (pdfUrl) {
+      let existingChatOptionWithPdfUrl = user.chatOptions.find(option => option.pdfUrls && option.pdfUrls.includes(pdfUrl));
+
+      if (existingChatOptionWithPdfUrl) {
+        return res.status(200).json({
+          message: 'A chat option with the same PDF URL already exists.',
+          chatOption: existingChatOptionWithPdfUrl
+        });
+      }
+    }
+
+    // Create a new chat option
     const newChatOption = { title, chatHistory: [] };
+    if (pdfUrl) {
+      newChatOption.pdfUrls = [pdfUrl];
+    }
     user.chatOptions.push(newChatOption);
     await user.save();
 
@@ -41,6 +56,7 @@ const createChatOption = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 const getAllChatOptions = async (req, res) => {
   const { page = 1, limit = 5, sortBy, filterBy, query } = req.query;
@@ -147,7 +163,7 @@ const chatWithPdfBySlug = async (req, res) => {
       return res.status(401).send('<p>Please log in to continue.</p>');
     }
 
-    const user = await User.findById(userId);
+    let user = await User.findById(userId);
     if (!user) {
       return res.status(404).send('<p>User not found. You must be logged in.</p>');
     }
@@ -163,77 +179,80 @@ const chatWithPdfBySlug = async (req, res) => {
       chatOption = user.chatOptions[0];
     }
 
-    // Check for API key
     const apiKey = user.apiKey;
     if (!apiKey) {
-      // If no API key, redirect to /chat/test in a new tab
       return res.send('<p>Please <a href="/chat/test" style="color: lightblue;" target="_blank">Enter API Key</a></p>');
     }
 
-    // Update chatOption with title and pdfUrls
     chatOption.title = title;
     chatOption.pdfUrls = pdfUrl.includes("http") ? Array.from(new Set([...chatOption.pdfUrls, pdfUrl])) : Array.from(new Set([...chatOption.pdfUrls]));
 
     let pdfText = '';
-
-    // If PDF URL is provided, extract text and save it to chatOption
     if (pdfUrl) {
       chatOption.pdfText = '';
       pdfText = await extractTextFromPdf(pdfUrl);
       chatOption.pdfText = pdfText;
     } else if (chatOption.pdfText) {
-      // Use existing pdfText if no new PDF URL is provided
       pdfText = chatOption.pdfText;
     }
 
     const context = [...chatOption.chatHistory] || [];
-
     let initialMessage;
-    
-    // If context has entries, update the first user query with pdfText
+
     if (context.length > 0 && pdfText) {
       context[0].user_query += ` -------- (PDF Document Text: ${pdfText}) -----------`;
-    }else if(pdfText){
+    } else if (pdfText) {
       initialMessage = `${message} -------- (PDF Document Text: ${pdfText}) -----------`;
     }
 
     let responseStream;
-
-    if(initialMessage){
-      // Generate response with updated context or just message if context is empty
+    if (initialMessage) {
       responseStream = generateChatResponse(initialMessage, context, apiKey);
-    } else{
+    } else {
       responseStream = generateChatResponse(message, context, apiKey);
     }
-      
-    // Set headers for streaming response
+
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.setHeader('Transfer-Encoding', 'chunked');
 
-    // Send streaming response
     let fullResponse = '';
-
     for await (const chunkText of responseStream) {
       fullResponse += chunkText;
-      res.write(chunkText); // Stream chunk to client
+      res.write(chunkText);
     }
 
-    // Add new chat entry to chatHistory
     chatOption.chatHistory.push({ user_query: message, model_response: fullResponse });
 
-    // Save chatOption back to user's chatOptions array
-    await user.save();
+    // Attempt to save with retry logic if needed
+    let saveAttempt = 0;
+    while (saveAttempt < 3) {
+      try {
+        await user.save();
+        break; // Exit loop on success
+      } catch (error) {
+        if (error.name === 'VersionError') {
+          // Re-fetch user and retry
+          user = await User.findById(userId);
+          chatOption = user.chatOptions.find(option => option.slug === slug) || user.chatOptions[0];
+          saveAttempt++;
+          if (saveAttempt >= 3) {
+            throw new Error('Failed to save after multiple attempts.');
+          }
+        } else {
+          throw error;
+        }
+      }
+    }
 
-    res.end(); // End the streaming response
+    res.end();
   } catch (error) {
     console.error('Error in chatWithPdfBySlug:', error);
-
     if (!res.headersSent) {
-      // Send HTML error response
       res.status(500).send('<p>Internal server error</p>');
     }
   }
 };
+
 
 
 

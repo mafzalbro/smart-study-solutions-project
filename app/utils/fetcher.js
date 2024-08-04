@@ -20,14 +20,17 @@ export const fetcher = async (url, method = 'GET', body = null, headers = {}) =>
   }
 
   const response = await fetch(url, options);
-
-  if (response.status === 401 && !token && !path.includes('/resources') && path !== new URL(process.env.NEXT_PUBLIC_FRONTEND_ORIGIN).pathname) {
+  
+  if (response.status === 401 && !token && !path.includes('/resources') && path !== new URL(processnv.NEXT_PUBLIC_FRONTEND_ORIGIN).pathname) {
     router.replace(`${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/login`);
   } else if (response.status === 200 && (path.includes('/login') || path.includes('/login/google') || path.includes('/register') || path.includes('/register/google'))) {
     router.replace('/');
   }
-
+  
   const data = await response.json();
+
+  console.log({data, status: response.status})
+
   if (!response.ok) {
     // return response.status
     throw new Error(data.message || 'Something went wrong');

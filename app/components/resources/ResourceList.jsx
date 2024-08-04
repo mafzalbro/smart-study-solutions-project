@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Spinner from "./Spinner";
+import Spinner from "../Spinner";
 import ResourceCard from "./ResourceCard";
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import { ToastContainer, toast } from 'react-toastify';
 import { fetcher } from '@/app/utils/fetcher';
 import TextInputField from '@/app/components/TextInputField';
 import 'react-toastify/dist/ReactToastify.css';
-import StylishTitle from "./StylishTitle";
+import StylishTitle from "../StylishTitle";
 
 export default function ResourcesList() {
   const [resources, setResources] = useState([]);

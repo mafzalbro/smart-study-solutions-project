@@ -124,7 +124,7 @@ const QuestionPage = ({ params }) => {
     setAlertMessage({ message: '', type: 'info' });
   };
 
-  if (!question) return <Skeleton count={5} height={400}/>;
+  if (!question) return <Skeleton height={1000} width="100%"/>;
   return (
     <section className="p-10 dark:bg-neutral-900 dark:text-white">
       <LinkButton text="&larr; &nbsp;Back to Forum" link="/forum" />
@@ -220,7 +220,7 @@ const QuestionPage = ({ params }) => {
                   </div>
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Answered at: {new Date(answer?.answeredAt).toLocaleString()}
+                  Answered at: {new Date(answer?.createdAt).toLocaleString()}
                 </p>
               </div>
             ))

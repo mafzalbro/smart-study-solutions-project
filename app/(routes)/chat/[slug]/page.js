@@ -5,6 +5,7 @@ import ChatHistory from '../../../components/chat/ChatHistory';
 import MessageInput from '../../../components/chat/MessageInput';
 import Sidebar from '../../../components/chat/Sidebar';
 import Loader from '../../../components/chat/Loader';
+import { fetcher } from '@/app/utils/fetcher';
 
 export default function Chat({ params }) {
   const { slug } = params;
@@ -18,13 +19,13 @@ export default function Chat({ params }) {
 
       setLoading(true);
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/${slug}`, {
-          credentials: 'include'
-        });
-        if (!res.ok) {
+        const data = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/${slug}`);
+        console.log({data});
+        
+        if (!data) {
           throw new Error('Failed to fetch chat data');
         }
-        const data = await res.json();
+        // const data = await res.json();
         setChatHistory(data.chatHistory);
         setPdfUrls(data.pdfUrls);
       } catch (error) {

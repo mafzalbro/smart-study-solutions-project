@@ -17,6 +17,7 @@ export const fetchData = async (url, options) => {
       accumulatedChunks += chunk;
     }
 
+    console.log({accumulatedChunks})
     return accumulatedChunks;
   } catch (error) {
     console.error('Error fetching data:', error);

@@ -11,6 +11,7 @@ import TextInputField from '@/app/components/TextInputField';
 import { fetcher } from '@/app/utils/fetcher';
 import Sidebar from '@/app/components/forum/MainSidebar';
 import StylishTitle from '@/app/components/StylishTitle';
+import { FaQuestionCircle } from 'react-icons/fa';
 
 const ForumPage = () => {
   const [questions, setQuestions] = useState([]);
@@ -117,7 +118,14 @@ const ForumPage = () => {
             Error fetching questions: {error.message}
           </p>
         ) : questions?.length === 0 ? (
-          <p className="text-center text-gray-500 mt-5">No questions found.</p>
+          <div className='md:space-x-6 flex flex-col md:flex-row'>
+          <Sidebar />
+              <div className="flex flex-col items-center justify-start mt-5 w-full">
+              <FaQuestionCircle className="text-gray-500 text-4xl mb-3" />
+              <p className="text-center text-gray-500">No questions found.</p>
+            </div>
+          </div>
+
         ) : (
           <div className='md:space-x-6 flex flex-col md:flex-row'>
             <Sidebar />
