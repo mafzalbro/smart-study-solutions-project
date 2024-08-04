@@ -29,6 +29,7 @@ export const fetcher = async (url, method = 'GET', body = null, headers = {}) =>
 
   const data = await response.json();
   if (!response.ok) {
+    // return response.status
     throw new Error(data.message || 'Something went wrong');
   }
 

@@ -80,12 +80,12 @@ const NavBar = () => {
             <Skeleton width={80} height={30} />
             <Skeleton width={80} height={30} />
             <Skeleton width={80} height={30} />
-            <Skeleton circle={true} height={30} width={30} />
             <Skeleton circle={true} height={40} width={40} />
+            <Skeleton circle={true} height={30} width={30} />
           </div>
           <div className="md:hidden flex items-center gap-4">
-            <Skeleton circle={true} height={30} width={30} />
             <Skeleton circle={true} height={40} width={40} />
+            <Skeleton circle={true} height={30} width={30} />
             <Skeleton height={20} width={30} />
           </div>
         </div>

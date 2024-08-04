@@ -1,17 +1,16 @@
-// components/forum/QuestionModal.js
 "use client";
 
 import React from 'react';
 
 const QuestionModal = ({ onClose, children }) => {
   return (
-    <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-[#FFDECC] p-8 w-11/12 md:w-3/4 lg:w-1/2 xl:w-2/3 h-3/4 md:h-3/3 lg:h-2/2 rounded-lg shadow-lg flex justify-center items-center overflow-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+      <div className="p-8 w-full md:w-3/4 lg:w-1/2 xl:w-2/3 h-auto md:h-auto lg:h-auto rounded-lg shadow-lg flex flex-col items-center overflow-auto">
         <div className="absolute top-4 right-4">
-          <button onClick={onClose} className="m-10 text-gray-300 hover:text-gray-600 focus:outline-none">
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-200 focus:outline-none">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 inline-block"
+              className="h-6 w-6"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
