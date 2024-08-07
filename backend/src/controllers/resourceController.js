@@ -7,13 +7,17 @@ const { paginateResults } = require('../utils/pagination');
 const recommendResource = async (req, res) => {
   try {
     const user = req.user;
-    const recommendedResources = await recommendResources(user);
+    const { resourceSlug, keyword } = req.query;  // Extract resourceSlug and keyword from query parameters
+    
+    const recommendedResources = await recommendResources(user, resourceSlug, keyword);
     res.status(200).json(recommendedResources);
   } catch (error) {
     console.error('Error recommending resources:', error);
     res.status(500).json({ message: 'Error recommending resources' });
   }
 };
+
+
 
 // Get a resource by slug
 const getResourceBySlug = async (req, res) => {
@@ -89,7 +93,7 @@ const deleteResourceBySlug = async (req, res) => {
 const getAllResources = async (req, res) => {
   const { page = 1, limit = 5, sortBy, filterBy, query } = req.query;
 
-  console.log({ page, limit, sortBy, filterBy, query });
+  // console.log({ page, limit, sortBy, filterBy, query });
 
   let queryOptions = {};
   let sortOptions = {};
@@ -122,6 +126,7 @@ const getAllResources = async (req, res) => {
       ];
     }
 
+    // console.log(await Resource.find())
     // Fetch results with pagination and sorting
     const results = await paginateResults(
       Resource.find(queryOptions).sort(sortOptions),

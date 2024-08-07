@@ -136,12 +136,14 @@ const getAllChatTitles = async (req, res) => {
     // Sorting by updatedAt descending (most recently updated first)
     filteredChatOptions.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
-    // Extracting titles with slugs
+    // Extracting titles with slugs and PDF URLs
     const titles = filteredChatOptions.map(option => ({
       slug: option.slug,
       title: option.title,
       createdAt: option.createdAt,
-      updatedAt: option.updatedAt
+      updatedAt: option.updatedAt,
+      // pdfUrls: option.pdfUrls.length > 0 ? option.pdfUrls[0] : null
+      pdfUrls: option.pdfUrls.length > 0 ? option.pdfUrls : []
     }));
 
     // Pagination
@@ -181,7 +183,7 @@ const chatWithPdfBySlug = async (req, res) => {
 
     const apiKey = user.apiKey;
     if (!apiKey) {
-      return res.send('<p>Please <a href="/chat/test" style="color: lightblue;" target="_blank">Enter API Key</a></p>');
+      return res.send('<p>Please <a href="/chat/test-api" style="color: lightblue;" target="_blank">Enter API Key</a></p>');
     }
 
     chatOption.title = title;
@@ -260,6 +262,7 @@ const updateChatOption = async (req, res) => {
   const { slug } = req.params;
   const { title, user_query, model_response } = req.body;
 
+  console.log({title})
   try {
     const user = req.user;
 

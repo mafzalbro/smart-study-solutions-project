@@ -9,6 +9,8 @@ import { FaThumbsUp, FaThumbsDown, FaStar } from 'react-icons/fa';
 import { fetcher } from '@/app/utils/fetcher';
 import StylishTitle from '@/app/components/StylishTitle';
 import Skeleton from 'react-loading-skeleton';
+import Sidebar from '@/app/components/resources/Sidebar';
+
 
 export default function ResourcePage({ params }) {
   const [resource, setResource] = useState(null);
@@ -39,7 +41,7 @@ export default function ResourcePage({ params }) {
         setRatingCount(data.ratingCount);
 
         // Fetch related resources
-        const relatedRes = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/recommend`);
+        const relatedRes = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/recommend?resourceSlug=${slug}`);
         if (relatedRes) {
           setRelatedResources(relatedRes);
         }
@@ -114,8 +116,10 @@ export default function ResourcePage({ params }) {
   }
 
   return (
-    <div className="resource-item container mx-auto w-[80vw] sm:w-[95vw] mb-10">
-      <div className='text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 shadow-md bg-clip-border rounded-xl mt-10 p-10'>
+    <div className="resource-item container mx-auto w-[95vw] md:w-[90vw] mb-10">
+      <section className='flex gap-8 flex-col md:flex-row'>
+
+      <main className='text-neutral-700 md:w-[66%] dark:text-neutral-300 bg-secondary dark:bg-neutral-800 shadow-md bg-clip-border rounded-xl mt-10 p-10'>
         <Link href="/resources">
           <span className="block md:inline-block py-2 px-4 bg-accent-600 text-white rounded-lg shadow-sm hover:bg-accent-700 dark:bg-accent-600 dark:hover:bg-accent-700">
             &larr; &nbsp; Back to Resources
@@ -123,10 +127,10 @@ export default function ResourcePage({ params }) {
         </Link>
         <div className='flex space-x-4 mt-10'>
           <p className="text-neutral-700 dark:text-neutral-300 mb-2"><strong>Type:</strong>
-          <Link href={`/resources/type/${resource?.type}`} className='text-accent-500 hover:text-accent-600 transition-all duration-100 capitalize'> {resource?.type} </Link>
+          <Link href={`/resources/type/${resource?.type?.split(' ').join('-')}`} className='text-accent-500 hover:text-accent-600 transition-all duration-100 capitalize'> {resource?.type} </Link>
           </p>
 
-          <p className="text-neutral-700 dark:text-neutral-300 mb-2"><strong>Tags:</strong> {resource?.tags.map((tag, i) => <Link key={i} href={`/resources/tag/${tag}`} className='text-accent-500 hover:text-accent-600 transition-all duration-100 capitalize' tabIndex={1}>{tag}{resource?.tags[resource?.tags.length - 1] !== tag && ','} </Link>)}</p>
+          <p className="text-neutral-700 dark:text-neutral-300 mb-2"><strong>Tags:</strong> {resource?.tags.map((tag, i) => <Link key={i} href={`/resources/tag/${tag?.split(' ').join('-')}`} className='text-accent-500 hover:text-accent-600 transition-all duration-100 capitalize' tabIndex={1}>{tag}{resource?.tags[resource?.tags.length - 1] !== tag && ','} </Link>)}</p>
 
           
           <p className="text-neutral-700 dark:text-neutral-300
@@ -174,7 +178,9 @@ mb-2"><strong>Published At:</strong> {new Date(resource?.createdAt).toLocaleDate
         </div>
       </div>
     </div>
-  </div>
+  </main>
+     <Sidebar />
+  </section>
   {relatedResources.length > 0 && (
     <div className="mt-8">
       <StylishTitle colored='Related Resources' tagName='h2' fontSize='3xl' className='text-center'/>

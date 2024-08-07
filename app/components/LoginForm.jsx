@@ -60,7 +60,8 @@ const LoginForm = () => {
       setPassword('');
       toast.success(userData.message);
       if (userData.message.includes('successfully')) {
-        router.push('/');
+        // router.push('/');
+        router.back()
       }
     } catch (error) {
       toast.error('Login failed');

@@ -1,7 +1,7 @@
 import { Poppins, Outfit } from 'next/font/google';
 import NavBar from '@/app/components/navbar/NavBar';
 import { AuthProvider } from '@/app/customHooks/AuthContext';
-import { AppStateProvider } from '@/app/customHooks/AppStateProvider'; // Ensure this path is correct
+// import { AppStateProvider } from '@/app/customHooks/AppStateProvider'; // Ensure this path is correct
 import ProgressBar from '@/app/customHooks/ProgressBar'; // Import the provider
 import './globals.css';
 import Footer from './components/Footer';
@@ -18,15 +18,15 @@ const RootLayout = ({ children }) => {
   return (
     <html lang="en">
       <body className={`${font.className}`}>
+      <ToastContainer stacked containerId={font.className}/>
         <AuthProvider>
-          <AppStateProvider>
+          {/* <AppStateProvider> */}
             <ProgressBar>
               <NavBar />
               {children}
             </ProgressBar>
-          </AppStateProvider>
+          {/* </AppStateProvider> */}
         </AuthProvider>
-        <ToastContainer stacked />
         <Footer />
       </body>
     </html>

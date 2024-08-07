@@ -45,6 +45,11 @@ html.dark body {
   scroll-behavior: smooth;
 }
 
+::selection{
+  background-color: aqua;
+  color: black;
+}
+
 .relative.flex.flex-col.text-gray-700.bg-white.shadow-md.bg-clip-border.rounded-xl {
   width: 400px;
 }

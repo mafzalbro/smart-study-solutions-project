@@ -2,7 +2,9 @@
 "use client"
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { CiEdit } from "react-icons/ci";
+// import { CiEdit, } from "react-icons/ci";
+import { fetcher } from '@/app/utils/fetcher';
+import { GrAdd } from 'react-icons/gr';
 
 export default function NewChatButton() {
   const [creatingChat, setCreatingChat] = useState(false);
@@ -33,7 +35,7 @@ export default function NewChatButton() {
       className={`block md:inline-block py-2 px-4 bg-accent-600 text-secondary rounded-lg shadow-md hover:bg-accent-700 dark:hover:bg-accent-700 dark:bg-accent-600 my-4 ${creatingChat ? 'opacity-50 pointer-events-none' : ''}`} 
       disabled={creatingChat}
     >
-      {creatingChat ? 'Creating Chat...' : <span className='flex justify-center items-center gap-1'><CiEdit /> <span>Create New Chat</span></span>}
+      {creatingChat ? 'Adding...' : <span className='flex justify-center items-center gap-2'><GrAdd /> <span> Add New</span></span>}
     </button>
   );
 }

@@ -4,8 +4,8 @@ import { ToastContainer } from 'react-toastify'
 const page = () => {
     return (
     <>
+        {/* <ToastContainer /> */}
         <LoginForm />
-        <ToastContainer />
 
     </>
   )

@@ -1,6 +1,6 @@
 "use client"
 
-import Sidebar from './chat/Sidebar';
+import Sidebar from './chat/sidebar/Sidebar';
 import { useEffect, useState } from 'react';
 import Loader from './LoadingSpinner';
 

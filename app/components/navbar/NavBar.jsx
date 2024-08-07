@@ -105,7 +105,7 @@ const NavBar = () => {
         <div className="flex items-center">
           <ul
             className={`${
-              isMobileMenuOpen ? 'block z-10' : 'hidden'
+              isMobileMenuOpen ? 'block z-50' : 'hidden'
             } md:flex md:space-x-6 p-6 md:p-0 md:items-center absolute md:static bg-secondary dark:bg-neutral-800 top-16 left-0 w-full md:w-auto shadow-lg md:shadow-none text-center`}
           >
             <li>
@@ -161,7 +161,7 @@ const NavBar = () => {
                 <FaUserCircle size={40} />
               </div>
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 z-10">
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 z-50">
                   <Link href="/dashboard" passHref>
                     <span className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                       Dashboard

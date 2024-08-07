@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import ChatHistory from '../../../components/chat/ChatHistory';
 import MessageInput from '../../../components/chat/MessageInput';
-import Sidebar from '../../../components/chat/Sidebar';
+import Sidebar from '../../../components/chat/sidebar/Sidebar';
 import Loader from '../../../components/chat/Loader';
 import { fetcher } from '@/app/utils/fetcher';
 
@@ -44,7 +44,7 @@ export default function Chat({ params }) {
 
   return (
     <div className='chat-home flex h-screen'>
-      <Sidebar chatHistory={chatHistory} />
+      <Sidebar chatHistory={chatHistory} slug={slug}/>
       <div className="flex flex-col w-full md:w-3/4">
         <ChatHistory chatHistory={chatHistory} pdfUrls={pdfUrls} loading={loading} />
         <MessageInput chatId={slug} addMessageToChatHistory={addMessageToChatHistory} chatHistory={chatHistory}/>

@@ -7,7 +7,8 @@ import Image from 'next/image';
 import randomInteger from '@/app/utils/randomNo';
 import useAlert from '@/app/customHooks/useAlert';
 import TextInputField from '@/app/components/TextInputField';
-
+import { IoSendSharp } from "react-icons/io5";
+import { TbFileTypePdf } from "react-icons/tb";
 
 const messages = [
   'Waiting for response...',
@@ -60,7 +61,7 @@ export default function MessageInput({ chatId, addMessageToChatHistory, chatHist
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [isSending]); // Trigger when isSending changes
+  }, [isSending, chatHistory]); // Trigger when isSending changes
 
   const isValidPdfUrl = (url) => {
     try {
@@ -143,12 +144,12 @@ export default function MessageInput({ chatId, addMessageToChatHistory, chatHist
   return (
     <>
     {isSending && (
-      <Modal isOpen={isSending} onClose={() => setIsSending(false)}>
-        <div className="w-full flex items-center justify-center">
-          <SyncLoader color="#6B7280" size={8} />
-          <Image src="https://cdn.svgator.com/images/2023/03/simple-svg-animated-loaders.svg" width={100} height={100} alt="loader" />
+      <Modal isOpen={isSending} onClose={() => setIsSending(false)} className="bg-primary bg-opacity-50">
+        <div className="w-full flex items-center justify-center gap-5">
+          <SyncLoader color="white" size={12} />
+          {/* <Image src="https://cdn.svgator.com/images/2023/03/simple-svg-animated-loaders.svg" width={100} height={100} alt="loader" /> */}
         </div>
-        <div className="text-neutral-500 text-center mt-4">
+        <div className="text-neutral-300 text-center mt-4">
           {messages[waitingMessageIndex]}
         </div>
       </Modal>
@@ -182,7 +183,8 @@ export default function MessageInput({ chatId, addMessageToChatHistory, chatHist
           onClick={handlePdfButtonClick}
           className="p-2 bg-accent-100 dark:bg-neutral-700 rounded-lg dark:text-secondary dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-accent-600"
         >
-          Add PDF
+          {/* Add PDF */}
+          <TbFileTypePdf />
         </button>
         <button
           onClick={sendMessage}
@@ -191,7 +193,8 @@ export default function MessageInput({ chatId, addMessageToChatHistory, chatHist
             message.trim() === '' || isSending ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >
-          {isSending ? <SyncLoader color="#ffffff" size={4} /> : 'Send'}
+          
+          {isSending ? <SyncLoader color="#ffffff" size={4} /> : <IoSendSharp />}
         </button>
       </div>
     </div>
