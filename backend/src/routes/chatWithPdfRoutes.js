@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createChatOption, updateChatOption, removeChatOption, getChatOptionBySlug, chatWithPdfBySlug, getAllChatOptions, getAllChatTitles, setupAPIKey, fetchAPIKey } = require('../controllers/chatWithPdfController');
+const { createChatOption, updateChatOption, removeChatOption, getChatOptionBySlug, chatWithPdfBySlug, getAllChatOptions, getChatTitles, getPdfTitles, setupAPIKey, fetchAPIKey } = require('../controllers/chatWithPdfController');
 const { auth } = require('../middlewares/auth');
 
 // Get all chats
@@ -10,7 +10,10 @@ router.get('/', auth, getAllChatOptions);
 router.post('/create', auth, createChatOption);
 
 // Get all chat titles
-router.get('/titles', auth, getAllChatTitles);
+router.get('/titles', auth, getChatTitles);
+
+// Get all pdf chat titles
+router.get('/pdf-titles', auth, getPdfTitles);
 
 // get api key
 router.get('/getApi', auth, fetchAPIKey);

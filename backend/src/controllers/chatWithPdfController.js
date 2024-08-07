@@ -106,7 +106,64 @@ const getAllChatOptions = async (req, res) => {
   }
 };
 
-const getAllChatTitles = async (req, res) => {
+
+const getChatTitles = async (req, res) => {
+  const { page = 1, limit = 5, sortBy, filterBy, query } = req.query;
+  let filteredChatOptions = req.user.chatOptions;
+
+  try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found. Please log in to continue.' });
+    }
+
+    // Filtering
+    if (filterBy) {
+      const filter = JSON.parse(filterBy);
+      filteredChatOptions = filteredChatOptions.filter(option => {
+        return Object.keys(filter).every(key => {
+          return option[key] === filter[key];
+        });
+      });
+    }
+
+    // Searching
+    if (query) {
+      const searchQuery = new RegExp(query, 'i');
+      filteredChatOptions = filteredChatOptions.filter(option => searchQuery.test(option.title));
+    }
+
+    // Sorting by updatedAt descending (most recently updated first)
+    filteredChatOptions.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+    // Extracting titles with slugs and excluding PDF URLs
+    const titles = filteredChatOptions
+      .filter(option => option.pdfUrls.length === 0)
+      .map(option => ({
+        slug: option.slug,
+        title: option.title,
+        createdAt: option.createdAt,
+        updatedAt: option.updatedAt,
+      }));
+
+    // Count total chats
+    const totalChats = filteredChatOptions.filter(option => option.pdfUrls.length === 0).length;
+
+    // Pagination
+    const results = paginateResultsForArray(titles, parseInt(page), parseInt(limit));
+    
+    res.status(200).json({
+      ...results,
+      totalChats
+    });
+  } catch (error) {
+    console.error('Error fetching chat titles:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const getPdfTitles = async (req, res) => {
   const { page = 1, limit = 5, sortBy, filterBy, query } = req.query;
   let filteredChatOptions = req.user.chatOptions;
 
@@ -137,23 +194,32 @@ const getAllChatTitles = async (req, res) => {
     filteredChatOptions.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
     // Extracting titles with slugs and PDF URLs
-    const titles = filteredChatOptions.map(option => ({
-      slug: option.slug,
-      title: option.title,
-      createdAt: option.createdAt,
-      updatedAt: option.updatedAt,
-      // pdfUrls: option.pdfUrls.length > 0 ? option.pdfUrls[0] : null
-      pdfUrls: option.pdfUrls.length > 0 ? option.pdfUrls : []
-    }));
+    const titles = filteredChatOptions
+      .filter(option => option.pdfUrls.length > 0)
+      .map(option => ({
+        slug: option.slug,
+        title: option.title,
+        createdAt: option.createdAt,
+        updatedAt: option.updatedAt,
+        pdfUrls: option.pdfUrls
+      }));
+
+    // Count total PDFs
+    const totalPDFs = filteredChatOptions.filter(option => option.pdfUrls.length > 0).length;
 
     // Pagination
     const results = paginateResultsForArray(titles, parseInt(page), parseInt(limit));
-    res.status(200).json(results);
+    
+    res.status(200).json({
+      ...results,
+      totalPDFs
+    });
   } catch (error) {
     console.error('Error fetching chat titles:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 const chatWithPdfBySlug = async (req, res) => {
   try {
@@ -198,11 +264,11 @@ const chatWithPdfBySlug = async (req, res) => {
       pdfText = chatOption.pdfText;
     }
 
-    const context = [...chatOption.chatHistory] || [];
+    const context = JSON.parse(JSON.stringify(chatOption.chatHistory)) || [];
     let initialMessage;
 
     if (context.length > 0 && pdfText) {
-      context[0].user_query += ` -------- (PDF Document Text: ${pdfText}) -----------`;
+      context[0].user_query += ` ___-------- (PDF Document Text: ${pdfText}) -----------`;
     } else if (pdfText) {
       initialMessage = `${message} -------- (PDF Document Text: ${pdfText}) -----------`;
     }
@@ -254,8 +320,6 @@ const chatWithPdfBySlug = async (req, res) => {
     }
   }
 };
-
-
 
 
 const updateChatOption = async (req, res) => {
@@ -384,4 +448,4 @@ const fetchAPIKey = async (req, res) => {
   }
 };
 
-module.exports = { createChatOption, updateChatOption, removeChatOption, getChatOptionBySlug, chatWithPdfBySlug, getAllChatOptions, getAllChatTitles, setupAPIKey, fetchAPIKey };
+module.exports = { createChatOption, updateChatOption, removeChatOption, getChatOptionBySlug, chatWithPdfBySlug, getAllChatOptions, getChatTitles, getPdfTitles, setupAPIKey, fetchAPIKey };
