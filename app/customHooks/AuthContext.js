@@ -23,11 +23,10 @@ export const AuthProvider = ({ children }) => {
 
 
         if (res.status === 401 && !token && !path.includes('/resources') && !path.includes('/register') && !path.includes('/forgot-password') && !path.includes('/forum') && path !== new URL(process.env.NEXT_PUBLIC_FRONTEND_ORIGIN).pathname) {
+
           router.push(`${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/login`);
-        } else if (res.status === 200 && (path.includes('/login') || path.includes('/login/google') || path.includes('/register') || path.includes('/register/google'))) {
-          router.push('/');
-        }
-      
+
+        } else if (res.status === 200 && (path.includes('/login') || path.includes('/login/google') || path.includes('/register') || path.includes('/register/google') || path.includes('/register/google') || path.includes('/forgot-password') || path.includes('/verify-password')))   
 
         if (res.status === 200 && data.auth) {
           setIsLoggedIn(true);

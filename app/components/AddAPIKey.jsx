@@ -2,20 +2,22 @@
 
 import { useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
-import { TbExternalLink, TbEye, TbEyeEdit, TbEyeOff } from "react-icons/tb";
+import { TbExternalLink, TbEye, TbEyeOff, TbEdit } from "react-icons/tb";
 import 'react-toastify/dist/ReactToastify.css';
 import Spinner from './Spinner';
 import { getApiKey, addApiKey } from '@/app/services/api';
-import TextInputField from './TextInputField';
+import TextInputField from './chat/TextInputField';
 import SubmitButton from './SubmitButton';
 import WhiteContainer from './WhiteContainer';
 import { useRouter } from 'next/navigation';
 import LinkButton from './LinkButton';
 import { FaArrowLeft } from 'react-icons/fa';
+import { MdClose } from 'react-icons/md';
 
 const AddAPIKey = () => {
   const router = useRouter();
   const [apiKey, setApiKey] = useState('');
+  const [originalApiKey, setOriginalApiKey] = useState('');
   const [valid, setValid] = useState(null);
   const [initialLoad, setInitialLoad] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -28,6 +30,7 @@ const AddAPIKey = () => {
         const response = await getApiKey();
         if (response.apiKey) {
           setApiKey(response.apiKey);
+          setOriginalApiKey(response.apiKey);
           toast.success('API Key is valid.');
           setValid(true);
         } else {
@@ -63,6 +66,7 @@ const AddAPIKey = () => {
         toast.success('API Key is valid.');
         setValid(true);
         setIsChangingApiKey(false);
+        setOriginalApiKey(apiKey);
       } else {
         toast.error('API Key is invalid.');
         setValid(false);
@@ -84,33 +88,45 @@ const AddAPIKey = () => {
     setApiKey('');
   };
 
+  const handleCancelChange = () => {
+    setApiKey(originalApiKey);
+    setIsChangingApiKey(false);
+  };
+
   return (
-    <WhiteContainer>
+    <WhiteContainer className="relative">
       <h1 className="text-2xl font-bold mb-6 text-primary dark:text-secondary">API Key Validator</h1>
       <LinkButton text='See Chat' link='/chat' icon={<FaArrowLeft />} />
       {initialLoad ? (
         <Spinner />
       ) : valid && apiKey && !isChangingApiKey ? (
-        <div className="mt-4 p-4 relative bg-accent-50 text-accent-700 rounded-lg truncate">
+        <div className="mt-4 p-4 relative bg-accent-50 text-accent-700 rounded-lg truncate transition-opacity duration-1000 opacity-100">
           {showApiKey ? apiKey : '•'.repeat(apiKey.length)}
           <button
             onClick={toggleShowApiKey}
-            className="ml-2 absolute right-2 top-1/2 transform -translate-y-1/2 text-link hover:text-link-hover"
+            className="ml-2 absolute right-2 top-1/2 transform -translate-y-1/2 text-link hover:text-link-hover transition-opacity duration-1000"
             style={{ fontSize: '1.5rem' }}
           >
             {showApiKey ? <TbEyeOff /> : <TbEye />}
           </button>
           <button
             onClick={handleChangeApiKey}
-            className="ml-4 absolute right-10 top-1/2 transform -translate-y-1/2 text-link hover:text-link-hover"
+            className="ml-4 absolute right-10 top-1/2 transform -translate-y-1/2 text-link hover:text-link-hover transition-opacity duration-1000"
             style={{ fontSize: '1rem' }}
           >
-            {/* Change API Key */}
-            <TbEyeEdit fontSize={22}/>
+            <TbEdit fontSize={22} title='Edit API'/>
           </button>
         </div>
       ) : (
         <>
+          {isChangingApiKey && (
+            <button
+              onClick={handleCancelChange}
+              className="absolute top-10 right-10 transition-opacity duration-1000"
+            >
+              <MdClose size='20'/>
+            </button>
+          )}
           <TextInputField
             value={apiKey}
             onChange={handleApiKeyChange}
@@ -120,19 +136,21 @@ const AddAPIKey = () => {
             showIcon={<TbEye />}
             hideIcon={<TbEyeOff />}
             onToggleShow={toggleShowApiKey}
+            className="transition-opacity duration-1000"
           />
           <SubmitButton
             onClick={handleSubmit}
             disabled={apiKey.trim().length === 0}
             processing={processing}
+            className="transition-opacity duration-1000"
           />
-          <p className="text-primary dark:text-secondary mt-6 text-sm sm:text-base flex gap-1">
+          <p className="text-primary dark:text-secondary mt-6 text-sm sm:text-base flex gap-1 transition-opacity duration-1000">
             Visit and get a free API key{' '}
             <a
               href="https://aistudio.google.com/app/apikey"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-link hover:text-link-hover underline flex gap-2"
+              className="text-link hover:text-link-hover underline flex gap-2 transition-opacity duration-1000"
             >
               Google AI Studio <TbExternalLink />
             </a>

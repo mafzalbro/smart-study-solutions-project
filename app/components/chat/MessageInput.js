@@ -2,11 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import PdfInput from './PdfInput';
 import AddPdfModel from '../chat/AddPdfModel';
 import Modal from '../Modal';
-import SyncLoader from 'react-spinners/SyncLoader';
+import { SyncLoader, PuffLoader } from 'react-spinners';
 import Image from 'next/image';
 import randomInteger from '@/app/utils/randomNo';
 import useAlert from '@/app/customHooks/useAlert';
-import TextInputField from '@/app/components/TextInputField';
+import TextInputField from '@/app/components/chat/TextInputField';
 import { IoSendSharp } from "react-icons/io5";
 import { TbFileTypePdf } from "react-icons/tb";
 
@@ -23,7 +23,7 @@ const messages = [
   'Still working on it...',
 ];
 
-export default function MessageInput({ chatId, addMessageToChatHistory, chatHistory }) {
+export default function MessageInput({ chatId, addMessageToChatHistory, chatHistory, addPdfURL, fetchChat }) {
   const [message, setMessage] = useState('');
   const [reply, setReply] = useState('');
   const [pdfUrl, setPdfUrl] = useState('');
@@ -34,11 +34,13 @@ export default function MessageInput({ chatId, addMessageToChatHistory, chatHist
   const [error, setError] = useAlert(null); // State to manage errors
   const inputRef = useRef(null);
   const endOfChatRef = useRef(null);
+  
+  // fetchChat()
 
   useEffect(() => {
     let timer = null;
     const random = randomInteger(3, 7);
-
+    
     if (isSending) {
       timer = setTimeout(() => {
         setWaitingMessageIndex((prevIndex) => (prevIndex + 1) % messages.length);
@@ -55,17 +57,21 @@ export default function MessageInput({ chatId, addMessageToChatHistory, chatHist
       endOfChatRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [reply]);
-
+  
   useEffect(() => {
     // Focus on the input field when component mounts or after a message is sent
     if (inputRef.current) {
       inputRef.current.focus();
-    }
-  }, [isSending, chatHistory]); // Trigger when isSending changes
-
-  const isValidPdfUrl = (url) => {
-    try {
+    } 
+    // else {
+      //   document.querySelector('.chat-input-class input').focus()
+      // }
+    }, [isSending, chatHistory]); // Trigger when isSending changes
+    
+    const isValidPdfUrl = (url) => {
+      try {
       new URL(url);
+      // addPdfURL(pdfUrl)
       return true;
     } catch (error) {
       return false;
@@ -176,25 +182,26 @@ export default function MessageInput({ chatId, addMessageToChatHistory, chatHist
         disabled={isSending}
         noMargin
         padding='p-3'
+        className='chat-input-class'
       />
       {showPdfInput && <PdfInput pdfUrl={pdfUrl} setPdfUrl={setPdfUrl} />}
-      <div className="flex space-x-2">
+      <div className="flex space-x-2 pb-2">
         <button
           onClick={handlePdfButtonClick}
-          className="p-2 bg-accent-100 dark:bg-neutral-700 rounded-lg dark:text-secondary dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-accent-600"
+          className="p-4 bg-accent-100 dark:bg-neutral-700 rounded-lg dark:text-secondary dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-accent-600"
         >
           {/* Add PDF */}
-          <TbFileTypePdf />
+          <TbFileTypePdf size={21}/>
         </button>
         <button
           onClick={sendMessage}
           disabled={message.trim() === '' || isSending}
-          className={`p-2 bg-accent-500 rounded-lg text-white hover:bg-accent-400 focus:outline-none focus:ring-2 focus:ring-accent-600 ${
+          className={`p-4 bg-accent-500 rounded-lg text-white hover:bg-accent-400 focus:outline-none focus:ring-2 focus:ring-accent-600 ${
             message.trim() === '' || isSending ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >
           
-          {isSending ? <SyncLoader color="#ffffff" size={4} /> : <IoSendSharp />}
+          {isSending ? <PuffLoader color="#ffffff" size={4} /> : <IoSendSharp size={21}/>}
         </button>
       </div>
     </div>

@@ -10,12 +10,14 @@ import SidebarToggleButton from './SidebarToggleButton';
 import { usePathname, useRouter } from 'next/navigation';
 import { fetcher } from '@/app/utils/fetcher';
 
-export default function Sidebar({ chatHistory, slug }) {
+export default function Sidebar({ chatHistory, slug, pdfuri }) {
   const [chats, setChats] = useState([]);
   const [pdfChats, setPdfChats] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalResults, setTotalResults] = useState(0);
+  const [chatPage, setChatPage] = useState(1);
+  const [pdfPage, setPdfPage] = useState(1);
+  const [totalChats, setTotalChats] = useState(0);
+  const [totalPDFs, setTotalPDFs] = useState(0);
   const [editingChatSlug, setEditingChatSlug] = useState(null);
   const [newTitle, setNewTitle] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
@@ -23,6 +25,7 @@ export default function Sidebar({ chatHistory, slug }) {
   const [selectedChatSlug, setSelectedChatSlug] = useState(null);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('chat'); // State for active tab
+  const limit = 5
 
   const toggleSidebar = () => {
     setIsSidebarVisible(!isSidebarVisible);
@@ -31,32 +34,43 @@ export default function Sidebar({ chatHistory, slug }) {
   const router = useRouter();
   const modalRef = useRef(null);
 
-  // Fetch chats based on the active tab
+  // Fetch chats
   const fetchChats = async () => {
     setLoading(true);
     try {
-      const endpoint = `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/titles?page=${page}&limit=15`;
-
+      const endpoint = `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/titles?page=${chatPage}&limit=${limit}`;
       const data = await fetcher(endpoint);
       if (data && data.data) {
-        // Sort chats by updatedAt descending
         const sortedChats = data.data.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-        // If page is 1, replace chats; otherwise, append to existing chats
-        const updatedChats = page === 1 ? sortedChats : [...(activeTab === 'chat' ? chats : pdfChats), ...sortedChats];
-
-        // Separate chats with PDF URLs from those without
-        const newChats = updatedChats.filter(chat => Array.isArray(chat.pdfUrls) && chat.pdfUrls.length === 0);
-        const newPdfChats = updatedChats.filter(chat => Array.isArray(chat.pdfUrls) && chat.pdfUrls.length > 0);
-
-        setChats(newChats);
-        setPdfChats(newPdfChats);
-
-        setTotalResults(data.totalResults);
+        const updatedChats = chatPage === 1 ? sortedChats : [...chats, ...sortedChats];
+        setChats(updatedChats);
+        setTotalChats(data.totalResults);
       } else {
         console.error('Data structure is unexpected or data is null.');
       }
     } catch (error) {
       console.error('Error fetching chats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch PDFs
+  const fetchPDFs = async () => {
+    setLoading(true);
+    try {
+      const endpoint = `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/pdf-titles?page=${pdfPage}&limit=${limit}`;
+      const data = await fetcher(endpoint);
+      if (data && data.data) {
+        const sortedPDFs = data.data.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+        const updatedPDFs = pdfPage === 1 ? sortedPDFs : [...pdfChats, ...sortedPDFs];
+        setPdfChats(updatedPDFs);
+        setTotalPDFs(data.totalResults);
+      } else {
+        console.error('Data structure is unexpected or data is null.');
+      }
+    } catch (error) {
+      console.error('Error fetching PDFs:', error);
     } finally {
       setLoading(false);
     }
@@ -69,12 +83,21 @@ export default function Sidebar({ chatHistory, slug }) {
       const isPdf = allChats.some(chat => chat.slug === slug && chat.pdfUrls && chat.pdfUrls.length > 0);
       setActiveTab(isPdf ? 'pdf' : 'chat');
     }
+
+    if((pdfuri || []).length > 0){
+      setActiveTab('pdf')
+    }
   }, [slug, chatHistory]);
 
-  // Fetch chats on initial load and when page or activeTab changes
+  // Fetch chats or PDFs on page or tab change
   useEffect(() => {
-    fetchChats();
-  }, [page, activeTab]);
+    if (activeTab === 'chat') {
+      fetchChats();
+    } else {
+      fetchPDFs();
+    }
+  }, [chatPage, pdfPage, activeTab, chatHistory]);
+  // }, [chatPage, pdfPage, activeTab, chatHistory, pdfuri]);
 
   // Close modal when clicking outside of it
   useEffect(() => {
@@ -106,7 +129,7 @@ export default function Sidebar({ chatHistory, slug }) {
         } else {
           setPdfChats(pdfChats.filter(chat => chat.slug !== chatSlug));
         }
-        setTotalResults(totalResults - 1);
+        setTotalChats(totalChats - 1);
         setModalVisible(false);
         router.push('/chat');
       } else {
@@ -145,7 +168,7 @@ export default function Sidebar({ chatHistory, slug }) {
 
   return (
     <>
-      <div className={`sidebar md:w-1/4 md:opacity-100 ${!isSidebarVisible ? 'w-0 overflow-hidden p-0 opacity-0 pointer-events-none md:pointer-events-auto' : 'pointer-events-auto overflow-auto p-4 fixed md:relative w-[55%] h-full opacity-100'} bg-secondary bg-opacity-90 bg-blend-color-dodge md:bg-transparent text-primary dark:text-secondary dark:bg-neutral-800 md:p-4 flex flex-col gap-10 transition-opacity ease-in-out duration-700 z-20 dark:shadow-2xl md:border-r dark:border-none`}>
+      <div className={`sidebar md:w-1/4 md:opacity-100 ${!isSidebarVisible ? 'w-0 overflow-hidden p-0 opacity-0 pointer-events-none md:pointer-events-auto' : 'pointer-events-auto overflow-auto p-4 fixed md:relative w-[55%] h-full opacity-100'} bg-secondary bg-opacity-90 bg-blend-color-dodge md:bg-transparent text-primary dark:text-secondary dark:bg-neutral-800 md:p-4 flex flex-col gap-10 transition-opacity ease-in-out duration-500 z-20 dark:shadow-2xl md:border-r dark:border-none`}>
         <SidebarHeader />
         <NewChatButton />
         <SidebarTabs activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -162,9 +185,12 @@ export default function Sidebar({ chatHistory, slug }) {
           handleEdit={handleEdit}
           handleDelete={handleDelete}
           loading={loading}
-          setPage={setPage}
-          page={page}
-          totalResults={totalResults}
+          setChatPage={setChatPage}
+          setPdfPage={setPdfPage}
+          chatPage={chatPage}
+          pdfPage={pdfPage}
+          totalChats={totalChats}
+          totalPDFs={totalPDFs}
         />
         <Modal
           modalVisible={modalVisible}
@@ -178,11 +204,11 @@ export default function Sidebar({ chatHistory, slug }) {
           selectedChatSlug={selectedChatSlug}
           activeTab={activeTab}
         />
-        <SidebarToggleButton
-          isSidebarVisible={isSidebarVisible}
-          toggleSidebar={toggleSidebar}
-        />
       </div>
+      <SidebarToggleButton
+        isSidebarVisible={isSidebarVisible}
+        toggleSidebar={toggleSidebar}
+      />
     </>
   );
-}
+}  

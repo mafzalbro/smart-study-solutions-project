@@ -12,29 +12,29 @@ export default function Chat({ params }) {
   const [chatHistory, setChatHistory] = useState([]);
   const [pdfUrls, setPdfUrls] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  const fetchChat = async () => {
+    if (!slug) return;
+
+    setLoading(true);
+    try {
+      const data = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/${slug}`);
+      // console.log({data});
+      
+      if (!data) {
+        throw new Error('Failed to fetch chat data');
+      }
+      // const data = await res.json();
+      setChatHistory(data.chatHistory);
+      (data.pdfUrl) ? setPdfUrls(data.pdfUrl) : setPdfUrls([]);
+    } catch (error) {
+      console.error('Error fetching chat:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchChat = async () => {
-      if (!slug) return;
-
-      setLoading(true);
-      try {
-        const data = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/${slug}`);
-        console.log({data});
-        
-        if (!data) {
-          throw new Error('Failed to fetch chat data');
-        }
-        // const data = await res.json();
-        setChatHistory(data.chatHistory);
-        setPdfUrls(data.pdfUrls);
-      } catch (error) {
-        console.error('Error fetching chat:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchChat();
   }, [slug]);
 
@@ -42,12 +42,17 @@ export default function Chat({ params }) {
     setChatHistory((prevHistory) => [...prevHistory, message]);
   };
 
+  // const addPdfURL = (pdfUrl) => {
+  //   // setPdfUrl(pdfUrl)
+  // }
+
+
   return (
     <div className='chat-home flex h-screen'>
-      <Sidebar chatHistory={chatHistory} slug={slug}/>
+      <Sidebar chatHistory={chatHistory} slug={slug} pdfuri={pdfUrls}/>
       <div className="flex flex-col w-full md:w-3/4">
         <ChatHistory chatHistory={chatHistory} pdfUrls={pdfUrls} loading={loading} />
-        <MessageInput chatId={slug} addMessageToChatHistory={addMessageToChatHistory} chatHistory={chatHistory}/>
+        <MessageInput fetchChat={fetchChat} chatId={slug} addMessageToChatHistory={addMessageToChatHistory} chatHistory={chatHistory}/>
       </div>
     </div>
   );

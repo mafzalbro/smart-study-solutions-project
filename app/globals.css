@@ -46,8 +46,8 @@ html.dark body {
 }
 
 ::selection{
-  background-color: aqua;
-  color: black;
+  background-color: blue;
+  color: white;
 }
 
 .relative.flex.flex-col.text-gray-700.bg-white.shadow-md.bg-clip-border.rounded-xl {
@@ -103,6 +103,15 @@ span.bg-orange-500.hover\:bg-orange-600.text-white.py-2.px-4.rounded-lg.shadow-s
   background: #909090;
 }
 
+.dark ::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 0px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 /* Up button */
 ::-webkit-scrollbar-button:single-button:vertical:decrement {
   height: 16px;
@@ -119,7 +128,10 @@ span.bg-orange-500.hover\:bg-orange-600.text-white.py-2.px-4.rounded-lg.shadow-s
 
 
 .dark ::-webkit-scrollbar-button:single-button:vertical:decrement, .dark ::-webkit-scrollbar-button:single-button:vertical:increment {
-  background-color: #909090;
+  background-color: #444;
+}
+.dark ::-webkit-scrollbar-button:single-button:vertical:decrement:hover, .dark ::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+  background-color: #555;
 }
 
 ::-webkit-scrollbar-button:single-button:vertical:decrement, ::-webkit-scrollbar-button:single-button:vertical:increment {

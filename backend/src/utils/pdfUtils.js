@@ -12,7 +12,7 @@ const worker = createWorker();
 const extractTextFromPdf = async (pdfUrl) => {
   try {
     const response = await fetch(pdfUrl);
-    const buffer = await response.buffer();
+    const buffer = await response.arrayBuffer();
 
     // Attempt to extract text directly from PDF
     const data = await pdf(buffer);

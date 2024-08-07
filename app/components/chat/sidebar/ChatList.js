@@ -15,21 +15,34 @@ export default function ChatList({
   handleEdit,
   handleDelete,
   loading,
-  setPage,
-  page,
-  totalResults
+  setChatPage,
+  setPdfPage,
+  chatPage,
+  pdfPage,
+  totalChats,
+  totalPDFs
 }) {
 
-    // Determine the list to show based on the active tab
+  // Determine the list to show based on the active tab
   const items = activeTab === 'chat' ? chats : pdfChats;
   const emptyMessage = activeTab === 'chat' ? 'No chats available' : 'No PDF chats available';
+  const hasMoreItems = activeTab === 'chat' ? chats.length < totalChats : pdfChats.length < totalPDFs;
+
+  const handleLoadMore = () => {
+    if (activeTab === 'chat') {
+      setChatPage(chatPage + 1);
+    } else {
+      setPdfPage(pdfPage + 1);
+    }
+  };
 
   return (
     <>
       <div className="sidebar flex-1 overflow-y-auto">
-        {(activeTab === 'chat' ? chats : pdfChats).map((chat) => (
+        {items.map((chat) => (
           <ChatItem
             key={chat.slug}
+            pdfUrls={chat.pdfUrls}
             chat={chat}
             chatSlug={chatSlug}
             editingChatSlug={editingChatSlug}
@@ -41,11 +54,11 @@ export default function ChatList({
           />
         ))}
       </div>
-      {loading && <Loader />}
+      {/* {loading && <Loader />} */}
       {!loading && items.length === 0 && <p>{emptyMessage}</p>}
-      {(activeTab === 'chat' ? chats.length : pdfChats.length) < totalResults && (
-        <button onClick={() => setPage(page + 1)} className="justify-center inline-flex">
-          <MdOutlineKeyboardArrowDown size={30} color='white' />
+      {hasMoreItems && !loading && (
+        <button onClick={handleLoadMore} className="justify-center inline-flex text-accent-400">
+          <MdOutlineKeyboardArrowDown size={30} />
         </button>
       )}
     </>

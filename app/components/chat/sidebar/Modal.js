@@ -1,5 +1,8 @@
-import { MdDriveFileRenameOutline, MdOutlineDeleteOutline } from 'react-icons/md';
+import { MdDriveFileRenameOutline, MdOutlineDeleteOutline, MdPictureAsPdf, MdLink } from 'react-icons/md';
+// import { TbFileTypePdf } from "react-icons/tb";
+
 import { FiX } from 'react-icons/fi';
+import Link from 'next/link';
 
 export default function Modal({ modalVisible, modalRef, modalPosition, handleEdit, handleDelete, setModalVisible, chats, pdfChats, selectedChatSlug, activeTab }) {
   return modalVisible ? (
@@ -21,12 +24,17 @@ export default function Modal({ modalVisible, modalRef, modalPosition, handleEdi
         >
           <MdOutlineDeleteOutline className="mr-2" /> Delete
         </button>
+        {activeTab === 'pdf'  && <Link href={`${pdfChats.find((chat) => chat.slug === selectedChatSlug)?.pdfUrls}`} className="flex items-center w-full text-left p-2 hover:bg-neutral-200 dark:hover:bg-accent-800" target='_blank'><MdLink className="mr-2"/>PDF</Link>}
+        
+        {/* {console.log(pdfChats.map((chat) => chat.slug === selectedChatSlug)?.pdfUrls)} */}
+
         <button
           onClick={() => setModalVisible(false)}
           className="flex items-center w-full text-left p-2 hover:bg-neutral-200 dark:hover:bg-accent-800"
         >
           <FiX className="mr-2" /> Cancel
         </button>
+
       </div>
     </div>
   ) : null;

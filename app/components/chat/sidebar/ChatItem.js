@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { FiMoreVertical, FiCheck } from 'react-icons/fi';
+import { MdMoreVert } from "react-icons/md";
+
 import { MdDriveFileRenameOutline, MdOutlineDeleteOutline } from 'react-icons/md';
 
 export default function ChatItem({
@@ -10,7 +12,8 @@ export default function ChatItem({
   setNewTitle,
   handleUpdate,
   openModal,
-  handleEdit
+  handleEdit,
+  pdfUrls
 }) {
   return (
     <div key={chat.slug} className="relative group">
@@ -42,14 +45,14 @@ export default function ChatItem({
       {!editingChatSlug && chatSlug === chat.slug && (
         <div className="absolute right-0 top-0 p-2 space-x-2">
           <button onClick={(event) => openModal(event, chat.slug)} className="p-1 rounded-lg text-secondary">
-            <FiMoreVertical />
+          <MdMoreVert />
           </button>
         </div>
       )}
       {!editingChatSlug && (
         <div className="absolute right-0 top-0 p-2 hidden group-hover:flex space-x-2">
           <button onClick={(event) => openModal(event, chat.slug)} className="p-1 font-bold rounded-lg">
-            <FiMoreVertical />
+          <MdMoreVert />
           </button>
         </div>
       )}

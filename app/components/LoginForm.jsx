@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import loginUser from '../api/loginUser';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { FcGoogle } from "react-icons/fc";
 import { MdEmail } from "react-icons/md";
@@ -19,6 +19,7 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const pathname = usePathname()
 
   useEffect(() => {
     const handleErrors = (error) => {
@@ -60,10 +61,22 @@ const LoginForm = () => {
       setPassword('');
       toast.success(userData.message);
       if (userData.message.includes('successfully')) {
-        // router.push('/');
-        router.back()
+        const restrictedPaths = ['/register', '/reset-password', '/forgot-password', '/logout'];
+        const previousPath = document.referrer;
+      console.log(previousPath)
+        // Check if the previous path includes any of the restricted paths
+        const isRestrictedPath = restrictedPaths.some(path => previousPath.includes(path));
+      
+        if (!isRestrictedPath) {
+          // if(pathname.includes('/login')) router.push('/');
+          // else 
+          router.back();
+        } else {
+          router.push('/');
+        }
       }
-    } catch (error) {
+    }      
+       catch (error) {
       toast.error('Login failed');
     } finally {
       setLoading(false);
@@ -116,7 +129,7 @@ const LoginForm = () => {
       <hr className="my-10 border-t border-accent-300 w-[50%] mx-auto"/>
       <Link
         href="/login/google"
-        className="flex justify-center items-center gap-5 w-full py-2 px-4 bg-blue-700 text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 mt-4 text-center hover:bg-blue-800"
+        className="flex justify-center items-center gap-5 w-full py-2 px-4 bg-accent-50 text-link font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-300 mt-4 text-center hover:bg-accent-100"
       >
         <FcGoogle className='h-8 w-8'/> <span>Login with Google</span>
       </Link>

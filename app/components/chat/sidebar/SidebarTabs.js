@@ -7,7 +7,7 @@ export default function SidebarTabs({ activeTab, setActiveTab }) {
         onClick={() => setActiveTab('chat')}
         className={`p-2 flex-1 text-center flex items-center justify-center gap-2 transition-colors duration-300 ease-in-out ${
           activeTab === 'chat'
-            ? 'text-accent-600 font-semibold border-b-4 border-accent-600'
+            ? 'text-accent-600  dark:text-accent-400 font-semibold border-b-4 border-accent-600 dark:border-accent-400'
             : 'bg-transparent text-neutral-600 dark:text-secondary'
         }`}
       >
@@ -19,7 +19,7 @@ export default function SidebarTabs({ activeTab, setActiveTab }) {
         onClick={() => setActiveTab('pdf')}
         className={`p-2 flex-1 text-center flex items-center justify-center gap-2 transition-colors duration-300 ease-in-out ${
           activeTab === 'pdf'
-            ? 'text-accent-600 font-semibold border-b-4 border-accent-600'
+            ? 'text-accent-600 dark:text-accent-400 font-semibold border-b-4 border-accent-600 dark:border-accent-400'
             : 'bg-transparent text-neutral-600 dark:text-secondary'
         }`}
       >

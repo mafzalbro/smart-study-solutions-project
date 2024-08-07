@@ -155,20 +155,20 @@ const NavBar = () => {
           {isLoggedIn ? (
             <div className="relative ml-4">
               <div
-                className="cursor-pointer w-10 h-10 rounded-full overflow-hidden border-2 border-white dark:border-gray-800"
+                className="cursor-pointer w-10 h-10 rounded-full overflow-hidden border-2 border-white dark:border-neutral-800"
                 onClick={handleProfileClick}
               >
                 <FaUserCircle size={40} />
               </div>
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 z-50">
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-800 rounded-lg shadow-lg py-2 z-50">
                   <Link href="/dashboard" passHref>
-                    <span className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <span className="block px-4 py-2 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
                       Dashboard
                     </span>
                   </Link>
                   <Link href="/logout" passHref>
-                    <span className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <span className="block px-4 py-2 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
                       Logout
                     </span>
                   </Link>
@@ -184,9 +184,9 @@ const NavBar = () => {
           )}
           <button
             onClick={toggleDarkMode}
-            className="ml-4 p-2 bg-gray-200 dark:bg-gray-700 rounded-lg focus:outline-none"
+            className="ml-4 p-2 bg-neutral-200 dark:bg-neutral-700 rounded-lg focus:outline-none"
           >
-            {darkMode ? <FiSun className="text-yellow-500" /> : <FiMoon className="text-gray-800 dark:text-gray-200" />}
+            {darkMode ? <FiSun className="text-yellow-500" /> : <FiMoon className="text-neutral-800 dark:text-neutral-200" />}
           </button>
           <button
             className="block md:hidden ml-4"

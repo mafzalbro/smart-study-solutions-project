@@ -4,7 +4,8 @@ import React, { useEffect, useRef } from 'react';
 import Loader from './Loader';
 import ChatMessage from './ChatMessage';
 import Skeleton from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css'; // Import the skeleton styles
+import 'react-loading-skeleton/dist/skeleton.css';
+import '@/app/styles/chatStyles.css';
 import { GoArrowUpRight } from "react-icons/go";
 
 export default function ChatHistory({ chatHistory, pdfUrls, loading }) {
@@ -17,11 +18,10 @@ export default function ChatHistory({ chatHistory, pdfUrls, loading }) {
   }, [chatHistory]);
 
   return (
-    <div className="flex-grow overflow-y-auto p-4 mt-8 md:mt-0 dark:bg-neutral-800 dark:text-secondary">
+    <div className="chat-message flex-grow overflow-y-auto p-4 mt-8 md:mt-0 dark:bg-neutral-800 dark:text-secondary">
       {loading ? (
         <div className="flex flex-col items-center">
-          <Skeleton circle height={40} width={40} className="mb-4" />
-          <Skeleton count={5} height={40} className="w-full" />
+          <Skeleton className="w-screen h-screen" />
         </div>
       ) : (
         <>
