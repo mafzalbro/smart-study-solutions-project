@@ -2,11 +2,11 @@ Backend
 
 -- known in contacts is not sync that must check all loggedIn users
 -- add two plans (faster retreival, deep analysis)
--- add validation to frontend too
 
 Frontend
 
--- Date is not showing
--- Add PDF viewer with chatbot
--- limit the titles of chatbot when saving
+-- add validation to frontend too (Almost Done)
+-- Date is not showing (Done)
+-- Add PDF viewer with chatbot (Done)
+-- limit the titles of chatbot when saving (Done)
 ------------------------------------
