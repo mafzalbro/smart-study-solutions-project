@@ -54,6 +54,8 @@ const getUserById = async (req, res) => {
 const getUser = async (req, res) => {
 
   const id = req.user.id;
+
+  console.log({id})
   try {
     const user = await User.findById(id, '-chatOptions -password -__v');
     if (!user) {

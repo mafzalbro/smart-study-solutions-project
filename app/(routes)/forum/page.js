@@ -78,9 +78,8 @@ const ForumPage = () => {
 
   return (
     <>
-    <section className="p-8 dark:text-white w-full">
-      <ToastContainer />
-      <main className="flex-1 ml-6">
+    <section className="md:p-8 p-4 dark:text-white w-full">
+      <main className="flex-1 lg:ml-6">
         <LinkButton text="Ask Question" link="/forum/submit" />
         <StylishTitle colored='Ask Anything' simple='From Your Teacher' className='text-center'/>
         
@@ -101,14 +100,12 @@ const ForumPage = () => {
 
         {isLoading && questions?.length === 0 ? (
             <div className="flex h-full w-full gap-4">
-              <SkeletonTheme>
                 <div className='hidden md:flex flex-col md:w-1/4 h-full'>
                   <Skeleton height={500} width="100%" />
                 </div>
                 <div className='flex flex-col md:w-3/4 w-full h-full'>
                   <Skeleton height={500} width="100%" />
                 </div>
-              </SkeletonTheme>
               {/* <div className="absolute inset-0 flex items-center justify-center">
                 <Spinner />
               </div> */}
@@ -129,7 +126,7 @@ const ForumPage = () => {
         ) : (
           <div className='md:space-x-6 flex flex-col md:flex-row'>
             <Sidebar />
-          <div className="flex flex-wrap w-3/4 flex-shrink-0">
+          <div className="flex flex-wrap md:w-3/4 self-start">
             {questions?.map(question => (
               <ForumItem key={question?._id} question={question} />
             ))}

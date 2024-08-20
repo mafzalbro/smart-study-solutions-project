@@ -10,7 +10,6 @@ import TextInputField from '@/app/components/TextInputField';
 import forgotPassword from '../../api/forgotPassword';
 
 const ForgotPassword = (props) => {
-  console.log({props});
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [isValidEmail, setIsValidEmail] = useState(false);
@@ -70,7 +69,6 @@ const ForgotPassword = (props) => {
             processing={loading}
           />
         </form>
-        <ToastContainer />
       </div>
     </div>
   );

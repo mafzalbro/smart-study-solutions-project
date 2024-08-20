@@ -7,6 +7,7 @@ import SubmitButton from './SubmitButton';
 import './style.css';
 import { FiArrowUpRight } from 'react-icons/fi';
 import Link from 'next/link';
+import StreamFetcher from '@/app/utils/StreamFetcher';
 
 const ChatModal = ({ chatSlug, fileUrl, onClose }) => {
   const [messages, setMessages] = useState([]);
@@ -50,50 +51,37 @@ const ChatModal = ({ chatSlug, fileUrl, onClose }) => {
     setMessages((prevMessages) => [...prevMessages, newMessage]);
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = () => {
     if (isSending) return; // Prevent sending multiple messages at once
     setIsSending(true);
-  
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/${chatSlug}`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ pdfUrl, message: userMessage, title: 'User Message' }),
-      });
-  
-      if (!response.body) {
-        console.error('ReadableStream not supported in this browser.');
-        return;
-      }
-  
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let fullMessage = '';
-      
-      // Read and accumulate chunks
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        fullMessage += decoder.decode(value, { stream: true });
-      }
-  
-      // Update the message in the chat history
-      addMessageToChatHistory({ user_query: userMessage, model_response: fullMessage });
-  
-      setUserMessage('');
-      setIsSending(false);
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      setIsSending(false);
-    }
+
+    const body = { pdfUrl, message: userMessage, title: 'User Message' };
+
+    // Use StreamFetcher for handling the streaming response
+    return (
+      <StreamFetcher
+        url={`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/${chatSlug}`}
+        body={body}
+        onResponse={(newReply) => {
+          addMessageToChatHistory({ user_query: userMessage, model_response: newReply });
+          setUserMessage('');
+          setIsSending(false);
+          if (inputRef.current) {
+            inputRef.current.focus();
+          }
+        }}
+        onError={(error) => {
+          setError('An error occurred while fetching the message.');
+          console.error(error);
+          setIsSending(false);
+        }}
+        onComplete={() => {
+          setIsSending(false);
+        }}
+      />
+    );
   };
-    
+
   return (
     <div className="chat-container fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
       <div className="bg-secondary text-primary dark:text-secondary dark:bg-primary rounded-lg overflow-hidden w-3/4 h-3/4 flex flex-col">

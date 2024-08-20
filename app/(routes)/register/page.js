@@ -2,10 +2,16 @@
 
 import React, { useState } from 'react';
 import registerUser from '../../api/registerUser';
-import useAlert from '../../customHooks/useAlert';
 import { useRouter } from 'next/navigation';
 import { FcGoogle } from 'react-icons/fc';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import SubmitButton from '@/app/components/SubmitButton'; 
+import TextInputField from '@/app/components/TextInputField';
+import PasswordInput from '@/app/components/PasswordInput';
+import CardContainer from '@/app/components/WhiteContainer';
+
 
 const RegisterForm = () => {
   const [username, setUsername] = useState('');
@@ -13,41 +19,35 @@ const RegisterForm = () => {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('student');
   const [favoriteGenre, setFavoriteGenre] = useState('');
-  const [success, setSuccess] = useAlert('', 3000); // 3 seconds
-  const [error, setError] = useAlert('', 3000); // State for error message
-
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleRegister = async () => {
+    setLoading(true);
     try {
       const userData = await registerUser({ username, email, password, role, favoriteGenre });
-      console.log({ userData });
-      
-      // Check if userData contains a success message
       if (userData.message && userData.message.includes('successfully')) {
+        toast.success(userData.message);
         setUsername('');
         setEmail('');
         setPassword('');
         setRole('student');
         setFavoriteGenre('');
-        setSuccess(userData.message);
-        setError(''); // Clear error message on success
         router.push('/login');
       } else {
-        // Set error message if registration was not successful
-        setError(userData.message || 'Registration failed. Please try again.');
-        setSuccess('');
+        toast.error(userData.message || 'Registration failed. Please try again.');
       }
     } catch (error) {
-      setError(error); // Set error message
-      setSuccess(''); // Clear success message on error
+      toast.error('An error occurred during registration.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen my-10 pt-20 md:pt-32 bg-my-bg-1 text-foreground flex items-center justify-center">
-      <div className="w-full max-w-md p-4 md:p-8 bg-my-bg-2 shadow-md rounded-lg">
-        <h2 className="text-2xl font-bold mb-6">Register Form</h2>
+    <div className="min-h-screen flex items-center justify-center">
+      <CardContainer className="w-full max-w-md p-6 md:p-8 bg-secondary shadow-lg rounded-lg">
+        <h2 className="text-2xl font-bold mb-6 text-primary dark:text-secondary">Create an Account</h2>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -55,90 +55,66 @@ const RegisterForm = () => {
           }}
           className="space-y-4"
         >
-          <div>
-            <label className="block mb-2">Username:</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600"
-            />
-          </div>
-          <div>
-            <label className="block mb-2">Email:</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600"
-            />
-          </div>
-          <div>
-            <label className="block mb-2">Password:</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600"
-            />
-          </div>
-          <div>
-            <label className="block mb-4">Role:</label>
+          <TextInputField
+            label="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+          <TextInputField
+            type="email"
+            label="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <PasswordInput
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            required
+          />
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Role</label>
             <select
-              value={role || ''}
+              value={role}
               onChange={(e) => setRole(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600 mb-4"
+              className="w-full p-4 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 bg-transparent"
             >
-              <option value="student">Student</option>
-              <option value="teacher">Teacher</option>
+              <option value="student" className='text-primary'>Student</option>
+              <option value="teacher" className='text-primary'>Teacher</option>
             </select>
           </div>
-          <div>
-            <label className="block mb-2">Favorite Genre:</label>
-            <input
-              type="text"
-              value={favoriteGenre}
-              onChange={(e) => setFavoriteGenre(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600"
-            />
-          </div>
-          <button
+          <TextInputField
+            label="Favorite Genre"
+            value={favoriteGenre}
+            onChange={(e) => setFavoriteGenre(e.target.value)}
+            required
+          />
+          <SubmitButton
             type="submit"
-            className="w-full py-2 px-4 bg-orange-600 text-white font-semibold rounded-lg shadow-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600"
+            processing={loading}
+            disabled={loading || !username || !email || !password || !favoriteGenre}
+            className="w-full"
           >
             Register
-          </button>
+          </SubmitButton>
         </form>
 
         <div className="mt-4 flex justify-between">
-          <Link href="/forgot-password" className="text-orange-600 hover:underline">Forgot Password?</Link>
-          <Link href="/login" className="text-orange-600 hover:underline">Login</Link>
+          <Link href="/login" className="hover:underline text-link hover:text-link-hover">Login</Link>
+          <Link href="/forgot-password" className="hover:underline text-link hover:text-link-hover">Forgot Password?</Link>
         </div>
 
-        <hr className="my-10 border-t border-orange-300 w-[50%] mx-auto" />
-        <a
+        <hr className="my-10 border-t border-neutral-300 w-[50%] mx-auto" />
+        <Link
           href="/register/google"
-          className="flex justify-center items-center gap-5 w-full py-2 px-4 text-blue-700 font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 mt-4 text-center"
+          className="flex justify-center items-center gap-5 w-full py-2 px-4 bg-accent-500font-semibold rounded-lg dark:bg-accent-900 dark:hover:bg-accent-800 dark:text-secondary bg-accent-50 hover:bg-accent-100 focus:outline-none focus:ring-2 focus:ring-accent-300 mt-4 text-center text-link"
         >
           <FcGoogle className='h-8 w-8' /> <span>Register with Google</span>
-        </a>
-
-        {success !== '' && (
-          <div className="mt-6 bg-green-100 text-green-700 p-4 rounded-lg">
-            <p>{success}</p>
-          </div>
-        )}
-        {error !== '' && (
-          <div className="mt-6 bg-red-100 text-red-700 p-4 rounded-lg">
-            <p>{error}</p>
-          </div>
-        )}
-      </div>
+        </Link>
+      </CardContainer>
     </div>
   );
 };

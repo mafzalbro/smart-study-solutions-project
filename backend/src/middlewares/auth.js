@@ -1,24 +1,32 @@
-const Admin = require('../models/admin');
+const jwt = require('jsonwebtoken');
+const User = require('../models/user');
 
-// console.log(process.env.FRONTEND_ORIGIN);
-
-// middlewares/auth.js
 const auth = async (req, res, next) => {
-  console.log({ID: req?.user?.id});
-    if (req.isAuthenticated()) {
-      const admin = await Admin.findOne({ username: req.user.username });
-      if (admin) {
-        res.status(401).json({ message: 'You are admin, Please login with user account' });
-      } else{
-        return next();
-      }
-    } else{
-      // res.redirect(`${process.env.FRONTEND_ORIGIN}/login`);
-      // res.redirect('/login');
-      res.status(401).json({ message: 'Unauthorized' });
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized, token missing' });
     }
-    
-  };
-  
-  module.exports = { auth };
-  
+
+    // Verify JWT token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Find the user by the ID from the token
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized, user not found' });
+    }
+
+    // Attach user data to request object
+    req.user = user;
+
+    // Proceed to the next middleware
+    next();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports = { auth };

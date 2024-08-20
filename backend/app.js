@@ -40,6 +40,8 @@ app.use(cors({
   credentials: true
 }));
 
+console.log(process.env.FRONTEND_ORIGIN, process.env.FRONTEND_ORIGIN_1)
+
 
 // Session configuration
 app.use(session({

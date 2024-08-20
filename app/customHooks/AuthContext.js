@@ -1,65 +1,71 @@
 "use client";
 
-// AuthContext.js
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { useSearchParams, usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { fetcher } from '@/app/utils/fetcher';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
   const router = useRouter();
-  const path = usePathname(); // Ensure correct usage of usePathname
-  const token = useSearchParams().get("token");
+  const path = usePathname();
 
   useEffect(() => {
     const checkAuth = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/check-auth`, {
-          credentials: 'include',
-          cache: 'no-store'
-        });
-        const data = await res.json();
+      const token = localStorage.getItem('token');
+      
+      if (token) {
+        try {
+          const res = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/check-auth`);
+          
+          if (res.auth) {
+            setIsLoggedIn(true);
+            // Fetch user data separately
+            try {
+              const userRes = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/user/get/one`);
+              
+              setUser(userRes);
 
-
-        if (res.status === 401 && !token && !path.includes('/resources') && !path.includes('/register') && !path.includes('/forgot-password') && !path.includes('/forum') && path !== new URL(process.env.NEXT_PUBLIC_FRONTEND_ORIGIN).pathname) {
-
-          router.push(`${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/login`);
-
-        } else if (res.status === 200 && (path.includes('/login') || path.includes('/login/google') || path.includes('/register') || path.includes('/register/google') || path.includes('/register/google') || path.includes('/forgot-password') || path.includes('/verify-password')))   
-
-        if (res.status === 200 && data.auth) {
-          setIsLoggedIn(true);
-          localStorage.setItem('isLoggedIn', 'true');
-        } else {
-          setIsLoggedIn(false);
-          localStorage.setItem('isLoggedIn', 'false');
+            } catch (userError) {
+              console.error('Error fetching user data:', userError);
+            }
+          } else if (!res.auth) {
+            setIsLoggedIn(false);
+            localStorage.removeItem('token');
+          }
+        } catch (error) {
+          console.error('Error checking auth:', error);
+          // setIsLoggedIn(false);
+          // localStorage.removeItem('token');
         }
-      } catch (error) {
-        console.error('Error checking auth:', error);
-        setIsLoggedIn(false);
-        localStorage.setItem('isLoggedIn', 'false');
       }
     };
 
     checkAuth();
-  }, [router, path, token]);
-
-  useEffect(() => {
-    const storedIsLoggedIn = localStorage.getItem('isLoggedIn');
-    console.log(storedIsLoggedIn);
     
-    if (storedIsLoggedIn) {
-      setIsLoggedIn(storedIsLoggedIn === 'true');
-    }
-  }, []);
+    const handleTokenUpdate = () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        setIsLoggedIn(true);
+        checkAuth();
+      }
+    };
+
+    window.addEventListener('tokenUpdated', handleTokenUpdate);
+
+    return () => {
+      window.removeEventListener('tokenUpdated', handleTokenUpdate);
+    };
+  }, [router, path]);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, user }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Export useContext directly
+// Export the useAuth hook
 export const useAuth = () => useContext(AuthContext);

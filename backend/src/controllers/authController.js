@@ -1,31 +1,25 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
-const passport = require('../config/passport');
+const jwt = require('jsonwebtoken');
 const { getNextSequenceValue } = require('../utils/autoIncrement'); // Adjust the path as needed
 const { sendPasswordResetEmail, sendGenericEmail } = require('../services/emailService'); // Adjust path as needed
-const jwt = require('jsonwebtoken');
 
-// sendGenericEmail("maf415415@gmail.com", "Hey", "This is Afzal to Test email!")
+// JWT Secret
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRATION = process.env.JWT_EXPIRES;
 
+// Register User
 const registerUser = async (req, res) => {
   const { username, email, password, role, favoriteGenre } = req.body;
   try {
-    // Check if the user is already registered
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User with this email already exists' });
     }
 
-    // Increment the serial number only for new users
-    let serialNumber;
-    if (!existingUser) {
-      serialNumber = await getNextSequenceValue('userSerial', 'User');
-    }
-
-    // Hash the password
+    const serialNumber = await getNextSequenceValue('userSerial', 'User');
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new user document
     const newUser = new User({
       serialNumber,
       username,
@@ -35,63 +29,64 @@ const registerUser = async (req, res) => {
       favoriteGenre
     });
     
-    // Save the user to the database
     await newUser.save();
-
-    res.status(201).json({ message: 'User registered successfully' });
+    
+    const token = jwt.sign({ id: newUser._id, role: newUser.role }, JWT_SECRET, { expiresIn: JWT_EXPIRATION });
+    res.status(201).json({ message: 'User registered successfully', token });
   } catch (error) {
     console.error('Error registering user:', error);
     res.status(500).json({ message: `Failed to register user ${username}: ${error.message}` });
   }
 };
 
+// Login User
+const loginUser = async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await User.findOne({ username });
+    if (!user) return res.status(400).json({ message: 'Incorrect username or password' });
 
-const loginUser = (req, res, next) => {
-  passport.authenticate('user-local', (err, user, info) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ message: 'Internal server error', error: err.message });
-    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ message: 'Incorrect username or password' });
 
-    if (!user) return res.status(400).json({ message: info.message });
-    
-    // Log in the user
-    req.logIn(user, (err) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ message: 'Internal server error', error: err.message });
-      }
-      // console.log(req?.user);
-      res.status(200).json({ message: 'Logged in successfully' });
-    });
-
-
-  })(req, res, next);
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: JWT_EXPIRATION });
+    res.status(200).json({ message: 'Logged in successfully', token });
+  } catch (error) {
+    console.error('Error logging in user:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
+// // Middleware to protect routes
+// const authenticateJWT = (req, res, next) => {
+//   const token = req.headers.authorization?.split(' ')[1];
+//   if (!token) {
+//     return res.status(401).json({ message: 'Access token is missing or invalid' });
+//   }
+
+//   jwt.verify(token, JWT_SECRET, (err, user) => {
+//     if (err) {
+//       return res.status(403).json({ message: 'Invalid token' });
+//     }
+//     req.user = user;
+//     next();
+//   });
+// };
+
+// Logout User (Optional with JWT - Just remove token client-side)
 const logoutUser = (req, res) => {
-  // Log out the user
-  req.logout((err) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ message: 'Failed to logout', error: err.message });
-    }
-    res.status(200).json({ message: 'Logged out successfully' });
-  });
+  res.status(200).json({ message: 'Logged out successfully' });
 };
 
+// Change Password
 const changePassword = async (req, res) => {
   const { currentPassword, newPassword } = req.body;
-  const userId = req.user.id; // Assuming you're using passport or similar for authentication
+  const userId = req.user.id;
 
   try {
-    // Find the user by ID
     const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
-    // Check if the current password matches
     const isPasswordMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isPasswordMatch) {
       return res.status(400).json({ message: 'Current password is incorrect' });
@@ -99,11 +94,7 @@ const changePassword = async (req, res) => {
       return res.status(400).json({ message: 'New password cannot be the same as the current password' });
     }
 
-
-    // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    // Update the user's password
     user.password = hashedPassword;
     await user.save();
 
@@ -114,60 +105,35 @@ const changePassword = async (req, res) => {
   }
 };
 
-
-
+// Forgot Password
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
   try {
-    if (!email) {
-      return res.status(404).json({ message: 'Email not found' });
-    }
-    // Find the user by email
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    if (!user) return res.status(404).json({ message: 'This user is no account yet' });
 
-    // Generate a unique reset token
-    const resetToken = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-    // Set the reset token expiry time on the user object
-    user.resetTokenExpiry = Date.now() + 3600000; // Token expires in 1 hour
-
-    // Save the updated user object
+    const resetToken = jwt.sign({ email: user.email }, JWT_SECRET, { expiresIn: '1h' });
+    user.resetTokenExpiry = Date.now() + 3600000;
     await user.save();
 
-    // Construct the password reset link
-    // const resetLink = `${process.env.FRONTEND_ORIGIN}/api/auth/verifyToken?token=${resetToken}`;
     const resetLink = `${process.env.FRONTEND_ORIGIN}/reset-password?token=${resetToken}`;
-
-    // Send the password reset email
     await sendPasswordResetEmail(user.email, resetLink);
 
-    res.status(200).json({ message: `Password reset instructions sent to your email! Please Check your email: ${email}` });
+    res.status(200).json({ message: `Password reset instructions sent to your email: ${email}` });
   } catch (error) {
     console.error('Error in forgotPassword:', error);
     res.status(500).json({ message: 'Failed to process password reset request', error: error.message });
   }
 };
 
+// Verify Token
 const verifyToken = async (req, res) => {
   const { token } = req.query;
   try {
-    // Verify the JWT token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findOne({ email: decoded.email, resetTokenExpiry: { $gt: Date.now() } });
+    if (!user) return res.status(400).json({ message: 'Invalid or expired token' });
 
-    // Find the user by email and ensure the token has not expired
-    const user = await User.findOne({
-      email: decoded.email,
-      resetTokenExpiry: { $gt: Date.now() } // Ensure the token has not expired
-    });
-
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid or expired token' });
-    }
-
-    // Token is valid
     res.status(200).json({ message: 'Token is valid', token });
   } catch (error) {
     console.error('Error in verifyToken:', error);
@@ -175,30 +141,17 @@ const verifyToken = async (req, res) => {
   }
 };
 
+// Reset Password
 const resetPassword = async (req, res) => {
   const { token, newPassword } = req.body;
   try {
-    // Verify the JWT token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findOne({ email: decoded.email, resetTokenExpiry: { $gt: Date.now() } });
+    if (!user) return res.status(400).json({ message: 'Invalid or expired token' });
 
-    // Find the user by email and ensure the token has not expired
-    const user = await User.findOne({
-      email: decoded.email,
-      resetTokenExpiry: { $gt: Date.now() } // Ensure the token has not expired
-    });
-
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid or expired token' });
-    }
-
-    // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    // Update the user's password and clear the reset token and expiry
     user.password = hashedPassword;
     user.resetTokenExpiry = null;
-
-    // Save the updated user object
     await user.save();
 
     res.status(200).json({ message: 'Password has been reset successfully' });
@@ -208,15 +161,11 @@ const resetPassword = async (req, res) => {
   }
 };
 
+// Check Auth (optional with JWT, can just verify token)
 const checkAuth = (req, res) => {
-  // console.log("Session data:", req.session);
-  // console.log("User authenticated:", req.isAuthenticated());
-
-  if (req.isAuthenticated()) {
-    return res.status(200).json({ auth: true });
-  }
-  return res.status(401).json({ auth: false });
+  res.status(200).json({ auth: true, user: req.user });
 };
 
-
-module.exports = { registerUser, loginUser, logoutUser, changePassword, forgotPassword, verifyToken, resetPassword, checkAuth };
+module.exports = { registerUser, loginUser, logoutUser, changePassword, forgotPassword, verifyToken, resetPassword, checkAuth, 
+  // authenticateJWT 
+};

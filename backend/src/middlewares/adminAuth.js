@@ -1,22 +1,27 @@
+const jwt = require('jsonwebtoken');
 const Admin = require('../models/admin');
-// const Admin = require('../models/user');
 
 const adminAuth = async (req, res, next) => {
   try {
-    // Check if user is authenticated
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: 'Unauthorized' });
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized, token missing' });
     }
 
-    // Find the admin by username from the Admin collection
-    const admin = await Admin.findOne({ username: req.user.username });
+    // Verify JWT token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Check if the user is an admin
+    // Find the admin by the ID from the token
+    const admin = await Admin.findById(decoded.id);
+
     if (!admin) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      return res.status(401).json({ message: 'Unauthorized, not an admin' });
     }
 
-    // If user is authenticated and is an admin, proceed to the next middleware
+    // Attach admin data to request object
+    req.user = admin;
+
+    // Proceed to the next middleware
     next();
   } catch (error) {
     console.error(error);

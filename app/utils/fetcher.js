@@ -1,9 +1,7 @@
 "use client";
 
 export const fetcher = async (url, method = 'GET', body = null, headers = {}) => {
-  let router = window.location;
-  const newURL = new URL(router.href);
-  const token = newURL.searchParams.get('token');
+  const token = localStorage.getItem('token'); // Get token from local storage
   const path = window.location.pathname;
 
   const options = {
@@ -11,6 +9,7 @@ export const fetcher = async (url, method = 'GET', body = null, headers = {}) =>
     headers: {
       'Content-Type': 'application/json',
       ...headers,
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {}), // Include token in headers
     },
     credentials: 'include',
   };
@@ -20,20 +19,25 @@ export const fetcher = async (url, method = 'GET', body = null, headers = {}) =>
   }
 
   const response = await fetch(url, options);
-  
-  if (response.status === 401 && !token && !path.includes('/resources') && path !== new URL(process.env.NEXT_PUBLIC_FRONTEND_ORIGIN).pathname) {
-    router.replace(`${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/login`);
+
+  if (response.status === 401 && !path.includes('/resources') && path !== new URL(process.env.NEXT_PUBLIC_FRONTEND_ORIGIN).pathname) {
+    localStorage.removeItem('token'); // Remove token on unauthorized access
+    window.location.replace(`${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/login`);
   } else if (response.status === 200 && (path.includes('/login') || path.includes('/login/google') || path.includes('/register') || path.includes('/register/google'))) {
-    router.replace('/');
+    window.location.replace('/');
   }
-  
+
   const data = await response.json();
 
-  console.log({data, status: response.status})
+  console.log({ data, status: response.status });
 
   if (!response.ok) {
-    // return response.status
     throw new Error(data.message || 'Something went wrong');
+  }
+
+  // Store new token if available in the response body
+  if (data.token) {
+    localStorage.setItem('token', data.token); // Store token
   }
 
   return data;

@@ -41,7 +41,7 @@ const MainSidebar = () => {
 
   return (
     <>
-      <aside className="w-full md:w-1/4 p-6 border-r border-neutral-300 dark:border-neutral-600 sticky top-0 h-screen md:block hidden">
+      <aside className="w-full md:w-1/4 p-2 pr-4 lg:p-6 border-r border-neutral-300 dark:border-neutral-600 sticky top-0 h-screen md:block hidden">
         <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">Forum Navigation</h2>
         
         <ul>

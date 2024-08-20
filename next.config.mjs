@@ -2,7 +2,10 @@
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
-  experimental: {
+  swcMinify: true,
+  productionBrowserSourceMaps: false, // Disable source maps in development
+  optimizeFonts: false, // Disable font optimization
+experimental: {
     missingSuspenseWithCSRBailout: false,
   },
   images: {

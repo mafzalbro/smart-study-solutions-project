@@ -81,9 +81,12 @@ app.prepare().then(() => {
     return handle(req, res);
   });
 
-  const port = process.env.PORT || 3000;
-  server.listen(port, (err) => {
-    if (err) throw err;
-    console.log(`> Ready on http://localhost:${port}`);
-  });
+  // const port = process.env.PORT || 3000;
+  // server.listen(port, (err) => {
+  //   if (err) throw err;
+  //   console.log(`> Ready on http://localhost:${port}`);
+  // });
+
+  // Export the server for use elsewhere
+  module.exports = server;
 });

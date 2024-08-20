@@ -6,6 +6,8 @@ import ProgressBar from '@/app/customHooks/ProgressBar'; // Import the provider
 import './globals.css';
 import Footer from './components/Footer';
 import { ToastContainer } from 'react-toastify';
+import { SkeletonTheme } from 'react-loading-skeleton';
+
 
 export const metadata = {
   title: "Smart Study Solutions",
@@ -14,10 +16,13 @@ export const metadata = {
 
 const font = Outfit({ subsets: ["latin"], weight: ['400', '700'], display: "block" });
 
+console.log('NEXT_PUBLIC_BACKEND_ORIGIN = ', process.env.NEXT_PUBLIC_BACKEND_ORIGIN);
+
 const RootLayout = ({ children }) => {
   return (
     <html lang="en">
-      <body className={`${font.className}`}>
+      <body className={`${font.className} text-primary dark:text-secondary`}>
+      <SkeletonTheme >
       <ToastContainer stacked containerId={font.className}/>
         <AuthProvider>
           {/* <AppStateProvider> */}
@@ -28,6 +33,7 @@ const RootLayout = ({ children }) => {
           {/* </AppStateProvider> */}
         </AuthProvider>
         <Footer />
+        </SkeletonTheme>
       </body>
     </html>
   );

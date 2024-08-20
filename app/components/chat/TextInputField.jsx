@@ -1,12 +1,13 @@
 // components/TextInputField.js
 
-const TextInputField = ({ ref, type, value, onChange, onKeyPress, placeholder, className, disabled, required, noMargin, padding, showToggle, showIcon, hideIcon, onToggleShow }) => {
+// const TextInputField = ({ ref, type, value, onChange, onKeyPress, placeholder, className, disabled, required, noMargin, padding, showToggle, showIcon, hideIcon, onToggleShow }) => {
+const TextInputField = ({ type, value, onChange, onKeyPress, placeholder, className, disabled, required, noMargin, padding, showToggle, showIcon, hideIcon, onToggleShow }) => {
 
   return (
     <div className={`relative ${noMargin ? 'mb-0' : 'mb-4'} w-full ${className}`}>
       <input type={type}
         value={value}
-        ref={ref}
+        // ref={ref}
         onChange={onChange}
         onKeyPress={onKeyPress}
         placeholder={placeholder}

@@ -54,6 +54,13 @@ html.dark body {
   width: 400px;
 }
 
+label {
+  color: #333;
+}
+html.dark label {
+  color: #eee;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

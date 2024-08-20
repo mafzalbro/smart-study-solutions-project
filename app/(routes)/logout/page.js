@@ -15,9 +15,8 @@ const LogoutPage = () => {
   useEffect(() => {
     const performLogout = async () => {
       try {
-        await handleLogout();
+        await handleLogout(router);
         toast.success('You have been logged out successfully.');
-        router.push('/login');
       } catch (error) {
         toast.error('Failed to log out. Please try again.');
         console.error('Logout failed:', error.message);

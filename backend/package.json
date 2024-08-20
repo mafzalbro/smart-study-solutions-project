@@ -37,12 +37,12 @@
     "swagger-autogen": "^2.23.7",
     "swagger-ui-express": "^5.0.1",
     "tesseract.js": "^5.1.0",
+    "uuid": "^10.0.0",
     "whatsapp-web.js": "^1.24.0"
   },
   "devDependencies": {
     "next": "^14.2.5",
     "nodemon": "^3.1.4",
-    "vercel": "^35.1.0",
     "yarn": "^1.22.22"
   }
 }

@@ -1,9 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('../config/passport')
+const passport = require('../config/passport');
+const jwt = require('jsonwebtoken');
 const { changePassword, registerUser, loginUser, logoutUser, forgotPassword, verifyToken, resetPassword, checkAuth } = require('../controllers/authController');
 const { auth } = require('../middlewares/auth');
 const { noCache } = require('../middlewares/noCache');
+
+// JWT Secret
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRATION = process.env.JWT_EXPIRES;
 
 // Register a new user
 router.post('/register', registerUser);
@@ -17,18 +22,17 @@ router.post('/logout', logoutUser);
 // Change password
 router.put('/changePassword', auth, changePassword);
 
-// forgot password
+// Forgot password
 router.post('/forgotPassword', forgotPassword);
 
-// verify token
+// Verify token
 router.get('/verifyToken', verifyToken);
 
-// reset password
+// Reset password
 router.post('/resetPassword', resetPassword);
 
-//check status that it is logged in or not
-
-router.get('/check-auth', checkAuth);
+// Check status
+router.get('/check-auth', auth, checkAuth);
 
 // Route to initiate Google OAuth authentication
 router.get('/google', (req, res, next) => {
@@ -38,20 +42,22 @@ router.get('/google', (req, res, next) => {
 // Route to handle Google OAuth callback
 router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
   const user = req.user;
-  // console.log(user);
 
-  // Check if user has missing credentials
-  const hasMissingCredentials = !user.username || !user.email || !user.role || !user.favoriteGenre || !user.password;
+  // Generate a JWT token for the user
+  const token = jwt.sign(
+    {
+      id: user._id,
+      role: user.role,
+      profileImage: user.profileImage,
+      email: user.email
+    },
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRATION }
+  );
 
-  if (hasMissingCredentials) {
-    const redirectUrl = `${process.env.FRONTEND_ORIGIN}/dashboard`;
-    res.redirect(redirectUrl);
-  } else {
-    const redirectUrl = `${process.env.FRONTEND_ORIGIN}/`;
-    res.redirect(redirectUrl);
-  }
+  // Redirect with the token as a query parameter
+  const redirectUrl = `${process.env.FRONTEND_ORIGIN}/?token=${token}`;
+  res.redirect(redirectUrl);
 });
-
-
 
 module.exports = router;

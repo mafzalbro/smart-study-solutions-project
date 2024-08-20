@@ -1,23 +1,16 @@
+// File: registerUser.js
+
 // api/registerUser.js
 
+import { fetcher } from '../utils/fetcher';
+
 const registerUser = async (userData) => {
-  let response;
   try {
-    response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(userData)
-    });
-
-    if (!response.ok) {
-      throw new Error('Registration failed');
-    }
-
-    return await response.json();
+    const url = `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/register`;
+    return await fetcher(url, 'POST', userData);
   } catch (error) {
-    return response.json()
+    console.error('Error registering user:', error.message);
+    throw error.message;
   }
 };
 

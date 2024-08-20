@@ -5,6 +5,7 @@ import Slider from 'react-slick';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import Announcement from '@/app/components/Announcement';
+import '@/app/components/Announcements.css';
 import { FaUserGraduate, FaCommentDots, FaCogs, FaPhone, FaEnvelope } from 'react-icons/fa';
 
 const Announcements = () => {
@@ -28,7 +29,7 @@ const Announcements = () => {
     const fetchAnnouncements = async () => {
       try {
         // Simulate data fetching
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        // await new Promise((resolve) => setTimeout(resolve, 1000));
 
         // Set announcements data
         setAnnouncements([
@@ -95,13 +96,25 @@ const Announcements = () => {
 
   if (loading) {
     return (
-          <div className="flex justify-center items-center flex-col bg-white dark:bg-accent-900 p-6 rounded-lg text-center my-auto m-1">
-            <Skeleton height={40} width={200} className="mb-2" />
-            <Skeleton height={80} width={300} className="mb-4" />
-            <Skeleton height={30} width={150} />
-          </div>
+      <div className="flex justify-center items-center flex-col bg-white dark:bg-accent-900 p-6 rounded-lg text-center my-auto w-[90vw] md:w-full">
+        <Skeleton 
+          height={40}
+          width={200} 
+          className="mb-2 md:w-48 w-32"
+        />
+        <Skeleton 
+          height={80} 
+          width={300} 
+          className="mb-4 md:w-64 w-48"/>
+        <Skeleton 
+          height={30} 
+          width={150} 
+          className="md:w-36 w-28"
+        />
+      </div>
     );
   }
+  
 
   return (
     <Slider {...settings}>

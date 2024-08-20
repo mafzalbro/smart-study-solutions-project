@@ -36,7 +36,7 @@ export default function ChatItem({
         <Link href={`/chat/${chat.slug}`} passHref>
           <span
             title={chat.title}
-            className={`block p-2 mb-2 rounded-lg ${chatSlug === chat.slug ? 'bg-accent-500 dark:bg-accent-700 text-secondary' : 'bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-secondary'}`}
+            className={`block px-4 py-2 mb-2 rounded-lg ${chatSlug === chat.slug ? 'bg-accent-500 dark:bg-accent-700 text-secondary' : 'bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-secondary'}`}
           >
             {chat.title.length > 15 ? chat.title.slice(0, 15) + '...' : chat.title}
           </span>

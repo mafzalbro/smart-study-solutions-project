@@ -108,7 +108,7 @@ const UpdateProfile = () => {
           />
           <label
             htmlFor="fileInput"
-            className="flex items-center gap-4 w-full md:w-3/4 mt-1 py-4 px-4 border rounded-lg cursor-pointer focus:ring-2 focus:ring-accent-600 outline-none bg-white dark:bg-neutral-700 text-gray-800 dark:text-gray-300"
+            className="flex items-center gap-4 w-full md:w-3/4 mt-1 py-4 px-4 border rounded-lg cursor-pointer focus:ring-2 focus:ring-accent-600 outline-none bg-white dark:bg-neutral-800 text-gray-800 dark:text-gray-300 border-neutral-300 dark:border-neutral-600"
           >
             <MdOutlineCloudUpload className="text-accent-600" /> <span>Choose File</span>
           </label>
@@ -118,9 +118,7 @@ const UpdateProfile = () => {
               <img
                 src={profileImage}
                 alt="Profile Preview"
-                width={300}
-                height={300}
-                className="block my-10 rounded-lg border mx-auto h-auto w-[100%]"
+                className="block my-10 rounded-lg border mx-auto h-auto w-[100%] "
                 style={{ maxWidth: '300px' }}
               />
               <button
@@ -136,9 +134,7 @@ const UpdateProfile = () => {
               <img
                 src={user.profileImage}
                 alt="Profile"
-                width={300}
-                height={300}
-                className="block my-10 rounded-lg border mx-auto"
+                className="block my-10 rounded-lg border border-neutral-300 dark:border-neutral-700 mx-auto h-auto w-[100%]"
                 style={{ maxWidth: '300px' }}
               />
             </div>
@@ -166,7 +162,7 @@ const UpdateProfile = () => {
             value={user.role || ''}
             onChange={(e) => setUser({ ...user, role: e.target.value })}
             required
-            className="block w-full md:w-3/4 mt-1 py-4 px-4 border rounded-lg focus:ring-2 focus:ring-accent-600 outline-none bg-white dark:bg-neutral-700 text-gray-800 dark:text-gray-300"
+            className="block w-full md:w-3/4 mt-1 py-4 px-4 border rounded-lg focus:ring-2 focus:ring-accent-600 outline-none bg-white dark:bg-neutral-800 text-gray-800 dark:text-gray-300 border-neutral-300 dark:border-neutral-700"
           >
             <option value="student">Student</option>
             <option value="teacher">Teacher</option>
@@ -192,7 +188,7 @@ const UpdateProfile = () => {
           onChange={(e) => setUser({ ...user, address: e.target.value })}
           placeholder="Address"
         /> */}
-        <button type="submit" className="w-full py-2 px-4 bg-accent-600 text-white font-semibold rounded-lg shadow-md hover:bg-accent-700 focus:outline-none focus:ring-2 focus:ring-accent-600">
+        <button type="submit" className="w-full py-2 px-4 bg-accent-600 text-white rounded-lg shadow-md hover:bg-accent-700 focus:outline-none focus:ring-2 focus:ring-accent-600">
           Update Profile
         </button>
         <ToastContainer />

@@ -137,8 +137,7 @@ export default function ResourcesPage({ params }) {
   return (
     <div className="flex flex-col md:flex-row">
       <main className="flex-1">
-        <section className="p-8 dark:text-secondary w-full">
-          <ToastContainer />
+        <section className="p-1 md:p-8 dark:text-secondary w-full">
 
           <StylishTitle
             colored={routes[0] ? decodeURIComponent(routes[0]).split("-").join(" ").toUpperCase() : 'Books, Past Papers, Notes'}
@@ -146,18 +145,19 @@ export default function ResourcesPage({ params }) {
             className='text-center'
           />
 
-          <div className="flex justify-center my-20 mx-10">
+          <div className="flex justify-center mx-4 my-10">
             <TextInputField
               type="text"
               placeholder="Search questions..."
               value={searchTerm}
+              noMargin
               onChange={handleSearchChange}
               className="py-5 px-10 border border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800 outline-none focus:ring-accent-400 rounded-full w-full max-w-md focus:outline-none ring-2 focus:ring-4 ring-accent-500"
               style={{ maxWidth: "600px" }}
             />
           </div>
 
-          <div className="md:flex">
+          <div className="md:flex px-4 md:gap-4">
             <SideArea
               sortBy={sortBy}
               handleSortChange={handleSortChange}
@@ -167,7 +167,7 @@ export default function ResourcesPage({ params }) {
             <div className="flex-1">
               {isLoading && resources.length === 0 ? (
                 <SkeletonTheme>
-                  <div className="flex flex-col gap-4 p-10">
+                  <div className="flex flex-col gap-4">
                     <Skeleton height={250} />
                     <Skeleton height={250} />
                     <Skeleton height={250} />
@@ -180,7 +180,7 @@ export default function ResourcesPage({ params }) {
               ) : resources.length === 0 ? (
                 <p className="text-center text-gray-500 mt-5">Nothing here.</p>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {resources.map((resource) => (
                     <ResourceCard key={resource._id} resource={resource} />
                   ))}

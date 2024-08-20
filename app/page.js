@@ -10,24 +10,25 @@ import 'react-toastify/dist/ReactToastify.css';
 import Announcements from './components/Announcements';
 import MainHeading from './components/MainHeading.jsx';
 import StylishTitle from './components/StylishTitle';
+import StylishSpan from './components/StylishSpan';
 
 const LandingPage = () => {
   return (
-    <div className="container mx-auto mt-20 md:my-20">
+    <div className="container mx-auto mt-5 md:my-20">
       <div className="flex flex-col md:flex-row items-center justify-center gap-20">
         <div className="md:w-1/2 text-center md:text-left">
 
           <StylishTitle colored='Hey PU Buddy,' addBr simple='You are At the Right Place!' />
 
-          <div className="text-base w-4/6 md:mx-0 inline-block my-5">
+          <div className="text-base w-5/6 md:mx-0 inline-block my-5">
             Discover, discuss, and learn with us. Join engaging conversations, ask questions.
-            <span className="text-accent-500"> Start exploring and connecting today!</span>
-            <p className='mt-8'>
+            <StylishSpan> Start exploring and connecting today!</StylishSpan>
+            <span className='mt-8 block'>
             <GetStartedButtons />
-            </p>
+            </span>
           </div>
         </div>
-        <div className="md:w-2/5">
+        <div className="w-full md:w-2/5">
           <Announcements />
         </div>
       </div>
@@ -44,7 +45,7 @@ const LandingPage = () => {
       </div>
 
       <div>
-        <MainHeading name='What Our Users Say' />
+        <MainHeading name='Testimonials' />
         <Testimonials />
       </div>
 

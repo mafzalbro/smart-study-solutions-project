@@ -1,21 +1,17 @@
+// File: verifyToken.js
+
 // api/verifyToken.js
 
+import { fetcher } from '../utils/fetcher';
+
 const verifyToken = async (token) => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/verifyToken?token=${token}`, {
-        method: 'GET',
-      });
-  
-      if (!response.ok) {
-        throw new Error('Token verification failed');
-      }
-  
-      return await response.json();
-    } catch (error) {
-      console.error('Error verifying token:', error.message);
-      throw error.message;
-    }
-  };
-  
-  export default verifyToken;
-  
+  try {
+    const url = `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/verifyToken?token=${token}`;
+    return await fetcher(url, 'GET');
+  } catch (error) {
+    console.error('Error verifying token:', error.message);
+    throw error.message;
+  }
+};
+
+export default verifyToken;

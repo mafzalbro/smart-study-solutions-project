@@ -4,6 +4,8 @@ const NotificationService = require('../services/notificationService'); // Ensur
 const bcrypt = require('bcrypt');
 const Schema = mongoose.Schema;
 
+const googleCacheMetaData = require('./googleCacheMetaData'); // Ensure correct path
+
 const ChatSchema = new Schema({
   _id: { type: Schema.Types.ObjectId, auto: true },
   slug: { type: String, required: true, unique: true, default: uuidv4 },
@@ -11,7 +13,8 @@ const ChatSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
   pdfText: { type: String, default: '' },
-  pdfUrls: { type: [String], default: [] }, // Remove unique constraint
+  pdfUrls: { type: [String], default: [] },
+  googleCacheMetaData: [{ type: Schema.Types.ObjectId, ref: 'googleCacheMetaData' }], // Add this line
 
   chatHistory: [
     {

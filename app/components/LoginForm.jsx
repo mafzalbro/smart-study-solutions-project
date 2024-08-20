@@ -67,13 +67,13 @@ const LoginForm = () => {
         // Check if the previous path includes any of the restricted paths
         const isRestrictedPath = restrictedPaths.some(path => previousPath.includes(path));
       
-        if (!isRestrictedPath) {
+        // if (!isRestrictedPath) {
           // if(pathname.includes('/login')) router.push('/');
           // else 
-          router.back();
-        } else {
+          // router.back();
           router.push('/');
-        }
+        // } else {
+        // }
       }
     }      
        catch (error) {

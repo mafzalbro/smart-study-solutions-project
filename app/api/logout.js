@@ -1,14 +1,24 @@
+// File: logout.js
+
+import { fetcher } from '../utils/fetcher';
+
 const handleLogout = async (router) => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/logout`, {
-      method: 'POST',
-      credentials: 'include',
+    const url = `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/logout`;
+    const token = localStorage.getItem('token'); // Retrieve the token from local storage
+
+    const res = await fetcher(url, 'POST', null, {
+      'Authorization': `Bearer ${token}`, // Include the token in the request header
     });
-    if(res) router.push('/login');
-    
+
+    if (res) {
+      localStorage.removeItem('token'); // Remove the token from local storage
+      localStorage.removeItem('isLoggedIn'); // Optionally remove the isLoggedIn flag
+      router.push('/login'); // Redirect to the login page
+    }
   } catch (error) {
     console.error('Error logging out:', error);
   }
 };
 
-export default handleLogout
+export default handleLogout;

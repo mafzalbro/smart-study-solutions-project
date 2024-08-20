@@ -1,25 +1,33 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import verifyToken from '../../api/verifyToken';
-import resetPassword from '../../api/resetPassword';
-import useAlert from '../../customHooks/useAlert';
+import verifyToken from '@/app/api/verifyToken';
+import resetPassword from '@/app/api/resetPassword';
+import useAlert from '@/app/customHooks/useAlert';
 import { useRouter, useSearchParams } from 'next/navigation';
+import PasswordInput from '@/app/components/PasswordInput';
+import SubmitButton from '@/app/components/SubmitButton';
+import WhiteContainer from '@/app/components/WhiteContainer';
+import Link from 'next/link'; // Import Link
 
 const ResetPassword = () => {
   const params = useSearchParams();
   const router = useRouter();
   const [token, setToken] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [success, setSuccess] = useAlert('', 5000); // 3 seconds
+  const [success, setSuccess] = useAlert('', 5000); // 5 seconds
   const [showPasswordField, setShowPasswordField] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('Please wait while we verify your token...');
+  const [errorMessage, setErrorMessage] = useState(''); // State to hold error message
 
   useEffect(() => {
     const tokenFromParams = params.get('token');
     if (tokenFromParams) {
       setToken(tokenFromParams);
       handleVerifyToken(tokenFromParams);
+    } else {
+      // If no token is found in the URL, show an error message
+      setErrorMessage('No verification token found. Please request a new password reset email.');
     }
   }, [params]);
 
@@ -31,11 +39,13 @@ const ResetPassword = () => {
       } else {
         setSuccess('Invalid or expired token');
         setLoadingMessage('Token verification failed');
+        setErrorMessage('Invalid or Expired token found. Please request a new password reset email.');
       }
     } catch (error) {
       console.error('Token verification failed:', error.message);
       setSuccess('Token verification failed');
       setLoadingMessage('Token verification failed');
+      setErrorMessage('Invalid or Expired token found. Please request a new password reset email.');
     }
   };
 
@@ -55,38 +65,43 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-my-bg-1 text-foreground flex items-center justify-center">
-      <div className="w-full max-w-md p-8 bg-my-bg-2 shadow-md rounded-lg">
-        <h2 className="text-2xl font-bold mb-6">Reset Password</h2>
-        {showPasswordField ? (
-          <form onSubmit={handleResetPassword} className="space-y-4">
-            <div>
-              <label className="block mb-2">Enter Your New Password:</label>
-              <input
-                type="password"
+    <WhiteContainer>
+      <h2 className="text-2xl font-bold mb-6 text-primary dark:text-secondary">Reset Password</h2>
+      {errorMessage ? (
+        <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-6">
+          <p>{errorMessage}</p>
+          <Link href="/forgot-password" className="text-link hover:underline">Go to forgot password to get email verification Link</Link>
+        </div>
+      ) : showPasswordField ? (
+        <form onSubmit={handleResetPassword} className="space-y-4">
+          <div className="relative">
+            <label className="block mb-2 text-accent-300">Enter Your New Password:</label>
+            <div className="relative">
+              <PasswordInput
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="New Password"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600"
               />
             </div>
-            <button
-              type="submit"
-              className="w-full py-2 px-4 bg-orange-600 text-white font-semibold rounded-lg shadow-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600"
-            >
-              Change Password
-            </button>
-          </form>
-        ) : (
-          <p>{loadingMessage}</p>
-        )}
-        {success && (
-          <div className={`mt-6 p-4 rounded-lg ${success.includes('failed') || success.includes('Invalid') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-            <p>{success}</p>
           </div>
-        )}
-      </div>
-    </div>
+          <SubmitButton
+            type="submit"
+            className="w-full py-2 px-4 bg-accent-500 text-white font-semibold rounded-lg hover:bg-accent-600 focus:outline-none focus:ring-2 focus:ring-accent-300"
+            processing={false}
+          >
+            Change Password
+          </SubmitButton>
+        </form>
+      ) : (
+        <p className="text-neutral-700">{loadingMessage}</p>
+      )}
+      {success && (
+        <div className={`mt-6 p-4 rounded-lg ${success.includes('failed') || success.includes('Invalid') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+          <p>{success}</p>
+        </div>
+      )}
+    </WhiteContainer>
   );
 };
 

@@ -253,7 +253,10 @@ const chatWithPdfBySlug = async (req, res) => {
     }
 
     chatOption.title = title;
-    chatOption.pdfUrls = pdfUrl.includes("http") ? Array.from(new Set([...chatOption.pdfUrls, pdfUrl])) : Array.from(new Set([...chatOption.pdfUrls]));
+
+    if(pdfUrl){
+      chatOption.pdfUrls = pdfUrl.includes("http") ? Array.from(new Set([...chatOption.pdfUrls, pdfUrl])) : Array.from(new Set([...chatOption.pdfUrls]));
+    }
 
     let pdfText = '';
     if (pdfUrl) {
@@ -263,23 +266,24 @@ const chatWithPdfBySlug = async (req, res) => {
     } else if (chatOption.pdfText) {
       pdfText = chatOption.pdfText;
     }
-
+    
     const context = JSON.parse(JSON.stringify(chatOption.chatHistory)) || [];
     let initialMessage;
-
+    
     if (context.length > 0 && pdfText) {
       context[0].user_query += ` ___-------- (PDF Document Text: ${pdfText}) -----------`;
     } else if (pdfText) {
       initialMessage = `${message} -------- (PDF Document Text: ${pdfText}) -----------`;
     }
-
+    
     let responseStream;
     if (initialMessage) {
-      responseStream = generateChatResponse(initialMessage, context, apiKey, pdfText);
+      responseStream = generateChatResponse(initialMessage, context, apiKey, pdfText, chatOption.googleCacheMetaData);
     } else {
-      responseStream = generateChatResponse(message, context, apiKey, pdfUrl, pdfText);
+      // responseStream = generateChatResponse(message, context, apiKey, pdfUrl, pdfText);
+      responseStream = generateChatResponse(message, context, apiKey, pdfText, chatOption.googleCacheMetaData);
     }
-
+    
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.setHeader('Transfer-Encoding', 'chunked');
 

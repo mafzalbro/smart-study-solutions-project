@@ -5,11 +5,12 @@ import Link from 'next/link';
 import ResourceCard from '@/app/components/resources/ResourceCard';
 import Spinner from '@/app/components/Spinner';
 import PdfModal from '@/app/components/resources/PdfModal';
-import { FaThumbsUp, FaThumbsDown, FaStar } from 'react-icons/fa';
+import { FaThumbsUp, FaThumbsDown, FaStar, FaBackward, FaChevronLeft } from 'react-icons/fa';
 import { fetcher } from '@/app/utils/fetcher';
 import StylishTitle from '@/app/components/StylishTitle';
 import Skeleton from 'react-loading-skeleton';
 import Sidebar from '@/app/components/resources/Sidebar';
+import BookViewer from '@/app/components/resources/BookViewer';
 
 
 export default function ResourcePage({ params }) {
@@ -21,6 +22,7 @@ export default function ResourcePage({ params }) {
   const [rating, setRating] = useState(0);
   const [ratingCount, setRatingCount] = useState(0);
   const [showPdfModal, setShowPdfModal] = useState(false);
+  const [showBookModal, setShowBookModal] = useState(false);
   const { slug } = params;
 
   useEffect(() => {
@@ -119,18 +121,18 @@ export default function ResourcePage({ params }) {
     <div className="resource-item container mx-auto w-[95vw] md:w-[90vw] mb-10">
       <section className='flex gap-8 flex-col md:flex-row'>
 
-      <main className='text-neutral-700 md:w-[66%] dark:text-neutral-300 bg-secondary dark:bg-neutral-800 shadow-md bg-clip-border rounded-xl mt-10 p-10'>
-        <Link href="/resources">
-          <span className="block md:inline-block py-2 px-4 bg-accent-600 text-white rounded-lg shadow-sm hover:bg-accent-700 dark:bg-accent-600 dark:hover:bg-accent-700">
-            &larr; &nbsp; Back to Resources
-          </span> 
+      <main className='text-neutral-700 md:w-[66%] dark:text-neutral-300 bg-secondary dark:bg-neutral-800 shadow-md bg-clip-border rounded-lg mt-10 p-10'>
+        <Link href="/resources" className='text-accent-600 dark:text-accent-300'>
+          {/* <span className="block md:inline-block py-2 px-4 bg-accent-600 text-white rounded-lg shadow-sm hover:bg-accent-700 dark:bg-accent-600 dark:hover:bg-accent-700"> */}
+            <FaChevronLeft className='mr-1 inline-block'/> Back to Resources
+          {/* </span>  */}
         </Link>
         <div className='flex space-x-4 mt-10'>
           <p className="text-neutral-700 dark:text-neutral-300 mb-2"><strong>Type:</strong>
-          <Link href={`/resources/type/${resource?.type?.split(' ').join('-')}`} className='text-accent-500 hover:text-accent-600 transition-all duration-100 capitalize'> {resource?.type} </Link>
+          <Link href={`/resources/type/${resource?.type?.split(' ').join('-')}`} className='text-accent-500 hover:text-accent-600 dark:text-accent-300 transition-all duration-100 capitalize'> {resource?.type} </Link>
           </p>
 
-          <p className="text-neutral-700 dark:text-neutral-300 mb-2"><strong>Tags:</strong> {resource?.tags.map((tag, i) => <Link key={i} href={`/resources/tag/${tag?.split(' ').join('-')}`} className='text-accent-500 hover:text-accent-600 transition-all duration-100 capitalize' tabIndex={1}>{tag}{resource?.tags[resource?.tags.length - 1] !== tag && ','} </Link>)}</p>
+          <p className="text-neutral-700 dark:text-neutral-300 mb-2"><strong>Tags:</strong> {resource?.tags.map((tag, i) => <Link key={i} href={`/resources/tag/${tag?.split(' ').join('-')}`} className='text-accent-500 hover:text-accent-600 dark:text-accent-300 transition-all duration-100 capitalize' tabIndex={1}>{tag}{resource?.tags[resource?.tags.length - 1] !== tag && ','} </Link>)}</p>
 
           
           <p className="text-neutral-700 dark:text-neutral-300
@@ -145,14 +147,29 @@ mb-2"><strong>Published At:</strong> {new Date(resource?.createdAt).toLocaleDate
           <img src={resource?.profileImage} alt={resource?.title} className="mb-4" />
         )}
         <p className="block mb-2 text-xl antialiased leading-snug tracking-normal text-blue-gray-900 font-normal">{resource?.description}</p>
+
+        <p className='my-10'>
         {resource?.pdfLink[0] && (
           <button
-            onClick={() => setShowPdfModal(true)}
-            className="block md:inline-block py-2 px-4 bg-accent-600 text-white rounded-lg shadow-sm hover:bg-accent-700 dark:bg-accent-600 dark:hover:bg-accent-700"
+          onClick={() => setShowPdfModal(true)}
+          className="block md:inline-block py-2 px-4 bg-accent-600 text-white rounded-lg shadow-sm hover:bg-accent-700 dark:bg-accent-600 dark:hover:bg-accent-700 mr-2"
           >
             View PDF
           </button> 
         )}
+
+        {resource?.pdfLink[0] && (
+          <button
+          onClick={() => setShowBookModal(true)}
+          className="block md:inline-block py-2 px-4 bg-accent-600 text-white rounded-lg shadow-sm hover:bg-accent-700 dark:bg-accent-600 dark:hover:bg-accent-700"
+          >
+            View PDF as a Book
+          </button> 
+        )}
+
+        </p>
+
+
         <div className="flex items-center my-20 space-x-4">
           <button onClick={handleLike} className="flex items-center text-neutral-700 dark:text-neutral-300">
             <FaThumbsUp className="mr-2" /> {likes}
@@ -196,6 +213,15 @@ mb-2"><strong>Published At:</strong> {new Date(resource?.createdAt).toLocaleDate
     <PdfModal
       fileUrl={resource.pdfLink[0]}
       onClose={() => setShowPdfModal(false)}
+      />
+      </div>
+  )}
+  {showBookModal && (
+    <div className='fixed flex justify-center top-0 left-0 bg-primary bg-opacity-80 w-full h-screen'>
+      
+      <BookViewer
+      pdfUrl={resource?.pdfLink[0]} 
+      onClose={() => setShowBookModal(false)}
       />
       </div>
   )}

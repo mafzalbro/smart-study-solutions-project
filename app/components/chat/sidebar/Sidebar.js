@@ -168,7 +168,7 @@ export default function Sidebar({ chatHistory, slug, pdfuri }) {
 
   return (
     <>
-      <div className={`sidebar md:w-1/4 md:opacity-100 ${!isSidebarVisible ? 'w-0 overflow-hidden p-0 opacity-0 pointer-events-none md:pointer-events-auto' : 'pointer-events-auto overflow-auto p-4 fixed md:relative w-[55%] h-full opacity-100'} bg-secondary bg-opacity-90 bg-blend-color-dodge md:bg-transparent text-primary dark:text-secondary dark:bg-neutral-800 md:p-4 flex flex-col gap-10 transition-opacity ease-in-out duration-500 z-20 dark:shadow-2xl md:border-r dark:border-none`}>
+      <div className={`sidebar md:w-1/4 md:opacity-100 backdrop-blur-sm ${!isSidebarVisible ? 'w-0 overflow-hidden p-0 opacity-0 pointer-events-none md:pointer-events-auto' : 'pointer-events-auto overflow-auto p-4 fixed md:relative w-[55%] h-full opacity-100'} bg-secondary bg-opacity-80 bg-blend-color-dodge md:bg-transparent text-primary dark:text-secondary dark:bg-neutral-800 md:p-4 flex flex-col gap-10 transition-opacity ease-in-out duration-500 z-20 dark:shadow-2xl md:border-r dark:border-none`}>
         <SidebarHeader />
         <NewChatButton />
         <SidebarTabs activeTab={activeTab} setActiveTab={setActiveTab} />

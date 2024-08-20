@@ -1,7 +1,7 @@
 import React from 'react';
-import { FaStar } from 'react-icons/fa'; // Example icon, you can use any icon library
+import { FaToiletPaper } from 'react-icons/fa'; 
 
-const MainHeading = ({ name, icon: Icon = FaStar }) => {
+const MainHeading = ({ name, icon: Icon = FaToiletPaper }) => {
   return (
     <div className="my-16 mt-32 flex flex-col items-center">
       <div className="flex items-center mb-4">
@@ -11,7 +11,7 @@ const MainHeading = ({ name, icon: Icon = FaStar }) => {
         </h2>
       </div>
       <div className="w-full flex justify-center">
-        <span className="block w-1/4 border-t-2 border-neutral-300 dark:border-neutral-600"></span>
+        <span className="block w-1/4 border-t-2 border-neutral-200 dark:border-neutral-800"></span>
       </div>
     </div>
   );
