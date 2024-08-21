@@ -57,17 +57,17 @@ const BookViewer = ({ pdfUrl, onClose }) => {
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-center p-4 md:w-[50vw] min-h-screen overflow-hidden">
-      <button onClick={onClose} className='z-10 absolute right-10 top-10 text-secondary hover:text-accent-200'><GrClose /></button>
-      {loading && <p>Loading...</p>}
+    <div className="relative flex flex-col items-center justify-center pt-4 mx-auto md:w-[50vw] min-h-screen overflow-hidden">
+      <button onClick={onClose} className='z-10 absolute top-1 right-1 md:right-10 md:top-10 bg-primary bg-opacity-30 p-2 rounded-full backdrop-blur-sm text-secondary hover:text-accent-200'><GrClose /></button>
+      {loading && <p className='text-secondary'>Loading...</p>}
       {!loading && pages.length > 0 && (
         <>
           <HTMLFlipBook
             ref={flipBook}
-            width={800} // Set the width of the flip book
-            height={700} // Set the height of the flip book
-            className="shadow-xl"
-            style={{ position: 'relative', height: 'auto', width: '100%', top: 'auto', left: 'auto', right: 0 }}
+            width={30} // Set the width of the flip book
+            height={50} // Set the height of the flip book
+            className="shadow-xl scale-80 md:scale-100"
+            style={{ position: 'relative', height: 'auto', width: '100%', top: 'auto', left: 'auto', right: 0, objectFit: 'contain' }}
             onFlip={(e) => setCurrentPage(e.data)}
           > 
             {pages.map((page, index) => (
@@ -80,7 +80,8 @@ const BookViewer = ({ pdfUrl, onClose }) => {
               </div>
             ))}
           </HTMLFlipBook>
-          <div className="flex space-x-4 mt-4 fixed bottom-20">
+          <div className='flex justify-around items-center bg-primary bg-opacity-30 backdrop-blur-sm fixed bottom-0 right-0 left-0'>
+          <div className="flex space-x-4">
             <button
               onClick={goToPreviousPage}
               className={`px-4 py-2 text-secondary hover:text-accent-200 rounded-full shadow ${currentPage === 0 && 'hidden'}`}
@@ -96,10 +97,11 @@ const BookViewer = ({ pdfUrl, onClose }) => {
               <GrNext />
             </button>
           </div>
-          <div className="mt-4 fixed bottom-10 text-secondary">
-            <p className="text-center">
+          <div className="text-secondary">
+            <p className="text-center text-sm">
               Page {currentPage + 1} of {pages.length}
             </p>
+          </div>
           </div>
         </>
       )}

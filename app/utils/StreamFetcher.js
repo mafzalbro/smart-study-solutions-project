@@ -5,11 +5,13 @@ import { useState, useEffect } from 'react';
 const StreamFetcher = ({ url, body, onResponse, onError, onComplete }) => {
   const [isFetching, setIsFetching] = useState(false);
 
+
+  console.log({url})
   useEffect(() => {
     const fetchStream = async () => {
       setIsFetching(true);
 
-      try {
+      // try {
         const token = localStorage.getItem('token'); // Get token from local storage
 
         const response = await fetch(url, {
@@ -17,7 +19,7 @@ const StreamFetcher = ({ url, body, onResponse, onError, onComplete }) => {
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
-            ...(token ? { 'Authorization': `Bearer ${token}` } : {}), // Include token in headers
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
           },
           body: JSON.stringify(body),
         });
@@ -34,21 +36,23 @@ const StreamFetcher = ({ url, body, onResponse, onError, onComplete }) => {
         const firstChunk = await reader.read();
         fullMessage += decoder.decode(firstChunk.value);
         onResponse(fullMessage);
+        console.log({fullMessage})
 
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
           fullMessage += decoder.decode(value);
+          console.log({fullMessage})
           onResponse(fullMessage);
         }
 
         onComplete();
-      } catch (error) {
-        console.error('Error:', error);
-        onError(error);
-      } finally {
-        setIsFetching(false);
-      }
+      // } catch (error) {
+      //   console.error('Error:', error);
+      //   onError(error);
+      // } finally {
+        // }
+          setIsFetching(false);
     };
 
     fetchStream();

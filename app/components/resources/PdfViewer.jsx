@@ -34,11 +34,11 @@ const PdfViewer = ({ fileUrl, onClose, onFullscreen, isFullscreen, version = '3.
 
   return (
     <div
-      className={`mx-auto fixed inset-0 bg-black bg-opacity-70 z-50 pdf-viewer-transition ${
-        isFullscreen ? 'w-full h-screen' : 'w-full max-w-4xl h-[46vh]'
+      className={`mx-auto fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 pdf-viewer-transition ${
+        isFullscreen ? 'w-full h-screen' : 'w-full max-w-4xl h-[60vh]'
       }`}
     >
-      <div className="p-10 relative w-full h-full dark:bg-neutral-800 rounded-lg shadow-lg overflow-auto">
+      <div className="pt-10 md:p-10 relative w-full h-full dark:bg-neutral-800 rounded-lg shadow-lg overflow-auto">
         <button
           onClick={onClose}
           className="absolute top-2 right-2 text-white text-xl bg-accent-600 hover:bg-accent-700 rounded-full p-2"
@@ -52,7 +52,7 @@ const PdfViewer = ({ fileUrl, onClose, onFullscreen, isFullscreen, version = '3.
           {isFullscreen ? <RxExitFullScreen /> : <RxEnterFullScreen />}
         </button>
 
-        <div className="p-4 h-full overflow-auto">
+        <div className="p-2 md:p-4 h-full overflow-auto">
           <Worker workerUrl={`https://unpkg.com/pdfjs-dist@${version}/build/pdf.worker.min.js`}>
             <Viewer
               fileUrl={fileUrl}

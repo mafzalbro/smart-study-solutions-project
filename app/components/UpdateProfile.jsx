@@ -104,11 +104,11 @@ const UpdateProfile = () => {
             onChange={handleImageUpload}
             className="hidden"
             id="fileInput"
-            ref={fileInputRef} // Attach the ref to the file input element
+            ref={fileInputRef}
           />
           <label
             htmlFor="fileInput"
-            className="flex items-center gap-4 w-full md:w-3/4 mt-1 py-4 px-4 border rounded-lg cursor-pointer focus:ring-2 focus:ring-accent-600 outline-none bg-white dark:bg-neutral-800 text-gray-800 dark:text-gray-300 border-neutral-300 dark:border-neutral-600"
+            className="flex items-center gap-4 w-full mt-1 py-4 px-4 border rounded-lg cursor-pointer focus:ring-2 focus:ring-accent-600 outline-none bg-white dark:bg-neutral-800 text-gray-800 dark:text-gray-300 border-neutral-300 dark:border-neutral-600"
           >
             <MdOutlineCloudUpload className="text-accent-600" /> <span>Choose File</span>
           </label>
@@ -162,7 +162,7 @@ const UpdateProfile = () => {
             value={user.role || ''}
             onChange={(e) => setUser({ ...user, role: e.target.value })}
             required
-            className="block w-full md:w-3/4 mt-1 py-4 px-4 border rounded-lg focus:ring-2 focus:ring-accent-600 outline-none bg-white dark:bg-neutral-800 text-gray-800 dark:text-gray-300 border-neutral-300 dark:border-neutral-700"
+            className="block w-full mt-1 py-4 px-4 border rounded-lg focus:ring-2 focus:ring-accent-600 outline-none bg-white dark:bg-neutral-800 text-gray-800 dark:text-gray-300 border-neutral-300 dark:border-neutral-700"
           >
             <option value="student">Student</option>
             <option value="teacher">Teacher</option>

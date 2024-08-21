@@ -8,7 +8,6 @@ import Footer from './components/Footer';
 import { ToastContainer } from 'react-toastify';
 import { SkeletonTheme } from 'react-loading-skeleton';
 
-
 export const metadata = {
   title: "Smart Study Solutions",
   description: "Let's learn anything about your degree",
@@ -22,7 +21,9 @@ const RootLayout = ({ children }) => {
   return (
     <html lang="en">
       <body className={`${font.className} text-primary dark:text-secondary`}>
-      <SkeletonTheme >
+      {/* <SkeletonTheme color="#eeeeee20" highlightColor="#44444420" baseColor='#eeeeee20'> */}
+      <SkeletonTheme color="#eeeeee0" highlightColor="#44444410" baseColor='#eeeeee02'>
+      <div className="gradient-skeleton">
       <ToastContainer stacked containerId={font.className}/>
         <AuthProvider>
           {/* <AppStateProvider> */}
@@ -33,6 +34,7 @@ const RootLayout = ({ children }) => {
           {/* </AppStateProvider> */}
         </AuthProvider>
         <Footer />
+        </div>
         </SkeletonTheme>
       </body>
     </html>

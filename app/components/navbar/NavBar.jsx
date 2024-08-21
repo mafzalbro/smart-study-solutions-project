@@ -99,7 +99,7 @@ const NavBar = () => {
   };
 
   const getActiveLinkClass = (linkPath) => {
-    return pathname === linkPath ? 'text-blue-500 dark:text-blue-300 font-semibold' : '';
+    return pathname === linkPath ? 'text-blue-500 dark:text-blue-300' : '';
   };
 
     useEffect(() => {
@@ -157,7 +157,7 @@ const NavBar = () => {
   if (loading) {
     return (
       <nav
-      className={`sticky top-0 z-50 backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-4 shadow-lg text-primary dark:text-secondary bg-opacity-80 transition-transform ${
+      className={`sticky top-0 translate-y-0 z-50 bg-opacity-80 dark:bg-opacity-80 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-2 px-4 md:p-4 shadow-lg text-primary dark:text-secondary ${
         scrollDirection === 'down' ? 'translate-y-[-100%]' : 'translate-y-0'
       }`}
     >
@@ -182,7 +182,7 @@ const NavBar = () => {
 
   return (
     <nav
-      className={`sticky top-0 z-50 backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-4 shadow-lg text-primary dark:text-secondary bg-opacity-80 transition-transform ${
+      className={`sticky top-0 z-50 bg-opacity-80 dark:bg-opacity-80 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-2 px-4 md:p-4 shadow-lg text-primary dark:text-secondary ${
         scrollDirection === 'down' ? 'translate-y-[-100%]' : 'translate-y-0'
       }`}
     >

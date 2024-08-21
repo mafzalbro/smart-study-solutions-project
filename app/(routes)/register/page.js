@@ -11,6 +11,8 @@ import SubmitButton from '@/app/components/SubmitButton';
 import TextInputField from '@/app/components/TextInputField';
 import PasswordInput from '@/app/components/PasswordInput';
 import CardContainer from '@/app/components/WhiteContainer';
+import { MdEmail, MdFavorite } from 'react-icons/md';
+import { FaUser } from 'react-icons/fa';
 
 
 const RegisterForm = () => {
@@ -45,7 +47,7 @@ const RegisterForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center my-10">
       <CardContainer className="w-full max-w-md p-6 md:p-8 bg-secondary shadow-lg rounded-lg">
         <h2 className="text-2xl font-bold mb-6 text-primary dark:text-secondary">Create an Account</h2>
         <form
@@ -56,14 +58,17 @@ const RegisterForm = () => {
           className="space-y-4"
         >
           <TextInputField
-            label="Username"
+            icon={MdEmail}
+            placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
-          />
+            />
+
           <TextInputField
+            icon={FaUser}
+            placeholder="Email"
             type="email"
-            label="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -86,8 +91,10 @@ const RegisterForm = () => {
               <option value="teacher" className='text-primary'>Teacher</option>
             </select>
           </div>
+          
           <TextInputField
-            label="Favorite Genre"
+            icon={MdFavorite}
+            placeholder="Favorite Genre"
             value={favoriteGenre}
             onChange={(e) => setFavoriteGenre(e.target.value)}
             required

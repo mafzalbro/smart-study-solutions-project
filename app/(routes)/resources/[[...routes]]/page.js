@@ -145,14 +145,14 @@ export default function ResourcesPage({ params }) {
             className='text-center'
           />
 
-          <div className="flex justify-center mx-4 my-10">
+          <div className="flex justify-center mx-4 my-20">
             <TextInputField
               type="text"
               placeholder="Search questions..."
               value={searchTerm}
               noMargin
               onChange={handleSearchChange}
-              className="py-5 px-10 border border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800 outline-none focus:ring-accent-400 rounded-full w-full max-w-md focus:outline-none ring-2 focus:ring-4 ring-accent-500"
+              className="py-5 px-10 border border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800 outline-none focus:ring-accent-400 rounded-full w-full max-w-md focus:outline-none focus:ring-2 ring-accent-500"
               style={{ maxWidth: "600px" }}
             />
           </div>
@@ -166,19 +166,17 @@ export default function ResourcesPage({ params }) {
             />
             <div className="flex-1">
               {isLoading && resources.length === 0 ? (
-                <SkeletonTheme>
                   <div className="flex flex-col gap-4">
                     <Skeleton height={250} />
                     <Skeleton height={250} />
                     <Skeleton height={250} />
                   </div>
-                </SkeletonTheme>
               ) : error ? (
                 <p className="text-center text-red-500 mt-5">
                   Error fetching resources: {error.message}
                 </p>
               ) : resources.length === 0 ? (
-                <p className="text-center text-gray-500 mt-5">Nothing here.</p>
+                <p className="text-center text-gray-500 my-10">Nothing here.</p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {resources.map((resource) => (

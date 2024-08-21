@@ -85,7 +85,7 @@ const AddAPIKey = () => {
 
   const handleChangeApiKey = () => {
     setIsChangingApiKey(true);
-    setApiKey('');
+    // setApiKey('');
   };
 
   const handleCancelChange = () => {
@@ -100,7 +100,7 @@ const AddAPIKey = () => {
       {initialLoad ? (
         <Spinner />
       ) : valid && apiKey && !isChangingApiKey ? (
-        <div className="mt-4 p-4 relative bg-accent-50 text-accent-700 rounded-lg truncate transition-opacity duration-1000 opacity-100">
+        <div className="mt-4 p-4 relative bg-accent-50 text-accent-700 rounded-lg truncate transition-opacity duration-1000 opacity-100 pr-16">
           {showApiKey ? apiKey : '•'.repeat(apiKey.length)}
           <button
             onClick={toggleShowApiKey}

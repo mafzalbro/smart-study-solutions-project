@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const Resource = require('../models/resource');
 const { recommendResources } = require('../services/resourceRecommendation');
 const { getNextSequenceValue } = require('../utils/autoIncrement');
@@ -22,17 +23,46 @@ const recommendResource = async (req, res) => {
 // Get a resource by slug
 const getResourceBySlug = async (req, res) => {
   const { slug } = req.params;
+  let userId;
+  const token = req.headers.authorization;
+  
+  if(token){
+    const trimToken = token.replace('Bearer ', '').trim()
+    jwt.verify(trimToken, process.env.JWT_SECRET, (err, user) => {
+      if (err) {
+        return res.status(403).json({ message: 'Invalid token' });
+      }
+      req.user = user
+      userId = req.user.id
+    })
+  }
+    
   try {
     const resource = await Resource.findOne({ slug });
     if (!resource) {
       return res.status(404).json({ message: 'Resource not found' });
     }
-    res.status(200).json(resource);
+
+    if(userId){
+      // Determine if the user has liked, disliked, or rated the resource
+      const hasLiked = resource.likedBy.includes(userId);
+      const hasDisliked = resource.dislikedBy.includes(userId);
+      const hasRated = resource.ratings.some(r => r.userId.toString() === userId.toString()); 
+      res.status(200).json({
+        ...resource._doc,
+        hasLiked,
+        hasDisliked,
+        hasRated
+      });
+    } else {
+      res.status(200).json(resource);
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error fetching resource by slug' });
   }
 };
+
 
 // Add a new resource
 const addResource = async (req, res) => {
@@ -145,7 +175,8 @@ const getAllResources = async (req, res) => {
 // Like a resource by slug
 const likeResource = async (req, res) => {
   const { slug } = req.params;
-  const userId = req.user.id; // Assuming user ID is available in the request
+  const userId = req.user.id;
+
   try {
     const resource = await Resource.findOne({ slug });
     if (!resource) {
@@ -154,7 +185,14 @@ const likeResource = async (req, res) => {
 
     // Check if the user has already liked the resource
     if (resource.likedBy.includes(userId)) {
-      return res.status(400).json({ message: 'You have already liked this resource', likes: resource.likes, dislikes: resource.dislikes });
+      return res.status(400).json({
+        message: 'You have already liked this resource',
+        likes: resource.likes,
+        dislikes: resource.dislikes,
+        hasLiked: true,
+        hasDisliked: resource.dislikedBy.includes(userId),
+        hasRated: resource.ratings.some(r => r.userId.toString() === userId.toString())
+      });
     }
 
     // If the user has disliked the resource, remove the dislike
@@ -168,17 +206,26 @@ const likeResource = async (req, res) => {
     resource.likedBy.push(userId);
     await resource.save();
 
-    res.status(200).json({ message: 'Resource liked successfully', likes: resource.likes, dislikes: resource.dislikes });
+    res.status(200).json({
+      message: 'Resource liked successfully',
+      likes: resource.likes,
+      dislikes: resource.dislikes,
+      hasLiked: true,
+      hasDisliked: false,
+      hasRated: resource.ratings.some(r => r.userId.toString() === userId.toString())
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error liking resource' });
   }
 };
 
+
 // Dislike a resource by slug
 const dislikeResource = async (req, res) => {
   const { slug } = req.params;
-  const userId = req.user.id; // Assuming user ID is available in the request
+  const userId = req.user.id;
+
   try {
     const resource = await Resource.findOne({ slug });
     if (!resource) {
@@ -187,7 +234,14 @@ const dislikeResource = async (req, res) => {
 
     // Check if the user has already disliked the resource
     if (resource.dislikedBy.includes(userId)) {
-      return res.status(400).json({ message: 'You have already disliked this resource', likes: resource.likes, dislikes: resource.dislikes });
+      return res.status(400).json({
+        message: 'You have already disliked this resource',
+        likes: resource.likes,
+        dislikes: resource.dislikes,
+        hasLiked: resource.likedBy.includes(userId),
+        hasDisliked: true,
+        hasRated: resource.ratings.some(r => r.userId.toString() === userId.toString())
+      });
     }
 
     // If the user has liked the resource, remove the like
@@ -201,7 +255,14 @@ const dislikeResource = async (req, res) => {
     resource.dislikedBy.push(userId);
     await resource.save();
 
-    res.status(200).json({ message: 'Resource disliked successfully', likes: resource.likes, dislikes: resource.dislikes });
+    res.status(200).json({
+      message: 'Resource disliked successfully',
+      likes: resource.likes,
+      dislikes: resource.dislikes,
+      hasLiked: false,
+      hasDisliked: true,
+      hasRated: resource.ratings.some(r => r.userId.toString() === userId.toString())
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error disliking resource' });
@@ -211,7 +272,8 @@ const dislikeResource = async (req, res) => {
 const rateResource = async (req, res) => {
   const { slug } = req.params;
   const { rating } = req.body;
-  const userId = req.user.id; // Assuming user ID is available in the request
+  const userId = req.user.id;
+
   try {
     if (!rating) {
       return res.status(400).json({ message: 'Rating key in request body is required' });
@@ -234,7 +296,12 @@ const rateResource = async (req, res) => {
     const existingRating = resource.ratings.find(r => r.userId.toString() === userId.toString());
 
     if (existingRating) {
-      return res.status(400).json({ message: 'You have already rated this resource' });
+      return res.status(400).json({
+        message: 'You have already rated this resource',
+        hasLiked: resource.likedBy.includes(userId),
+        hasDisliked: resource.dislikedBy.includes(userId),
+        hasRated: true
+      });
     }
 
     // Add the new rating
@@ -243,7 +310,13 @@ const rateResource = async (req, res) => {
     resource.ratingCount += 1;
 
     await resource.save();
-    res.status(200).json({ message: 'Resource rated successfully', resource });
+    res.status(200).json({
+      message: 'Resource rated successfully',
+      // resource,
+      hasLiked: resource.likedBy.includes(userId),
+      hasDisliked: resource.dislikedBy.includes(userId),
+      hasRated: true
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error rating resource' });

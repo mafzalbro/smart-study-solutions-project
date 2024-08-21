@@ -16,10 +16,10 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: radial-gradient(circle at 20% 20%, rgba(var(--blue-color), 0.01) 0%, rgba(var(--red-color), 0) 100%),
-              radial-gradient(circle at 80% 80%, rgba(var(--blue-color), 0.01) 0%, rgba(var(--orange-color), 0) 100%),
-              radial-gradient(circle at 50% 50%, rgba(var(--blue-color), 0.01) 0%, rgba(var(--green-color), 0) 100%),
-              radial-gradient(circle at 30% 70%, rgba(var(--blue-color), 0.01) 0%, rgba(var(--orange-color), 0) 100%),
+  background: radial-gradient(circle at 20% 20%, rgba(var(--blue-color), 0.02) 0%, rgba(var(--red-color), 0.01) 100%),
+              radial-gradient(circle at 80% 80%, rgba(var(--blue-color), 0.02) 0%, rgba(var(--orange-color), 0.01) 100%),
+              radial-gradient(circle at 50% 50%, rgba(var(--blue-color), 0.02) 0%, rgba(var(--green-color), 0.01) 100%),
+              radial-gradient(circle at 30% 70%, rgba(var(--blue-color), 0.02) 0%, rgba(var(--orange-color), 0.01) 100%),
               rgb(var(--background-start-rgb));
   background-attachment: fixed;
   background-repeat: no-repeat;
@@ -45,18 +45,45 @@ html.dark body {
   scroll-behavior: smooth;
 }
 
+
 ::selection{
   background-color: blue;
   color: white;
 }
 
+
 .relative.flex.flex-col.text-gray-700.bg-white.shadow-md.bg-clip-border.rounded-xl {
   width: 400px;
 }
 
+
+.scrollbar-hide::-webkit-scrollbar{
+  display: none;
+}
+
+
+.gradient-skeleton .react-loading-skeleton {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%) !important;
+  animation: gradientOpacityAnimation 1.8s ease-in-out infinite alternate !important; /* Adjusted animation timing */
+}
+
+@keyframes gradientOpacityAnimation {
+  0% {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.1));
+  }
+  50% {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0.3));
+  }
+  100% {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.5));
+  }
+}
+
+
 label {
   color: #333;
 }
+
 html.dark label {
   color: #eee;
 }
