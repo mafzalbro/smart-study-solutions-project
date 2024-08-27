@@ -93,12 +93,12 @@ const QuestionPage = ({ params }) => {
 
       setIsUpvotedAnswer(prev => ({
         ...prev,
-        [index]: data ? data?.isUpvoted : !prev[index]
+        [index]: data ? data?.isUpvoted : prev[index] ? true : false
       }));
 
       setIsDownvotedAnswer(prev => ({
         ...prev,
-        [index]: data ? data?.isDownvoted : !prev[index]
+        [index]: data ? data?.isDownvoted : prev[index] ? true : false
       }));
       
       setUpvotesAnswerCount(prev => ({
@@ -322,7 +322,7 @@ const QuestionPage = ({ params }) => {
 
           {Array.isArray(question?.answers) && question?.answers?.length > 0 ? (
             question?.answers?.map((answer, index) => (
-              <div key={index} className={`mb-4 p-8 pt-0 rounded-lg dark:bg-neutral-800 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-600 transition-all duration-300 ${expandedAnswers[index] ? 'h-full': 'h-auto'}`}>
+              <div key={index} className={`relative mb-4 p-8 pt-0 rounded-lg dark:bg-neutral-800 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-600 transition-all duration-300 ${expandedAnswers[index] ? 'h-full': 'h-auto'}`}>
                 <div className="flex justify-between cursor-pointer pt-8" onClick={()=> toggleAnswerVisibility(index)}>
                 <h3 className="text-lg font-medium">Answer {index + 1}</h3>
                 <span className='cursor-pointer'>
@@ -335,7 +335,7 @@ const QuestionPage = ({ params }) => {
                   </div>
 
                 {expandedAnswers[index] &&
-                <>
+                <div className={`transition-all duration-400 ease-in-out ${expandedAnswers[index] ? '-top-10': 'top-0'}`}>
                 <hr className="w-60 my-5" />
                 <div
                   dangerouslySetInnerHTML={{ __html: answer?.answerText }}
@@ -392,7 +392,7 @@ const QuestionPage = ({ params }) => {
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   Answered at: {new Date(answer?.createdAt).toLocaleString()}
                 </p>
-                </>
+                </div>
                 }
               </div>
             ))
