@@ -4,6 +4,8 @@ const NotificationService = require('../services/notificationService');
 
 const resourceSchema = new Schema({
   title: { type: String, required: true },
+  semester: { type: String, required: true },
+  degree: { type: String, required: true },
   type: { type: String, required: true },
   slug: { type: String, required: true },
   description: { type: String, required: true },

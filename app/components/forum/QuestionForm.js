@@ -4,8 +4,10 @@ import AlertMessage from '@/app/components/AlertMessage';
 import TextInputField from '@/app/components/TextInputField';
 import TextAreaField from '@/app/components/TextAreaField';
 import WhiteContainer from '../WhiteContainer';
+import { useRouter } from 'next-nprogress-bar' 
 
 const QuestionForm = ({ onSuccess, onClose }) => {
+  const router = useRouter()
   const [question, setQuestion] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
@@ -31,11 +33,16 @@ const QuestionForm = ({ onSuccess, onClose }) => {
     const tagsArray = tags.split(',').map(tag => tag.trim());
 
     try {
-      await fetcher(
+      const data = await fetcher(
         `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/qna/submit`,
         'POST',
         { question, description, category, tags: tagsArray }
       );
+
+      console.log({data})
+      console.log(data.newQuestion.slug)
+
+      router.push(`/forum/${data.newQuestion.slug}`)
 
       setQuestion('');
       setDescription('');

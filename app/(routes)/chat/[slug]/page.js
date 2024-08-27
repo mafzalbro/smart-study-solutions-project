@@ -6,6 +6,7 @@ import MessageInput from '../../../components/chat/MessageInput';
 import Sidebar from '../../../components/chat/sidebar/Sidebar';
 import Loader from '../../../components/chat/Loader';
 import { fetcher } from '@/app/utils/fetcher';
+import NewChatButton from '@/app/components/chat/NewChatButton';
 
 export default function Chat({ params }) {
   const { slug } = params;
@@ -49,6 +50,7 @@ export default function Chat({ params }) {
 
   return (
     <div className='chat-home flex h-screen'>
+      <NewChatButton stickyBtn={true} />
       <Sidebar chatHistory={chatHistory} slug={slug} pdfuri={pdfUrls}/>
       <div className="flex flex-col w-full md:w-3/4">
         <ChatHistory chatHistory={chatHistory} pdfUrls={pdfUrls} loading={loading} />

@@ -2,6 +2,7 @@ const Question = require('../models/qna');
 const Category = require('../models/category');
 const Notification = require('../models/notification');
 const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 const slugify = require('slugify');
 const { paginateResults } = require('../utils/pagination');
 
@@ -17,7 +18,7 @@ const submitQuestion = async (req, res) => {
 
     const newQuestion = new Question({
       question,
-      askedBy: req.user.id,
+      askedBy: req?.user?.id,
       category,
       tags,
       slug: slugify(question, { lower: true, strict: true })
@@ -42,7 +43,7 @@ const answerQuestion = async (req, res) => {
 
     // Check for duplicate answers
     const duplicateAnswer = question.answers.find(
-      (answer) => answer.answerText === answerText && answer.answeredBy.toString() === req.user.id.toString()
+      (answer) => answer.answerText === answerText && answer.answeredBy.toString() === req?.user?.id.toString()
     );
     if (duplicateAnswer) {
       return res.status(400).json({ message: 'Duplicate answer. This answer has already been submitted.' });
@@ -50,7 +51,7 @@ const answerQuestion = async (req, res) => {
 
     const newAnswer = {
       answerText,
-      answeredBy: req.user.id
+      answeredBy: req?.user?.id
     };
 
     question.answers.push(newAnswer);
@@ -67,13 +68,13 @@ const getAllQuestions = async (req, res) => {
   const { page = 1, limit = 10, sortBy, filterBy, query } = req.query;
   
   let queryOptions = {};
-  let sortOptions = {};
+  let sortOptions = { createdAt: -1 }; // Default sorting by newest first
 
   try {
     // Parse sorting options
     if (sortBy) {
       const [field, direction] = sortBy.split(':');
-      sortOptions[field] = direction === 'desc' ? -1 : 1;
+      sortOptions = { [field]: direction === 'desc' ? -1 : 1 };
     }
 
     // Parse filtering options
@@ -103,10 +104,9 @@ const getAllQuestions = async (req, res) => {
         .populate({
           path: 'category',
           select: 'name _id',
-        }),
+        }).sort(sortOptions),
       parseInt(page),
       parseInt(limit),
-      sortOptions
     );
 
     // Modify questions data to include the required fields
@@ -133,9 +133,21 @@ const getAllQuestions = async (req, res) => {
 };
 
 // Get a specific question by slug
-// Get a specific question by slug
 const getQuestionBySlug = async (req, res) => {
   const { slug } = req.params;
+
+  const token = req.headers.authorization;
+  
+  if(token){
+    const trimToken = token.replace('Bearer ', '').trim()
+    jwt.verify(trimToken, process.env.JWT_SECRET, (err, user) => {
+      if (err) {
+        return res.status(403).json({ message: 'Invalid token' });
+      }
+      req.user = user
+    })
+  }
+
   try {
     const question = await Question.findOne({ slug })
       .populate('category')
@@ -149,19 +161,43 @@ const getQuestionBySlug = async (req, res) => {
       });
 
     if (!question) {
-      return res.status(404).json({ message: 'Question not found' });
+      return res.status(404).json({ message: 'This question is not found' });
     }
 
     // Calculate number of upvotes and downvotes
     const upvotesCount = question.upvotedBy.length;
     const downvotesCount = question.downvotedBy.length;
 
+    // Check if current user has upvoted or downvoted this answer
+    const isUpvoted = question.upvotedBy.includes(req?.user?.id);
+    const isDownvoted = question.downvotedBy.includes(req?.user?.id);
+
+    const answers = question?.answers.map(answer => {
+
+      const isUpvoted = answer.upvotedBy.includes(req?.user?.id);
+      const isDownvoted = answer.downvotedBy.includes(req?.user?.id);
+
+    // Calculate upvotes and downvotes counts
+      const upvotesCount = answer.upvotedBy.length;
+      const downvotesCount = answer.downvotedBy.length;
+
+      return {
+        ...answer.toJSON(),
+        isUpvoted,
+        isDownvoted,
+        upvotesCount,
+        downvotesCount
+      }
+      })
+
+      // console.log(JSON.stringify(answers, null, 2))
+
     // Prepare the response object including upvotes and downvotes
     const response = {
       _id: question?._id,
       slug: question.slug,
       question: question.question,
-      answers: question.answers,
+      answers: answers,
       askedBy: {
         _id: question.askedBy?._id,
         username: question.askedBy.username,
@@ -173,7 +209,8 @@ const getQuestionBySlug = async (req, res) => {
       },
       upvotesCount,
       downvotesCount,
-      // Add other fields as needed
+      isUpvoted,
+      isDownvoted
     };
 
     res.status(200).json(response);
@@ -336,12 +373,12 @@ const upvoteQuestion = async (req, res) => {
 
     // Remove user from downvotedBy if they had previously downvoted
     question.downvotedBy = question.downvotedBy.filter(
-      (userId) => userId.toString() !== req.user.id.toString()
+      (userId) => userId.toString() !== req?.user?.id.toString()
     );
 
     // Add user to upvotedBy if they haven't already upvoted
-    if (!question.upvotedBy.includes(req.user.id)) {
-      question.upvotedBy.push(req.user.id);
+    if (!question.upvotedBy.includes(req?.user?.id)) {
+      question.upvotedBy.push(req?.user?.id);
     }
 
     await question.save();
@@ -351,8 +388,8 @@ const upvoteQuestion = async (req, res) => {
     const downvotesCount = question.downvotedBy.length;
 
     // Check if current user has upvoted or downvoted this question
-    const isUpvoted = question.upvotedBy.includes(req.user.id);
-    const isDownvoted = question.downvotedBy.includes(req.user.id);
+    const isUpvoted = question.upvotedBy.includes(req?.user?.id);
+    const isDownvoted = question.downvotedBy.includes(req?.user?.id);
 
     res.status(200).json({ message: 'Question upvoted successfully', upvotesCount, downvotesCount, isUpvoted, isDownvoted });
   } catch (error) {
@@ -372,12 +409,12 @@ const downvoteQuestion = async (req, res) => {
 
     // Remove user from upvotedBy if they had previously upvoted
     question.upvotedBy = question.upvotedBy.filter(
-      (userId) => userId.toString() !== req.user.id.toString()
+      (userId) => userId.toString() !== req?.user?.id.toString()
     );
 
     // Add user to downvotedBy if they haven't already downvoted
-    if (!question.downvotedBy.includes(req.user.id)) {
-      question.downvotedBy.push(req.user.id);
+    if (!question.downvotedBy.includes(req?.user?.id)) {
+      question.downvotedBy.push(req?.user?.id);
     }
 
     await question.save();
@@ -387,8 +424,8 @@ const downvoteQuestion = async (req, res) => {
     const downvotesCount = question.downvotedBy.length;
 
     // Check if current user has upvoted or downvoted this question
-    const isUpvoted = question.upvotedBy.includes(req.user.id);
-    const isDownvoted = question.downvotedBy.includes(req.user.id);
+    const isUpvoted = question.upvotedBy.includes(req?.user?.id);
+    const isDownvoted = question.downvotedBy.includes(req?.user?.id);
 
     res.status(200).json({ message: 'Question downvoted successfully', upvotesCount, downvotesCount, isUpvoted, isDownvoted });
   } catch (error) {
@@ -410,11 +447,11 @@ const reportQuestion = async (req, res) => {
     }
 
     // Add report details to the question
-    question.reports.push({ reportedBy: req.user.id, description });
+    question.reports.push({ reportedBy: req?.user?.id, description });
 
     // Create a new notification for the report
     const notification = new Notification({
-      user_id: req.user.id,
+      user_id: req?.user?.id,
       type: 'report',
       message: `Question reported: ${description}`,
       questionId: question?._id,
@@ -445,12 +482,13 @@ const upvoteAnswer = async (req, res) => {
 
     // Remove user from downvotedBy if they had previously downvoted
     answer.downvotedBy = answer.downvotedBy.filter(
-      (userId) => userId.toString() !== req.user.id.toString()
+      (userId) => userId.toString() !== req?.user?.id.toString()
     );
 
+
     // Add user to upvotedBy if they haven't already upvoted
-    if (!answer.upvotedBy.includes(req.user.id)) {
-      answer.upvotedBy.push(req.user.id);
+    if (!answer.upvotedBy.includes(req?.user?.id)) {
+      answer.upvotedBy.push(req?.user?.id);
     }
 
     await question.save();
@@ -460,8 +498,8 @@ const upvoteAnswer = async (req, res) => {
     const downvotesCount = answer.downvotedBy.length;
 
     // Check if current user has upvoted or downvoted this answer
-    const isUpvoted = answer.upvotedBy.includes(req.user.id);
-    const isDownvoted = answer.downvotedBy.includes(req.user.id);
+    const isUpvoted = answer.upvotedBy.includes(req?.user?.id);
+    const isDownvoted = answer.downvotedBy.includes(req?.user?.id);
 
     res.status(200).json({ message: 'Answer upvoted successfully', upvotesCount, downvotesCount, isUpvoted, isDownvoted });
   } catch (error) {
@@ -486,12 +524,12 @@ const downvoteAnswer = async (req, res) => {
 
     // Remove user from upvotedBy if they had previously upvoted
     answer.upvotedBy = answer.upvotedBy.filter(
-      (userId) => userId.toString() !== req.user.id.toString()
+      (userId) => userId.toString() !== req?.user?.id.toString()
     );
 
     // Add user to downvotedBy if they haven't already downvoted
-    if (!answer.downvotedBy.includes(req.user.id)) {
-      answer.downvotedBy.push(req.user.id);
+    if (!answer.downvotedBy.includes(req?.user?.id)) {
+      answer.downvotedBy.push(req?.user?.id);
     }
 
     await question.save();
@@ -501,8 +539,8 @@ const downvoteAnswer = async (req, res) => {
     const downvotesCount = answer.downvotedBy.length;
 
     // Check if current user has upvoted or downvoted this answer
-    const isUpvoted = answer.upvotedBy.includes(req.user.id);
-    const isDownvoted = answer.downvotedBy.includes(req.user.id);
+    const isUpvoted = answer.upvotedBy.includes(req?.user?.id);
+    const isDownvoted = answer.downvotedBy.includes(req?.user?.id);
 
     res.status(200).json({ message: 'Answer downvoted successfully', upvotesCount, downvotesCount, isUpvoted, isDownvoted });
   } catch (error) {
@@ -528,11 +566,11 @@ const reportAnswer = async (req, res) => {
     }
 
     // Add report details to the answer
-    answer.reports.push({ reportedBy: req.user.id, description });
+    answer.reports.push({ reportedBy: req?.user?.id, description });
 
     // Create a new notification for the report
     const notification = new Notification({
-      user_id: req.user.id,
+      user_id: req?.user?.id,
       type: 'report',
       message: `Answer reported: ${description}`,
       questionId: question?._id,

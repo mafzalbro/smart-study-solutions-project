@@ -7,7 +7,7 @@ import { fetcher } from '@/app/utils/fetcher';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
   const [user, setUser] = useState(null);
   const router = useRouter();
   const path = usePathname();
@@ -32,14 +32,19 @@ export const AuthProvider = ({ children }) => {
               console.error('Error fetching user data:', userError);
             }
           } else if (!res.auth) {
+            setUser({message:'User Not Loaded'})
             setIsLoggedIn(false);
             localStorage.removeItem('token');
           }
         } catch (error) {
+          setUser({message:'User Not Loaded'})
           console.error('Error checking auth:', error);
           // setIsLoggedIn(false);
           // localStorage.removeItem('token');
         }
+      } else {
+        setUser({message:'User Not Loaded'})
+        setIsLoggedIn(false);
       }
     };
 

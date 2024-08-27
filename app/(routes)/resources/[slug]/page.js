@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ResourceCard from '@/app/components/resources/ResourceCard';
-import Spinner from '@/app/components/Spinner';
 import PdfModal from '@/app/components/resources/PdfModal';
 import BookViewer from '@/app/components/resources/BookViewer';
 import StylishTitle from '@/app/components/StylishTitle';
@@ -20,6 +19,7 @@ export default function ResourcePage({ params }) {
   const [dislikes, setDislikes] = useState(0);
   const [rating, setRating] = useState(0);
   const [ratingCount, setRatingCount] = useState(0);
+  const [ratingNumber, setRatingNumber] = useState(null);
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [showBookModal, setShowBookModal] = useState(false);
   const [hasLiked, setHasLiked] = useState(false);
@@ -38,12 +38,17 @@ export default function ResourcePage({ params }) {
     if (updatedData.dislikes !== undefined) setDislikes(updatedData.dislikes);
     if (updatedData.rating !== undefined) setRating(updatedData.rating);
     if (updatedData.ratingCount !== undefined) setRatingCount(updatedData.ratingCount);
-    if (updatedData.hasLiked !== undefined) setHasLiked(updatedData.hasLiked);
-    if (updatedData.hasDisliked !== undefined) setHasDisliked(updatedData.hasDisliked);
+    if (updatedData.hasLiked !== undefined) setHasLiked(updatedData.hasLiked)
+    if (updatedData.hasDisliked !== undefined) setHasDisliked(updatedData.hasDisliked)
     if (updatedData.hasRated !== undefined) setHasRated(updatedData.hasRated);
+    if (updatedData.ratingNumber !== undefined) setRatingNumber(updatedData.ratingNumber);
   };
 
   const handleLike = async () => {
+    if(!hasLiked){
+      setHasLiked(true)
+      setHasDisliked(false)
+    }
     try {
       const updatedResource = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/${slug}/like`, 'POST');
       if (!updatedResource) {
@@ -57,11 +62,18 @@ export default function ResourcePage({ params }) {
         setHasDisliked(false)
       }
     } catch (error) {
+      setHasLiked(true)
+      setHasDisliked(false)
+      updateResourceState(resource);
       console.error('Error liking resource:', error);
     }
   };
 
   const handleDislike = async () => {
+    if(!hasDisliked){
+      setHasLiked(false)
+      setHasDisliked(true)
+    }
     try {
       const updatedResource = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/${slug}/dislike`, 'POST');
       if (!updatedResource) {
@@ -73,11 +85,19 @@ export default function ResourcePage({ params }) {
         setHasDisliked(true)
       }
     } catch (error) {
+      updateResourceState(resource);
+      setHasLiked(false)
+      setHasDisliked(true)
       console.error('Error disliking resource:', error);
     }
   };
-
+  
   const handleRating = async (ratingValue) => {
+
+    if(!hasRated) {
+      setHasRated(true) 
+      setRatingNumber(ratingValue)
+    }
     try {
       const updatedResource = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/${slug}/rate`, 'POST', { rating: ratingValue });
       if (!updatedResource) {
@@ -85,9 +105,8 @@ export default function ResourcePage({ params }) {
       }
       updateResourceState(updatedResource);
       
-      if(updatedResource.rating) setHasRated(true)
-    
-  } catch (error) {
+    } catch (error) {
+      updateResourceState(resource);
       console.error('Error rating resource:', error);
     }
   };
@@ -112,6 +131,7 @@ export default function ResourcePage({ params }) {
       setHasDisliked(data.hasDisliked);
       setHasRated(data.hasRated);
       setRatingCount(data.ratingCount);
+      setRatingNumber(data.ratingNumber)
 
       // Fetch related resources
       const relatedRes = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/recommend?resourceSlug=${slug}`);
@@ -131,11 +151,63 @@ export default function ResourcePage({ params }) {
 
 
   if (loading) {
-    return <Skeleton height={1000} width="100%" />;
+    return (
+      <div className="resource-item container mx-auto w-[95vw] md:w-[90vw] my-10 px-4">
+        <section className="flex flex-col md:flex-row gap-8">
+          {/* Main Content Skeleton */}
+          <main className="bg-secondary dark:bg-neutral-800 shadow-md bg-clip-border rounded-lg p-6 md:p-10 flex-1">
+            {/* Back Link Skeleton */}
+            <Skeleton height={30} width="200px" className="mb-4" />
+  
+            {/* Type, Tags, Dates Skeleton */}
+            <Skeleton height={20} width="150px" className="mb-2" />
+            <Skeleton height={20} width="250px" className="mb-2" />
+            <Skeleton height={20} width="200px" className="mb-2" />
+            <Skeleton height={20} width="200px" className="mb-6" />
+  
+            {/* Title Skeleton */}
+            <Skeleton height={40} width="80%" className="mb-6" />
+  
+            {/* Image Skeleton */}
+            <Skeleton height={200} width="100%" className="mb-4" />
+  
+            {/* Description Skeleton */}
+            <Skeleton height={20} width="90%" className="mb-4" />
+            <Skeleton height={20} width="85%" className="mb-4" />
+            <Skeleton height={20} width="80%" className="mb-6" />
+  
+            {/* Buttons Skeleton */}
+            <Skeleton height={50} width="150px" className="mb-4" />
+            <Skeleton height={50} width="200px" className="mb-6" />
+  
+            {/* Likes and Dislikes Skeleton */}
+            <Skeleton height={40} width="100px" className="mb-6" />
+            <Skeleton height={40} width="100px" className="mb-6" />
+  
+            {/* Ratings Skeleton */}
+            <Skeleton height={25} width="50%" className="mb-2" />
+            <Skeleton height={40} width="60%" className="mb-6" />
+          </main>
+  
+          {/* Sidebar Skeleton */}
+          <aside className="md:w-1/3">
+            <Skeleton height={500} width="100%" />
+          </aside>
+        </section>
+  
+        {/* Related Resources Skeleton */}
+        <section className="w-full flex gap-2 flex-wrap justify-stretch mt-10">
+          {[...Array(3)].map((_, index) => (
+            <Skeleton key={index} height={300} width="30%" className="rounded-lg" />
+          ))}
+        </section>
+      </div>
+    );
   }
+  
 
   if (!resource) {
-    return <p className="container mx-auto p-4 text-center text-neutral-700 dark:text-neutral-300">Resource not found</p>
+    return <p className="container mx-auto p-4 text-center text-neutral-700 dark:text-neutral-300 py-96">Resource not found</p>
   }
 
   return (
@@ -165,7 +237,8 @@ export default function ResourcePage({ params }) {
             <strong>Updated At:</strong> {new Date(resource.updatedAt).toLocaleDateString()}
           </p>
         </div>
-        <h1 className="text-2xl md:text-4xl my-6 text-foreground">{resource.title}</h1>
+        {/* <h1 className="text-2xl md:text-4xl my-6 text-foreground">{resource.title}</h1> */}
+          <StylishTitle colored={resource.title} /> 
         {resource.profileImage && (
           <img src={resource.profileImage} alt={resource.title} className="mb-4 w-full max-w-xs mx-auto" />
         )}
@@ -211,7 +284,7 @@ export default function ResourcePage({ params }) {
               <button
                 key={ratingValue}
                 onClick={() => !hasRated && handleRating(ratingValue)}
-                className={`flex items-center ${(hasRated) ? 'text-yellow-500' : 'text-neutral-500'} disabled:text-yellow-500 disabled:pointer-events-none`}
+                className={`flex items-center ${(hasRated && ratingValue <= ratingNumber) ? 'text-yellow-500 disabled:text-yellow-500' : 'text-neutral-500'} disabled:pointer-events-none`}
                 disabled={(hasRated)}
               >
                 <FaStar className="mr-1" />
@@ -227,13 +300,22 @@ export default function ResourcePage({ params }) {
 
         </section>
 
+        { relatedResources && (
+          <>
+          <StylishTitle colored={'Ralated Resources'} tagName='h2' fontSize='3xl text-4xl text-center' /> 
+          <section className="w-full flex gap-2 flex-wrap my-10">
+          {relatedResources.map(resource => <ResourceCard key={`${resource.slug}-${resource._id}-${Date.now()}`} resource={resource} />)}
+        </section>
+          </>
+        )
+        }
 
         {showPdfModal && (
-          <PdfModal onClose={() => setShowPdfModal(false)} pdfLink={resource.pdfLink[0]} />
+          <PdfModal onClose={() => setShowPdfModal(false)} fileUrl={resource.pdfLink[0]} />
         )}
 
         {showBookModal && (
-          <BookViewer onClose={() => setShowBookModal(false)} pdfLink={resource.pdfLink[0]} />
+          <BookViewer onClose={() => setShowBookModal(false)} pdfUrl={resource.pdfLink[0]} />
         )}
 
         </div>          

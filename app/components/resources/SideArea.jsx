@@ -49,7 +49,7 @@ const SideArea = ({ sortBy, handleSortChange, filterBy, handleFilterChange }) =>
     setSelectedDegree(degree);
     setSelectedSemester(null);
     setSelectedSubDir(null);
-    router.push(`/resources/${degree.toLowerCase()}`);
+    // router.push(`/resources/${degree.toLowerCase()}`);
   };
 
   const handleSemesterChange = (semester) => {
@@ -77,7 +77,7 @@ const SideArea = ({ sortBy, handleSortChange, filterBy, handleFilterChange }) =>
   };
 
   return (
-    <aside className={`mb-10 md:mb-0 rounded-lg ${isMediumScreen ? 'w-40 h-screen sticky top-0' : 'w-full md:w-40 mt-4 md:mt-0'}`}>
+    <aside className={`mb-10 md:mb-0 rounded-lg ${isMediumScreen ? 'w-60 h-screen sticky top-0' : 'w-full md:w-60 mt-4 md:mt-0 text-sm'}`}>
       {/* <ClickButton className="py-2 px-4 mb-4 bg-transparent hover:bg-transparent dark:hover:bg-transparent dark:bg-transparent text-center text-accent-500 hover:text-accent-600 shadow-none" text='Clear All' onClick={() => window.location.reload()} /> */}
       <div className="space-y-4">
         <CustomSelect

@@ -77,7 +77,6 @@ export default function ResourcesList() {
 
   return (
     <section className="p-8 dark:text-white w-full">
-      <ToastContainer />
 
       <StylishTitle colored='Books, Past Papers, Notes' simple='For Punjab University' className='text-center'/>
 
@@ -85,13 +84,14 @@ export default function ResourcesList() {
         Welcome to our comprehensive academic forum! Access past papers, university notes, books, and essential study materials for your BS 4-year program. Join a community dedicated to learning and sharing knowledge. Explore, download, and contribute to enrich your academic journey with us today!
       </p> */}
 
-      <div className="flex justify-center my-20 mx-10">
+      {/* <div className="flex justify-center my-20 mx-10"> */}
+      <div>
         <TextInputField
           type="text"
           placeholder="Search questions..."
           value={searchTerm}
           onChange={handleSearchChange}
-          className="py-5 px-10 border border-neutral-300 rounded-full w-full max-w-md focus:outline-none ring-2 focus:ring-4 ring-accent-500"
+          className="py-5 px-10 border border-neutral-300 rounded-full w-full max-w-md focus:outline-none ring-2 focus:ring-4 ring-accent-500 bg-transparent"
           style={{ maxWidth: "600px" }}
         />
       </div>

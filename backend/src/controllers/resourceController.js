@@ -23,8 +23,10 @@ const recommendResource = async (req, res) => {
 // Get a resource by slug
 const getResourceBySlug = async (req, res) => {
   const { slug } = req.params;
+
+
   let userId;
-  const token = req.headers.authorization;
+  const token = req?.headers?.authorization;
   
   if(token){
     const trimToken = token.replace('Bearer ', '').trim()
@@ -33,10 +35,10 @@ const getResourceBySlug = async (req, res) => {
         return res.status(403).json({ message: 'Invalid token' });
       }
       req.user = user
-      userId = req.user.id
+      userId = req?.user?.id
     })
   }
-    
+  
   try {
     const resource = await Resource.findOne({ slug });
     if (!resource) {
@@ -48,11 +50,15 @@ const getResourceBySlug = async (req, res) => {
       const hasLiked = resource.likedBy.includes(userId);
       const hasDisliked = resource.dislikedBy.includes(userId);
       const hasRated = resource.ratings.some(r => r.userId.toString() === userId.toString()); 
+      const userRating = resource?.ratings.find(r => r.userId.toString() === userId.toString());
+      const ratingNumber = userRating ? userRating?.rating : null
+
       res.status(200).json({
         ...resource._doc,
         hasLiked,
         hasDisliked,
-        hasRated
+        hasRated,
+        ratingNumber
       });
     } else {
       res.status(200).json(resource);
@@ -135,11 +141,22 @@ const getAllResources = async (req, res) => {
       sortOptions[field] = direction === 'desc' ? -1 : 1;
     }
 
+    // if(degree){
+    //   console.log("degree decodeURIComponent --", JSON.parse(decodeURIComponent(degree)))
+    //   const degObj = JSON.parse(decodeURIComponent(degree));
+    //   const degArray = Object.entries(degObj)
+    //   console.log(degArray)
+    //   const deg = degArray[0][0]
+    //   const semester = degArray[0][1]
+    //   Object.assign(queryOptions, {degree: deg});
+    //   Object.assign(queryOptions, {semester});
+    // }
+
+    
     // Parse filtering options
     if (filterBy) {
       try {
         const filter = JSON.parse(decodeURIComponent(filterBy));
-        console.log(filter);
         Object.assign(queryOptions, filter);
       } catch (error) {
         return res.status(400).json({ message: 'Invalid filterBy parameter' });
@@ -156,14 +173,17 @@ const getAllResources = async (req, res) => {
       ];
     }
 
+    console.log("queryOptions", queryOptions)
+
     // console.log(await Resource.find())
     // Fetch results with pagination and sorting
     const results = await paginateResults(
-      Resource.find(queryOptions).sort(sortOptions),
+      Resource.find(queryOptions, {title: 1, description: 1, slug: 1}).sort(sortOptions),
       parseInt(page),
       parseInt(limit)
     );
-
+    
+    
     res.status(200).json({ results });
   } catch (error) {
     console.error(error);
@@ -183,6 +203,9 @@ const likeResource = async (req, res) => {
       return res.status(404).json({ message: 'Resource not found' });
     }
 
+    const userRating = resource.ratings.find(r => r.userId.toString() === userId.toString());
+    const ratingNumber = userRating ? userRating?.rating : null
+
     // Check if the user has already liked the resource
     if (resource.likedBy.includes(userId)) {
       return res.status(400).json({
@@ -191,7 +214,8 @@ const likeResource = async (req, res) => {
         dislikes: resource.dislikes,
         hasLiked: true,
         hasDisliked: resource.dislikedBy.includes(userId),
-        hasRated: resource.ratings.some(r => r.userId.toString() === userId.toString())
+        hasRated: resource.ratings.some(r => r.userId.toString() === userId.toString()),
+        ratingNumber
       });
     }
 
@@ -212,7 +236,8 @@ const likeResource = async (req, res) => {
       dislikes: resource.dislikes,
       hasLiked: true,
       hasDisliked: false,
-      hasRated: resource.ratings.some(r => r.userId.toString() === userId.toString())
+      hasRated: resource.ratings.some(r => r.userId.toString() === userId.toString()),
+      ratingNumber
     });
   } catch (error) {
     console.error(error);
@@ -232,6 +257,9 @@ const dislikeResource = async (req, res) => {
       return res.status(404).json({ message: 'Resource not found' });
     }
 
+    const userRating = resource.ratings.find(r => r.userId.toString() === userId.toString());
+    const ratingNumber = userRating ? userRating?.rating : null
+
     // Check if the user has already disliked the resource
     if (resource.dislikedBy.includes(userId)) {
       return res.status(400).json({
@@ -240,7 +268,9 @@ const dislikeResource = async (req, res) => {
         dislikes: resource.dislikes,
         hasLiked: resource.likedBy.includes(userId),
         hasDisliked: true,
-        hasRated: resource.ratings.some(r => r.userId.toString() === userId.toString())
+        hasRated: resource.ratings.some(r => r.userId.toString() === userId.toString()),
+        ratingNumber
+
       });
     }
 
@@ -261,7 +291,8 @@ const dislikeResource = async (req, res) => {
       dislikes: resource.dislikes,
       hasLiked: false,
       hasDisliked: true,
-      hasRated: resource.ratings.some(r => r.userId.toString() === userId.toString())
+      hasRated: resource.ratings.some(r => r.userId.toString() === userId.toString()),
+      ratingNumber
     });
   } catch (error) {
     console.error(error);
@@ -300,7 +331,8 @@ const rateResource = async (req, res) => {
         message: 'You have already rated this resource',
         hasLiked: resource.likedBy.includes(userId),
         hasDisliked: resource.dislikedBy.includes(userId),
-        hasRated: true
+        hasRated: true,
+        ratingNumber: existingRating?.rating
       });
     }
 
@@ -309,13 +341,21 @@ const rateResource = async (req, res) => {
     resource.rating = ((resource.rating * resource.ratingCount) + rating) / (resource.ratingCount + 1);
     resource.ratingCount += 1;
 
+    
+    const userRating = resource?.ratings.find(r => r.userId.toString() === userId.toString());
+    const ratingNumber =userRating ? userRating?.rating : null
+
     await resource.save();
     res.status(200).json({
       message: 'Resource rated successfully',
       // resource,
       hasLiked: resource.likedBy.includes(userId),
       hasDisliked: resource.dislikedBy.includes(userId),
-      hasRated: true
+      hasRated: true,
+      ratingNumber,
+      rating: resource.rating,
+      ratingCount: resource.ratingCount,
+
     });
   } catch (error) {
     console.error(error);

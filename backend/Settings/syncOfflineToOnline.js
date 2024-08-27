@@ -1,7 +1,10 @@
 const { MongoClient } = require('mongodb');
+const { config } = require('dotenv')
 
-const LOCAL_URI = 'mongodb://localhost:27017/books-library';
-const ONLINE_URI = 'mongodb://mafzalbro:mafzalbro@ac-hoyy6qy-shard-00-00.nxmhzyv.mongodb.net:27017,ac-hoyy6qy-shard-00-01.nxmhzyv.mongodb.net:27017,ac-hoyy6qy-shard-00-02.nxmhzyv.mongodb.net:27017/books_library?ssl=true&replicaSet=atlas-b4zf9f-shard-0&authSource=admin&retryWrites=true&w=majority&appName=AtlasCluster';
+config()
+
+const LOCAL_URI = process.env.ONLINE_MONGODB_URI;
+const ONLINE_URI = process.env.LOCAL_MONGODB_URI;
 
 async function syncDatabases() {
   const localClient = new MongoClient(LOCAL_URI);

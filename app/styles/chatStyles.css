@@ -7,6 +7,7 @@
   /* background-color: #ffffff; */
   /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); */
   word-wrap: break-word; /* Ensure long words break */
+  overflow: auto;
 }
 
 .chat-message pre {
@@ -15,6 +16,7 @@
   border-radius: 5px;
   overflow-x: auto;
   white-space: pre-wrap; /* Preserve whitespace */
+  width: 100%;
   word-wrap: break-word; /* Ensure long words break */
 }
 
@@ -141,13 +143,14 @@ html.dark .chat-message code {
   color: #e5e7eb;
 }
 
-html.dark .chat-message table thead {
-  background-color: #475569;
+html.dark .chat-message table th{
+  background-color: #29313b;
 }
 
 html.dark .chat-message th, 
 html.dark .chat-message td {
   border: 1px solid #4b5563;
+  background-color: #2f3844;
 }
 
 html.dark .chat-message a {

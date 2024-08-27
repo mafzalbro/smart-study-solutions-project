@@ -1,88 +1,147 @@
-  .question-container h1,
-  .question-container h2,
-  .question-container h3,
-  .question-container h4,
-  .question-container h5,
-  .question-container h6 {
-    margin-top: 1.5em;
-    margin-bottom: 0.5em;
-    color: #333;
-  }
-  
-  .question-container h1 {
-    font-size: 2em;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 0.5em;
-  }
-  
-  .question-container h2 {
-    font-size: 1.75em;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 0.5em;
-  }
-  
-  .question-container h3 {
-    font-size: 1.5em;
-  }
-  
-  .question-container h4 {
-    font-size: 1.25em;
-  }
-  
-  .question-container h5 {
-    font-size: 1em;
-  }
-  
-  .question-container h6 {
-    font-size: 0.875em;
-  }
-  
-  .question-container p {
-    line-height: 1.6;
-    margin: 1em 0;
-  }
-  
-  .question-container blockquote {
-    border-left: 4px solid #e0e0e0;
-    padding-left: 1em;
-    color: #666;
-    margin: 1em 0;
-    font-style: italic;
-    background-color: #f9f9f9;
-  }
-  
-  .question-container ul,
-  .question-container ol {
-    margin: 1em 0;
-    padding-left: 1.5em;
-    list-style: auto;
-  }
-  
-  .question-container ul li,
-  .question-container ol li {
-    margin: 0.5em 0;
-  }
-  
-  .question-container code {
-    background-color: #f4f4f4;
-    padding: 2px 4px;
-    font-family: monospace;
-    border-radius: 4px;
-    font-size: 0.9em;
-  }
-  
-  .question-container pre {
-    background-color: #f4f4f4;
-    padding: 1em;
-    border-radius: 8px;
-    overflow-x: auto;
-    font-family: monospace;
-    line-height: 1.4;
-  }
-  
-  .question-container pre code {
-    background: none;
-    padding: 0;
-    font-size: 1em;
-  }
-  
+.question-container h1,
+.question-container h2,
+.question-container h3,
+.question-container h4,
+.question-container h5,
+.question-container h6 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  color: #333;
+}
+
+html.dark .question-container h1,
+html.dark .question-container h2,
+html.dark .question-container h3,
+html.dark .question-container h4,
+html.dark .question-container h5,
+html.dark .question-container h6 {
+  color: #e0e0e0;
+}
+
+.question-container h1 {
+  font-size: 2em;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 0.5em;
+  display: inline-block;
+}
+
+html.dark .question-container h1 {
+  border-bottom: 1px solid #444;
+}
+
+.question-container h2 {
+  font-size: 1.75em;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 0.5em;
+}
+
+html.dark .question-container h2 {
+  border-bottom: 1px solid #444;
+}
+
+.question-container h3 {
+  font-size: 1.5em;
+}
+
+.question-container h4 {
+  font-size: 1.25em;
+}
+
+.question-container h5 {
+  font-size: 1em;
+}
+
+.question-container h6 {
+  font-size: 0.875em;
+}
+
+.question-container p {
+  line-height: 1.6;
+  margin: 1em 0;
+  color: #333;
+}
+
+html.dark .question-container p {
+  color: #ccc;
+}
+
+.question-container blockquote {
+  border-left: 4px solid #e0e0e0;
+  padding-left: 1em;
+  color: #666;
+  margin: 1em 0;
+  font-style: italic;
+  background-color: #f9f9f9;
+}
+
+html.dark .question-container blockquote {
+  border-left: 4px solid #444;
+  color: #aaa;
+  background-color: #333;
+}
+
+.question-container ul,
+.question-container ol {
+  margin: 1em 0;
+  padding-left: 1.5em;
+  list-style: auto;
+}
+
+.question-container ul li,
+.question-container ol li {
+  margin: 0.5em 0;
+  color: #333;
+}
+
+html.dark .question-container ul li,
+html.dark .question-container ol li {
+  color: #ccc;
+}
+
+.question-container code {
+  background-color: #f4f4f4;
+  padding: 1px 4px;
+  font-family: monospace;
+  border-radius: 4px;
+  font-size: 0.9em;
+  color: #333;
+}
+
+html.dark .question-container code {
+  background-color: #333;
+  color: #ddd;
+}
+
+.question-container pre {
+  background-color: #f4f4f4;
+  padding: 1em;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: monospace;
+  line-height: 1.4;
+  color: #333;
+}
+
+html.dark .question-container pre {
+  background-color: #333;
+  color: #ddd;
+}
+
+.question-container pre code {
+  background: none;
+  padding: 0;
+  font-size: 1em;
+  color: inherit;
+}
+
+html.dark .question-container pre code {
+  color: inherit;
+}
+
+.main-qna-container hr {
+  border-top: 1px solid #e0e0e0;
+}
+
+html.dark .main-qna-container hr {
+  border-top: 1px solid #444;
+}

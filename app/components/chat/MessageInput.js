@@ -174,7 +174,15 @@ export default function MessageInput({ chatId, addMessageToChatHistory, chatHist
     {error && (
       <div className="text-red-500 m-4">{error}</div>
     )}
-    <div className="relative bottom-0 left-0 right-0 bg-secondary dark:bg-neutral-800 p-1 flex items-center justify-between space-x-2">
+    <div className="fixed md:relative bottom-0 left-0 right-0 bg-secondary dark:bg-neutral-800 p-1 flex items-center justify-between space-x-2">
+        <button
+          onClick={handlePdfButtonClick}
+          className="p-4 bg-accent-100 dark:bg-neutral-700 rounded-lg dark:text-secondary dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-accent-600"
+        >
+          {/* Add PDF */}
+          <TbFileTypePdf size={21}/>
+        </button>
+      {showPdfInput && <PdfInput pdfUrl={pdfUrl} setPdfUrl={setPdfUrl} />}
       <TextInputField
         ref={inputRef}
         type="text"
@@ -187,15 +195,7 @@ export default function MessageInput({ chatId, addMessageToChatHistory, chatHist
         padding='p-3'
         className='chat-input-class'
       />
-      {showPdfInput && <PdfInput pdfUrl={pdfUrl} setPdfUrl={setPdfUrl} />}
       <div className="flex space-x-2 pb-2">
-        <button
-          onClick={handlePdfButtonClick}
-          className="p-4 bg-accent-100 dark:bg-neutral-700 rounded-lg dark:text-secondary dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-accent-600"
-        >
-          {/* Add PDF */}
-          <TbFileTypePdf size={21}/>
-        </button>
         <button
           onClick={sendMessage}
           disabled={message.trim() === '' || isSending}

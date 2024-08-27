@@ -128,11 +128,11 @@ const LoginForm = () => {
       </div>
       <hr className="my-10 border-t border-accent-300 w-[50%] mx-auto"/>
       <Link
-        href="/login/google"
-        className="flex justify-center items-center gap-5 w-full py-2 px-4 bg-accent-50 text-link font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-300 mt-4 text-center hover:bg-accent-100"
-      >
-        <FcGoogle className='h-8 w-8'/> <span>Login with Google</span>
-      </Link>
+          href="/login/google"
+          className="flex justify-center items-center gap-5 w-full py-2 px-4 bg-accent-500font-semibold rounded-lg dark:bg-accent-900 dark:hover:bg-accent-800 dark:text-secondary bg-accent-50 hover:bg-accent-100 focus:outline-none focus:ring-2 focus:ring-accent-300 mt-4 text-center text-link"
+        >
+          <FcGoogle className='h-8 w-8' /> <span>Register with Google</span>
+        </Link>
     </CardContainer>
   );
 };

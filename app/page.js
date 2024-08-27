@@ -18,11 +18,20 @@ const LandingPage = () => {
       <div className="flex flex-col md:flex-row items-center justify-center gap-20">
         <div className="md:w-1/2 text-center md:text-left">
 
-          <StylishTitle colored='Hey PU Buddy,' addBr simple='You are At the Right Place!' />
+          {/* <StylishTitle colored='Hey PU Buddy,' addBr simple='You are At the Right Place!' /> */}
 
-          <div className="text-base w-5/6 md:mx-0 inline-block my-5">
+          {/* <div className="text-base w-5/6 md:mx-0 inline-block my-5">
             Discover, discuss, and learn with us. Join engaging conversations, ask questions.
             <StylishSpan> Start exploring and connecting today!</StylishSpan>
+            <span className='mt-8 block'>
+            <GetStartedButtons />
+            </span>
+          </div> */}
+
+          <StylishTitle colored='The Ultimate Destination ' addBr simple='for Your Smart Studies!' />
+
+          <div className="text-base w-5/6 md:mx-0 inline-block my-5">
+              Here you'll find all the solutions about your study problems!
             <span className='mt-8 block'>
             <GetStartedButtons />
             </span>

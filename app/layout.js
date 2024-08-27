@@ -24,7 +24,7 @@ const RootLayout = ({ children }) => {
       {/* <SkeletonTheme color="#eeeeee20" highlightColor="#44444420" baseColor='#eeeeee20'> */}
       <SkeletonTheme color="#eeeeee0" highlightColor="#44444410" baseColor='#eeeeee02'>
       <div className="gradient-skeleton">
-      <ToastContainer stacked containerId={font.className}/>
+      <ToastContainer stacked containerId={font.className} theme='dark'/>
         <AuthProvider>
           {/* <AppStateProvider> */}
             <ProgressBar>

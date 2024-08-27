@@ -10,7 +10,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import TextInputField from '@/app/components/TextInputField';
 import SideArea from '@/app/components/resources/SideArea'; // Adjust path as needed
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next-nprogress-bar';
+import Link from 'next/link';
+import { FaChevronLeft } from 'react-icons/fa';
 
 
 
@@ -18,8 +21,8 @@ export default function ResourcesPage({ params }) {
   const routes = params?.routes || [];
   const router = useRouter()
   let query = useSearchParams()
-  const q = query.get('q')
-  console.log(q)
+  const q = query.get('query')
+
   
   const [resources, setResources] = useState([]);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -33,6 +36,11 @@ export default function ResourcesPage({ params }) {
   const [filterBy, setFilterBy] = useState({}); // For filtering options
   const results = 5;
 
+  // if(q){
+    // console.log(q)
+  //   setSearchTerm(q)
+  // }
+  
   // Debounce search term
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
@@ -45,7 +53,7 @@ export default function ResourcesPage({ params }) {
   const fetchResources = async (newPage = 1, reset = false) => {
     setIsLoading(true);
     setError(null);
-
+    
     try {
       const queryParams = new URLSearchParams();
 
@@ -53,7 +61,8 @@ export default function ResourcesPage({ params }) {
       queryParams.append('limit', results);
 
       if (debouncedSearchTerm) {
-        queryParams.append('query', debouncedSearchTerm);
+        router.push(`?query=${debouncedSearchTerm}`)
+        queryParams.append('query', q || debouncedSearchTerm);
       }
 
       if (sortBy) {
@@ -69,24 +78,37 @@ export default function ResourcesPage({ params }) {
           filterParams.tags = routes[1].split("-").join(" ");
         } else if (routes[0] === 'category') {
           filterParams.category = routes[1].split("-").join(" ");
-        }
+        } else if (routes[1]?.includes('semester')) {
+          if(routes[2]){
+            filterParams.degree = routes[0].split("-").join(" ");
+            filterParams.semester = routes[1].split("-").join(" ");
+            filterParams.type = routes[2].split("-").join(" ");
+          } else {
+            filterParams.degree = routes[0].split("-").join(" ");
+            filterParams.semester = routes[1].split("-").join(" ");
+          }
       }
+    }
 
       if (Object.keys(filterParams).length > 0) {
         queryParams.append('filterBy', JSON.stringify(filterParams));
+        console.log("filterParams => ", filterParams)
       }
 
       const url = `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources?${queryParams.toString()}`;
+      console.log(decodeURIComponent(url))
+      console.log(decodeURIComponent(queryParams))
       // router.push(queryParams.toString())
       const data = await fetcher(url);
       const { data: fetchedResources, totalResults } = data.results;
-
+      
       // Handle fetched resources
       if (reset || debouncedSearchTerm) {
         setResources(fetchedResources);
       } else {
         setResources((prevResources) => [...prevResources, ...fetchedResources]);
       }
+      console.log("filterParams", filterParams)
 
       setPage(newPage);
       setHasMore(newPage * results < totalResults);
@@ -134,10 +156,15 @@ export default function ResourcesPage({ params }) {
     }
   }, [routes]);
 
+
   return (
-    <div className="flex flex-col md:flex-row">
+    <div className="flex flex-col md:flex-row mb-10">
       <main className="flex-1">
         <section className="p-1 md:p-8 dark:text-secondary w-full">
+        { routes[0] ?
+        <Link href="/resources" className="text-accent-600 dark:text-accent-300 flex items-center mt-6 mx-2">
+          <FaChevronLeft className="mr-1" /> Back to Main Page
+        </Link> : ''}
 
           <StylishTitle
             colored={routes[0] ? decodeURIComponent(routes[0]).split("-").join(" ").toUpperCase() : 'Books, Past Papers, Notes'}
@@ -145,15 +172,16 @@ export default function ResourcesPage({ params }) {
             className='text-center'
           />
 
-          <div className="flex justify-center mx-4 my-20">
+          <div className="mx-4 my-20">
             <TextInputField
               type="text"
               placeholder="Search questions..."
-              value={searchTerm}
+              value={searchTerm || q || ''}
               noMargin
               onChange={handleSearchChange}
-              className="py-5 px-10 border border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800 outline-none focus:ring-accent-400 rounded-full w-full max-w-md focus:outline-none focus:ring-2 ring-accent-500"
+              className="py-5 px-10 border border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800 outline-none focus:ring-accent-400 rounded-full focus:outline-none focus:ring-2 ring-accent-500"
               style={{ maxWidth: "600px" }}
+              disabled={isLoading}
             />
           </div>
 
@@ -172,7 +200,7 @@ export default function ResourcesPage({ params }) {
                     <Skeleton height={250} />
                   </div>
               ) : error ? (
-                <p className="text-center text-red-500 mt-5">
+                <p className="text-center text-red-500 my-20">
                   Error fetching resources: {error.message}
                 </p>
               ) : resources.length === 0 ? (

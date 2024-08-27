@@ -44,13 +44,13 @@ router.post('/question/:slug/downvote', auth, downvoteQuestion);
 router.post('/question/:slug/report', auth, reportQuestion);
 
 // Upvote an answer
-router.put('/questions/:questionId/answers/:answerId/upvote', upvoteAnswer);
+router.put('/question/:questionId/answers/:answerId/upvote', auth, upvoteAnswer);
 
 // Downvote an answer
-router.put('/questions/:questionId/answers/:answerId/downvote', downvoteAnswer);
+router.put('/question/:questionId/answers/:answerId/downvote', auth, downvoteAnswer);
 
 // Report an answer
-router.post('/questions/:questionId/answers/:answerId/report', reportAnswer);
+router.post('/question/:questionId/answers/:answerId/report', auth, reportAnswer);
 
 
 

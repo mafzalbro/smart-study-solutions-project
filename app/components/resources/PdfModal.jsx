@@ -33,6 +33,14 @@ const PdfModal = ({ fileUrl, onClose }) => {
     }
   };
 
+  if(!fileUrl){
+    return (
+      <div className="relative flex flex-col items-center justify-center pt-4 mx-auto md:w-[50vw] min-h-screen overflow-hidden">
+        PDF Not Exists
+    </div>
+    )
+  }
+
   return (
     <>
       <PdfViewer
@@ -44,9 +52,9 @@ const PdfModal = ({ fileUrl, onClose }) => {
       {isLoggedIn ?
       <button
         onClick={handleAskAI}
-        className="fixed bottom-4 right-4 bg-accent-600 text-white py-4 px-6 rounded-full shadow-lg hover:bg-accent-700 transition-all duration-200 z-50 flex items-center justify-center gap-2"
+        className="fixed bottom-4 right-4 bg-accent-600 text-scondary bg-opacity-80 backdrop-blur-lg p-3 text-sm md:text-base md:py-4 md:px-6 rounded-full shadow-lg hover:bg-accent-700 transition-all duration-200 z-50 flex items-center justify-center gap-2"
       >
-        <MdChatBubbleOutline fontSize={25}/> Talk With This Doucment
+        <MdChatBubbleOutline /> <span className='hidden md:inline-block'>Talk With This Doucment</span>
       </button>
     : <LinkButton text='Login To Talk with PDF' icon={<MdLogin />} link={'/login'} />  
     }

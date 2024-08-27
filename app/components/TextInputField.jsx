@@ -1,7 +1,7 @@
 // components/TextInputField.js
 
 const TextInputField = ({ type, value, onChange, onKeyPress, placeholder, className, disabled, required, noMargin, padding, icon: Icon }) => (
-  <div className={`${Icon && 'relative'} m-0 p-0`}>
+  <div className={`${Icon ? 'relative' : ''} m-0 p-0`}>
   {Icon && <Icon className="absolute left-4 top-1/3 transform -translate-y-1/4 text-gray-400 dark:text-gray-500" size={18} /> }
   <input
     type={type}

@@ -38,7 +38,7 @@ export default function ChatList({
 
   return (
     <>
-      <div className="sidebar flex-1 overflow-y-auto">
+      <div className="sidebar overflow-y-auto">
         {items.map((chat) => (
           <ChatItem
             key={chat.slug}
@@ -54,7 +54,8 @@ export default function ChatList({
           />
         ))}
       </div>
-      {/* {loading && <Loader />} */}
+      {loading && <Loader />}
+
       {!loading && items.length === 0 && <p>{emptyMessage}</p>}
       {hasMoreItems && !loading && (
         <button onClick={handleLoadMore} className="justify-center inline-flex text-accent-400">

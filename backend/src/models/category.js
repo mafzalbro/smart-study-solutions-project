@@ -3,9 +3,9 @@ const Schema = mongoose.Schema;
 
 // Category Schema
 const categorySchema = new Schema({
-    name: { type: String, required: true },
+    name: { type: String, required: true, default: 'General' },
     description: { type: String },
-    slug: {type: String, unique: true, required: true}
+    slug: {type: String, unique: true, required: true, default: 'general'}
   });
 
   const Category = mongoose.model('Category', categorySchema);

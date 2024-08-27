@@ -11,6 +11,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { fetcher } from '@/app/utils/fetcher';
 
 export default function Sidebar({ chatHistory, slug, pdfuri }) {
+  const sidebarRef = useRef()
   const [chats, setChats] = useState([]);
   const [pdfChats, setPdfChats] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -166,11 +167,24 @@ export default function Sidebar({ chatHistory, slug, pdfuri }) {
     setModalVisible(true);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        setIsSidebarVisible(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
-      <div className={`sidebar md:w-1/4 md:opacity-100 backdrop-blur-sm ${!isSidebarVisible ? 'w-0 overflow-hidden p-0 opacity-0 pointer-events-none md:pointer-events-auto' : 'pointer-events-auto overflow-auto p-4 fixed md:relative w-[55%] h-full opacity-100'} bg-secondary bg-opacity-80 bg-blend-color-dodge md:bg-transparent text-primary dark:text-secondary dark:bg-neutral-800 md:p-4 flex flex-col gap-10 transition-opacity ease-in-out duration-500 z-20 dark:shadow-2xl md:border-r dark:border-none`}>
+      <div ref={sidebarRef} className={`sidebar md:w-1/4 md:opacity-100 backdrop-blur-sm ${!isSidebarVisible ? 'w-0 p-0 opacity-0 pointer-events-none md:pointer-events-auto' : 'pointer-events-auto p-4 fixed md:relative w-[60%] h-screen opacity-100'} bg-secondary bg-opacity-80 dark:bg-opacity-80 bg-blend-color-dodge md:bg-transparent text-primary dark:text-secondary dark:bg-neutral-800 md:p-4 flex flex-col gap-8 md:gap-6 transition-opacity ease-in-out duration-500 z-20 dark:shadow-2xl md:border-r dark:border-none`}>
         <SidebarHeader />
-        <NewChatButton />
+        <NewChatButton className='hidden md:block'/>
         <SidebarTabs activeTab={activeTab} setActiveTab={setActiveTab} />
         <ChatList
           chats={chats}

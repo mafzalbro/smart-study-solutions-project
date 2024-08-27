@@ -12,14 +12,15 @@ import { ToastContainer } from 'react-toastify';
 
 import 'react-loading-skeleton/dist/skeleton.css';
 import StylishSpan from '../StylishSpan';
+import HoverLine from './HoverLine';
 
 const NavBar = () => {
   const [scrollDirection, setScrollDirection] = useState('up');
   const [lastScrollTop, setLastScrollTop] = useState(0);
   const { isLoggedIn, user } = useAuth(); // Get isLoggedIn and user from AuthContext
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [attempts, setAttempts] = useState(0);
+  // const [loading, setLoading] = useState(true);
+  // const [attempts, setAttempts] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [darkMode, setDarkMode] = useState('light');
   const pathname = usePathname();
@@ -27,23 +28,22 @@ const NavBar = () => {
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
-  useEffect(() => {
-    const loadAuth = async () => {
-      if (attempts < 3) {
-        try {
-          // Simulate an async call to check authentication
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          setLoading(false);
-        } catch (error) {
-          setAttempts((prev) => prev + 1);
-        }
-      } else {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const loadAuth = async () => {
+  //     if (attempts < 3) {
+  //       try {
+          
+  //         setLoading(false);
+  //       } catch (error) {
+  //         setAttempts((prev) => prev + 1);
+  //       }
+  //     } else {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    loadAuth();
-  }, [attempts]);
+  //   loadAuth();
+  // }, [attempts]);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -98,51 +98,39 @@ const NavBar = () => {
     localStorage.setItem('theme', newDarkMode);
   };
 
-  const getActiveLinkClass = (linkPath) => {
-    return pathname === linkPath ? 'text-blue-500 dark:text-blue-300' : '';
-  };
-
-    useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-      // Only update scroll direction if scroll position is greater than 300 pixels
-      if (currentScrollTop > 300) {
-        if (currentScrollTop > lastScrollTop) {
-          setScrollDirection('down');
-        } else {
-          setScrollDirection('up');
-        }
-      }
-
-      // Update lastScrollTop, ensuring it's never negative
-      setLastScrollTop(currentScrollTop <= 0 ? 0 : currentScrollTop);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [lastScrollTop]);
-
-
   
-    useEffect(() => {
+  useEffect(() => {
     const handleScroll = () => {
-      const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const currentScrollTop = document.documentElement.scrollTop;
+      const chatScroll = document.querySelector('.chat-scroll')
 
-      // Only update scroll direction if scroll position is greater than 300 pixels
-      if (currentScrollTop > 300) {
-        if (currentScrollTop > lastScrollTop) {
-          setScrollDirection('down');
+      if(chatScroll) {
+        const currentChatScrollTop = chatScroll.scrollTop;
+        if (currentChatScrollTop > 100) {
+          if (currentChatScrollTop > lastScrollTop) {
+            setScrollDirection('down');
+          }
+          else {
+            setScrollDirection('up');
+          }
         } else {
           setScrollDirection('up');
         }
+        setLastScrollTop(currentChatScrollTop <= 0 ? 0 : currentChatScrollTop);
+      } else {
+        if (currentScrollTop > 100) {
+          if (currentScrollTop > lastScrollTop) {
+            setScrollDirection('down');
+          }
+          else {
+            setScrollDirection('up');
+          }
+        } else {
+          setScrollDirection('up');
+        }
+        // Update lastScrollTop, ensuring it's never negative
+        setLastScrollTop(currentScrollTop <= 0 ? 0 : currentScrollTop);
       }
-
-      // Update lastScrollTop, ensuring it's never negative
-      setLastScrollTop(currentScrollTop <= 0 ? 0 : currentScrollTop);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -151,13 +139,12 @@ const NavBar = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [lastScrollTop]);
-
-
-
-  if (loading) {
+  
+  
+  if (user === null) {
     return (
       <nav
-      className={`sticky top-0 translate-y-0 z-50 bg-opacity-80 dark:bg-opacity-80 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-2 px-4 md:p-4 shadow-lg text-primary dark:text-secondary ${
+      className={`sticky top-0 translate-y-0 z-50 bg-opacity-80 dark:bg-opacity-80 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-3 px-4 md:p-4 shadow-lg text-primary dark:text-secondary ${
         scrollDirection === 'down' ? 'translate-y-[-100%]' : 'translate-y-0'
       }`}
     >
@@ -171,18 +158,23 @@ const NavBar = () => {
             <Skeleton circle={true} height={30} width={30} />
           </div>
           <div className="md:hidden flex items-center gap-4">
-            <Skeleton circle={true} height={40} width={40} />
-            <Skeleton circle={true} height={30} width={30} />
+            <Skeleton circle={true} height={35} width={35} />
+            <Skeleton circle={true} height={27} width={27} />
             <Skeleton height={20} width={30} />
           </div>
         </div>
       </nav>
     );
   }
+  const getActiveLinkClass = (linkPath, isHome) => {
+    if(isHome) return pathname === linkPath ? 'text-blue-500 dark:text-blue-300 pointer-events-none' : '';
+    return pathname.includes(linkPath) ? 'text-blue-500 dark:text-blue-300' : '';
+    // return pathname.includes(linkPath) ? 'text-blue-500 dark:text-blue-300 pointer-events-none' : '';
+  };
 
   return (
     <nav
-      className={`sticky top-0 z-50 bg-opacity-80 dark:bg-opacity-80 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-2 px-4 md:p-4 shadow-lg text-primary dark:text-secondary ${
+    className={`sticky top-0 z-50 bg-opacity-80 dark:bg-opacity-50 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-2 px-4 md:p-4 shadow-lg text-primary dark:text-secondary ${
         scrollDirection === 'down' ? 'translate-y-[-100%]' : 'translate-y-0'
       }`}
     >
@@ -196,40 +188,35 @@ const NavBar = () => {
           <ul
             ref={mobileMenuRef}
             className={`${
-              isMobileMenuOpen ? 'block z-0' : 'hidden'
-            } md:flex md:space-x-6 p-6 md:p-0 md:items-center absolute md:static bg-secondary dark:bg-neutral-800 top-16 left-0 w-full md:w-auto shadow-lg md:shadow-none text-center`}
+              isMobileMenuOpen ? 'block z-0 top-14 opcity-100 md:opacity-100 pointer-events-auto' : 'pointer-events-none opacity-0 md:opacity-100 top-8'
+            } md:pointer-events-auto md:flex md:space-x-6 p-6 md:p-0 md:items-center absolute md:static bg-secondary dark:bg-neutral-800 md:dark:bg-transparent md:bg-transparent left-0 w-full md:w-auto shadow-lg md:shadow-none text-center transition-all duration-300 ease-in-out`}
           >
             <li>
-              <Link href="/" passHref>
-                <span className={`inline-block relative group py-2 md:py-0 ${getActiveLinkClass('/')}`}>
+              <Link href="/" passHref className={`inline-block relative group py-2 md:py-0 ${getActiveLinkClass('/', true)}`}>
                   Home
-                  <span className="block h-0.5 bg-link-hover absolute left-0 bottom-0 w-0 group-hover:w-full transition-all duration-300"></span>
-                </span>
+                  <HoverLine hide={pathname === '/'}/>
               </Link>
             </li>
             <li>
-              <Link href="/resources" passHref>
-                <span className={`inline-block relative group py-2 md:py-0 ${getActiveLinkClass('/resources')}`}>
+              <Link href="/resources" passHref className={`inline-block relative group py-2 md:py-0 ${getActiveLinkClass('/resources')}`}>
                   Resources
-                  <span className="block h-0.5 bg-link-hover absolute left-0 bottom-0 w-0 group-hover:w-full transition-all duration-300"></span>
-                </span>
+
+                  <HoverLine hide={pathname.includes('/resources')}/>
               </Link>
             </li>
             <li>
-              <Link href="/forum" passHref>
-                <span className={`inline-block relative group py-2 md:py-0 ${getActiveLinkClass('/forum')}`}>
+              <Link href="/forum" passHref className={`inline-block relative group py-2 md:py-0 ${getActiveLinkClass('/forum')}`}>
                   Forum
-                  <span className="block h-0.5 bg-link-hover absolute left-0 bottom-0 w-0 group-hover:w-full transition-all duration-300"></span>
-                </span>
+
+                  <HoverLine hide={pathname.includes('/forum')}/>
               </Link>
             </li>
             {isLoggedIn && (
               <li>
-                <Link href="/chat" passHref>
-                  <span className={`inline-block relative group py-2 md:py-0 ${getActiveLinkClass('/chat')}`}>
+                <Link href="/chat" passHref className={`inline-block relative group py-2 md:py-0 ${getActiveLinkClass('/chat')}`}>
                     Ask AI
-                    <span className="block h-0.5 bg-link-hover absolute left-0 bottom-0 w-0 group-hover:w-full transition-all duration-300"></span>
-                  </span>
+
+                    <HoverLine hide={pathname.includes('/chat')}/>
                 </Link>
               </li>
             )}

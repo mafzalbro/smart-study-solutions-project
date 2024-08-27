@@ -98,9 +98,10 @@ html.dark label {
   height: calc(100vh - 72px);
 }
 
+
 .quill .ql-toolbar.ql-snow {
   border: none;
-  background: #ef7e4320;
+  background: #5d43ef20;
 }
 
 .quill .ql-container.ql-snow, .quill .ql-editor {
@@ -109,9 +110,21 @@ html.dark label {
   background: white;
 }
 
+html.dark .quill .ql-toolbar.ql-snow {
+  border: none;
+  background: white;
+}
+
+html.dark .quill .ql-container.ql-snow, html.dark .quill .ql-editor {
+  min-height: 40vh;
+  border: none;
+  background: white;
+  color: black;
+}
 button.rounded-lg {
   border-radius: 100px !important;
 }
+
 
 span.bg-orange-500.hover\:bg-orange-600.text-white.py-2.px-4.rounded-lg.shadow-sm.transition-colors.duration-300 {
   border-radius: 100px;
@@ -179,6 +192,14 @@ span.bg-orange-500.hover\:bg-orange-600.text-white.py-2.px-4.rounded-lg.shadow-s
 ::-webkit-scrollbar-button:single-button:vertical:increment:hover {
   background-color: #d0d0d0;
 }
+
+@media screen and (max-width: 768px) {
+  ::-webkit-scrollbar {
+    height: 1px;
+    width: 1px;
+  }
+}
+
 
 
 /* styles/nprogress.css */

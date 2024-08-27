@@ -47,7 +47,7 @@ const AnswerForm = ({ questionSlug, onSuccess, onClose }) => {
         />
       )}
       <form onSubmit={handleSubmit} className="space-y-4 p-4">
-        <div className="relative border bg-neutral-100 dark:bg-shade-700 border-accent-300 dark:border-accent-600 rounded-lg overflow-auto h-[50vh]">
+        <div className="relative bg-neutral-100 dark:bg-shade-700 border-accent-300 dark:border-accent-600 rounded-lg overflow-auto h-[80vh]">
           {loading ? (
             <Skeleton height="100%" />
           ) : (

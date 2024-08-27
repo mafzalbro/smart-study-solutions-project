@@ -9,9 +9,9 @@ export default function Error({ error, reset }) {
   }, [error])
  
   return (
-    <div className='h-screen'>
-      <h2>Something went wrong!</h2>
-      <button
+    <div className='h-screen text-center flex justify-center items-center flex-col'>
+      <h2 className='text-xl'>Something went wrong!</h2>
+      <button className='bg-primary dark:bg-secondary rounded-full'
         onClick={
           // Attempt to recover by trying to re-render the segment
           () => reset()

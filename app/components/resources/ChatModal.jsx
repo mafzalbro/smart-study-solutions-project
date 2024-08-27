@@ -99,9 +99,9 @@ const ChatModal = ({ chatSlug, fileUrl, onClose }) => {
   return (
     <div className="chat-container fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 backdrop-blur-sm">
       <div className="bg-secondary text-primary dark:text-secondary dark:bg-primary rounded-lg overflow-hidden w-[90vw] mx-auto h-[90vh] md:w-3/4 md:h-3/4 flex flex-col">
-        <div className="p-4 border-b flex justify-between items-center">
+        <div className="p-4 border-b flex justify-between items-center text-sm md:text-base">
           <span>Chat with Document</span>
-          <span><Link href={`/chat/${chatSlug}`} target='_blank' className='text-accent-500'>See Full History <FiArrowUpRight/></Link></span>
+          <span><Link href={`/chat/${chatSlug}`} target='_blank' className='text-accent-500 dark:text-accent-300 flex gap-1'>See Full History <FiArrowUpRight/></Link></span>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             Close
           </button>
