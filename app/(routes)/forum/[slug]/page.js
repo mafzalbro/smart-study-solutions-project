@@ -248,7 +248,7 @@ const QuestionPage = ({ params }) => {
 
   if (isLoading && !question) return (
     <section className='px-4 py-8 md:p-10'>
-    <Link href="/forum" className="text-accent-600 dark:text-accent-300 flex items-center">
+    <Link href="/forum" className="text-accent-600 dark:text-accent-300 inline-flex items-center">
       <FaChevronLeft className="mr-1" /> Back to Forum Home
     </Link>
     
@@ -260,7 +260,7 @@ const QuestionPage = ({ params }) => {
 
   return (
     <section className="px-4 py-8 md:p-10">
-        <Link href="/forum" className="text-accent-600 dark:text-accent-300 flex items-center">
+        <Link href="/forum" className="text-accent-600 dark:text-accent-300 inline-flex items-center">
           <FaChevronLeft className="mr-1" /> Back to Forum Home
         </Link>
 

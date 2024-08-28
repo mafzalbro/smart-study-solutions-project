@@ -6,7 +6,7 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import Announcement from '@/app/components/Announcement';
 import '@/app/components/Announcements.css';
-import { FaUserGraduate, FaCommentDots, FaCogs, FaPhone, FaEnvelope } from 'react-icons/fa';
+import { FaBookOpen, FaFileAlt, FaTags, FaChalkboardTeacher, FaClock, FaBook, FaGift } from 'react-icons/fa';
 
 const Announcements = () => {
   const [loading, setLoading] = useState(true);
@@ -34,55 +34,56 @@ const Announcements = () => {
         // Set announcements data
         setAnnouncements([
           {
-            title: "New Feature Release!",
-            description: "We are excited to announce the launch of our new feature that allows you to customize your dashboard. Check it out and let us know what you think!",
-            btnText: "Learn More",
-            btnLink: "/features/custom-dashboard",
-            icon: <FaCogs className="text-2xl text-secondary" />
+            title: "New Notes Released!",
+            description: "We have just added new lecture notes for the latest courses. Make sure to download them and stay updated.",
+            btnText: "View Notes",
+            btnLink: "/notes/latest",
+            icon: <FaBookOpen className="text-2xl text-secondary" />
           },
           {
-            title: "Maintenance Scheduled",
-            description: "We will be performing scheduled maintenance on our servers on July 15th from 2:00 AM to 4:00 AM. During this time, the website may be temporarily unavailable.",
-            btnText: "Read More",
-            btnLink: "/maintenance",
-            icon: <FaCogs className="text-2xl text-secondary" />
+            title: "Past Papers Available",
+            description: "Past exam papers for all subjects are now available. Start practicing and boost your preparation!",
+            btnText: "Access Papers",
+            btnLink: "/past-papers",
+            icon: <FaFileAlt className="text-2xl text-secondary" />
           },
           {
-            title: "Summer Sale is Here!",
-            description: "Enjoy up to 50% off on all products during our Summer Sale! Don't miss out on these amazing deals.",
+            title: "Textbook Discounts!",
+            description: "Enjoy up to 30% off on textbooks and reference materials this semester. Don't miss out on these deals.",
             btnText: "Shop Now",
-            btnLink: "/sale",
-            icon: <FaCommentDots className="text-2xl text-secondary" />
+            btnLink: "/books/sale",
+            icon: <FaTags className="text-2xl text-secondary" />
           },
           {
-            title: "Webinar on Digital Marketing",
-            description: "Join us for a free webinar on digital marketing strategies on August 5th at 10:00 AM. Reserve your spot today!",
+            title: "Study Webinar Series",
+            description: "Join our upcoming webinar series focused on study techniques and time management. Reserve your spot today!",
             btnText: "Register Now",
-            btnLink: "/webinar/digital-marketing",
-            icon: <FaUserGraduate className="text-2xl text-secondary" />
+            btnLink: "/webinars/study-techniques",
+            icon: <FaChalkboardTeacher className="text-2xl text-secondary" />
           },
           {
-            title: "Holiday Hours Update",
-            description: "Please note that our office will be closed for the holidays from December 24th to January 1st. We will resume normal business hours on January 2nd.",
-            btnText: "See Details",
-            btnLink: "/holiday-hours",
-            icon: <FaEnvelope className="text-2xl text-secondary" />
+            title: "Library Hours Update",
+            description: "The university library will have extended hours during exam week. Check the schedule for more details.",
+            btnText: "See Schedule",
+            btnLink: "/library/hours",
+            icon: <FaClock className="text-2xl text-secondary" />
           },
           {
-            title: "New Blog Post",
-            description: "Check out our latest blog post on the top 10 productivity tips to boost your workflow. Get inspired and enhance your efficiency!",
-            btnText: "Read Blog",
-            btnLink: "/blog/productivity-tips",
-            icon: <FaCommentDots className="text-2xl text-secondary" />
+            title: "New Book Arrivals",
+            description: "Explore the latest arrivals in our book collection. From reference guides to the latest research publications.",
+            btnText: "Browse Books",
+            btnLink: "/books/new-arrivals",
+            icon: <FaBook className="text-2xl text-secondary" />
           },
           {
-            title: "Customer Appreciation Week",
-            description: "To show our gratitude, we're offering special discounts and giveaways all week long. Thank you for being a valued customer!",
+            title: "Student Appreciation Week",
+            description: "Celebrate Student Appreciation Week with exclusive access to study materials and giveaways.",
             btnText: "Explore Offers",
-            btnLink: "/customer-appreciation",
-            icon: <FaPhone className="text-2xl text-secondary" />
+            btnLink: "/student-appreciation",
+            icon: <FaGift className="text-2xl text-secondary" />
           }
         ]);
+        
         setLoading(false);
       } catch (error) {
         // Handle error
@@ -96,7 +97,7 @@ const Announcements = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center flex-col bg-white dark:bg-accent-900 p-6 rounded-lg text-center my-auto w-[90vw] md:w-full">
+      <div className="flex justify-center items-center flex-col bg-white dark:bg-accent-900 p-6 rounded-lg text-center mx-auto w-[90vw] md:w-full">
         <Skeleton 
           height={40}
           width={200} 

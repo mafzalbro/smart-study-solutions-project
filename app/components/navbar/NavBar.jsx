@@ -100,10 +100,10 @@ const NavBar = () => {
 
   
   useEffect(() => {
+    const chatScroll = document.querySelector('.chat-scroll')
     const handleScroll = () => {
       const currentScrollTop = document.documentElement.scrollTop;
-      const chatScroll = document.querySelector('.chat-scroll')
-
+      
       if(chatScroll) {
         const currentChatScrollTop = chatScroll.scrollTop;
         if (currentChatScrollTop > 100) {
@@ -134,9 +134,11 @@ const NavBar = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
-
+    chatScroll?.addEventListener('scroll', handleScroll);
+    
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      chatScroll?.removeEventListener('scroll', handleScroll);
     };
   }, [lastScrollTop]);
   

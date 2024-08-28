@@ -48,7 +48,7 @@ export default function ChatMessage({ message, display }) {
     <>
       {message && message?.model_response !== '' && (
         <div
-          className={`overflow-auto p-4 mb-2 rounded-lg dark:bg-neutral-900 dark:text-secondary ${
+          className={` overflow-auto p-4 mb-2 rounded-lg dark:bg-neutral-900 dark:text-secondary ${
             display ? display : ''
           }`}
         >

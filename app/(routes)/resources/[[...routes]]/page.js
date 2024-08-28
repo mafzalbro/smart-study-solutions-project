@@ -162,7 +162,7 @@ export default function ResourcesPage({ params }) {
       <main className="flex-1">
         <section className="p-1 md:p-8 dark:text-secondary w-full">
         { routes[0] ?
-        <Link href="/resources" className="text-accent-600 dark:text-accent-300 flex items-center mt-6 mx-2">
+        <Link href="/resources" className="text-accent-600 dark:text-accent-300 inline-flex items-center mt-6 mx-2">
           <FaChevronLeft className="mr-1" /> Back to Main Page
         </Link> : ''}
 

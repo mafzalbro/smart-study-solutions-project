@@ -215,7 +215,7 @@ export default function ResourcePage({ params }) {
     <section className="flex flex-col md:flex-row gap-8">
 
       <main className="text-neutral-700 dark:text-neutral-300 bg-secondary dark:bg-neutral-800 shadow-md bg-clip-border rounded-lg p-6 md:p-10 flex-1">
-        <Link href="/resources" className="text-accent-600 dark:text-accent-300 flex items-center">
+        <Link href="/resources" className="text-accent-600 dark:text-accent-300 inline-flex items-center">
           <FaChevronLeft className="mr-1" /> Back to Resources
         </Link>
         <div className="mt-4">

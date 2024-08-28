@@ -45,8 +45,7 @@ export default function ChatHistory({ chatHistory, pdfUrls, loading }) {
             ))
           ) : (
             <ChatMessage
-              // display="flex justify-center items-center h-[75vh] text-lg text-neutral-400"
-              display="flex justify-center items-center md:h-[75vh] text-lg text-neutral-400"
+              display="flex justify-center items-center h-[75vh] text-lg text-neutral-400"
               key="no-messages"
               message={{ user_query: 'Nothing to display', model_response: '' }}
             />
