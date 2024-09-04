@@ -15,7 +15,7 @@ const ChatSchema = new Schema({
   pdfText: { type: String, default: '' },
   pdfUrls: { type: [String], default: [] },
   googleCacheMetaData: [{ type: Schema.Types.ObjectId, ref: 'googleCacheMetaData' }], // Add this line
-
+  
   chatHistory: [
     {
       _id: { type: Schema.Types.ObjectId, auto: true },
@@ -47,6 +47,11 @@ const userSchema = new Schema({
   profileImage: {
     type: String,
     default: null,
+  },
+  isMember: 
+  {
+     type: Boolean,
+     default: false
   },
   slug: {
     type: String,

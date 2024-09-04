@@ -19,8 +19,6 @@ const NavBar = () => {
   const [lastScrollTop, setLastScrollTop] = useState(0);
   const { isLoggedIn, user } = useAuth(); // Get isLoggedIn and user from AuthContext
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  // const [loading, setLoading] = useState(true);
-  // const [attempts, setAttempts] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [darkMode, setDarkMode] = useState('light');
   const pathname = usePathname();
@@ -28,22 +26,6 @@ const NavBar = () => {
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
-  // useEffect(() => {
-  //   const loadAuth = async () => {
-  //     if (attempts < 3) {
-  //       try {
-          
-  //         setLoading(false);
-  //       } catch (error) {
-  //         setAttempts((prev) => prev + 1);
-  //       }
-  //     } else {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   loadAuth();
-  // }, [attempts]);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');

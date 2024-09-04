@@ -58,7 +58,7 @@ const RegisterForm = () => {
           className="space-y-4"
         >
           <TextInputField
-            icon={MdEmail}
+            icon={FaUser}
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
@@ -66,7 +66,7 @@ const RegisterForm = () => {
             />
 
           <TextInputField
-            icon={FaUser}
+            icon={MdEmail}
             placeholder="Email"
             type="email"
             value={email}

@@ -11,7 +11,7 @@ export default function Error({ error, reset }) {
   return (
     <div className='h-screen text-center flex justify-center items-center flex-col'>
       <h2 className='text-xl'>Something went wrong!</h2>
-      <button className='bg-primary text-secondary dark:bg-secondary dark:text-primary rounded-full'
+      <button className='bg-primary py-2 px-4 m-2 text-secondary dark:bg-secondary dark:text-primary rounded-full'
         onClick={
           // Attempt to recover by trying to re-render the segment
           () => reset()

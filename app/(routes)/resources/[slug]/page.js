@@ -8,8 +8,11 @@ import BookViewer from '@/app/components/resources/BookViewer';
 import StylishTitle from '@/app/components/StylishTitle';
 import Skeleton from 'react-loading-skeleton';
 import Sidebar from '@/app/components/resources/Sidebar';
+import { useAuth } from '@/app/customHooks/AuthContext';
 import { FaThumbsUp, FaThumbsDown, FaStar, FaChevronLeft } from 'react-icons/fa';
 import { fetcher } from '@/app/utils/fetcher';
+import LinkButton from '@/app/components/LinkButton';
+import { MdShoppingCart } from 'react-icons/md';
 
 export default function ResourcePage({ params }) {
   const [resource, setResource] = useState(null);
@@ -25,7 +28,7 @@ export default function ResourcePage({ params }) {
   const [hasLiked, setHasLiked] = useState(false);
   const [hasDisliked, setHasDisliked] = useState(false);
   const [hasRated, setHasRated] = useState(false);
-  
+  const { user } = useAuth()
 
   const { slug } = params;
 
@@ -147,8 +150,6 @@ export default function ResourcePage({ params }) {
 
     fetchResource();
   }, [slug]);
-  
-
 
   if (loading) {
     return (
@@ -252,12 +253,15 @@ export default function ResourcePage({ params }) {
               >
                 View PDF
               </button>
-              <button
-                onClick={() => setShowBookModal(true)}
-                className="bg-accent-600 text-white rounded-lg py-2 px-4 hover:bg-accent-700 dark:bg-accent-600 dark:hover:bg-accent-700"
-              >
+             { user?.isMember ?
+               <button
+               onClick={() => setShowBookModal(true)}
+               className="bg-accent-600 text-white rounded-lg py-2 px-4 hover:bg-accent-700 dark:bg-accent-600 dark:hover:bg-accent-700"
+               >
                 View PDF as a Book
-              </button>
+              </button> : <LinkButton text='Buy Membership to Chat with PDF' icon={<MdShoppingCart />} link={'/pricing'} className='!bg-accent-600 text-scondary text-sm md:text-base !py-2 !px-4 !rounded-full hover:!bg-accent-700 flex items-center justify-center gap-2 text-center' />
+
+              }
             </>
           )}
         </div>
