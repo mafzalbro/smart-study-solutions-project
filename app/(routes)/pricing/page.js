@@ -5,9 +5,8 @@ import WhiteContainer from '@/app/components/WhiteContainer'
 const ContactPage = () => {
     return (
         <>
-    
+        <h1 className='px-4 py-8'>Bear with Us, we are updating pricing section! Till then contact us for any query!</h1>
       <WhiteContainer>
-        <h1>Bear with Us, we are updating pricing section! Till then contact us for any query!</h1>
         <ContactUs />
       </WhiteContainer>
     
