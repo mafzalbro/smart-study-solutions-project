@@ -17,6 +17,7 @@ export default function ChatHistory({ chatHistory, pdfUrls, loading }) {
     }
   }, [chatHistory]);
 
+  if(chatHistory)
   return (
     // <div className="md:chat-message md:flex-grow overflow-y-auto p-4 mt-8 md:mt-0 dark:bg-neutral-800 dark:text-secondary">
     <div className="p-4 chat-message flex-grow overflow-y-auto mb-8 md:mt-0 dark:bg-neutral-800 dark:text-secondary chat-scroll">
@@ -39,18 +40,20 @@ export default function ChatHistory({ chatHistory, pdfUrls, loading }) {
             </div>
           )}
 
-          {chatHistory.length > 0 ? (
-            chatHistory.map((message) => (
-              <ChatMessage key={message._id} message={message} />
+          {chatHistory?.length > 0 ? (
+            chatHistory?.map((message, i) => (
+              <>
+              { chatHistory?.length === (i + 1) && <div ref={endOfChatRef}></div> }
+              <ChatMessage key={message._id + i} message={message} />
+              </>
             ))
           ) : (
             <ChatMessage
               display="flex justify-center items-center h-[75vh] text-lg text-neutral-400"
-              key="no-messages"
+              key={Date.now()}
               message={{ user_query: 'Nothing to display', model_response: '' }}
             />
           )}
-          <div ref={endOfChatRef}></div>
         </>
       )}
     </div>

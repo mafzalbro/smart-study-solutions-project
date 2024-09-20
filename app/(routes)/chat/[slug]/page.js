@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react';
 import ChatHistory from '../../../components/chat/ChatHistory';
 import MessageInput from '../../../components/chat/MessageInput';
 import Sidebar from '../../../components/chat/sidebar/Sidebar';
-import Loader from '../../../components/chat/Loader';
 import { fetcher } from '@/app/utils/fetcher';
 import NewChatButton from '@/app/components/chat/NewChatButton';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 export default function Chat({ params }) {
   const { slug } = params;
+  const router = useRouter()
   const [chatHistory, setChatHistory] = useState([]);
   const [pdfUrls, setPdfUrls] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,16 +22,18 @@ export default function Chat({ params }) {
     setLoading(true);
     try {
       const data = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/${slug}`);
-      // console.log({data});
       
-      if (!data) {
-        throw new Error('Failed to fetch chat data');
+      if (data.message === "chat not found") {
+        toast.error('Sorry, Chat Not Exists!')
+        router.push('/chat')
+        // throw new Error('Failed to fetch chat data');
+      } else {
+        setChatHistory(data.chatHistory);
+        (data.pdfUrl) ? setPdfUrls(data.pdfUrl) : setPdfUrls([]);
       }
-      // const data = await res.json();
-      setChatHistory(data.chatHistory);
-      (data.pdfUrl) ? setPdfUrls(data.pdfUrl) : setPdfUrls([]);
     } catch (error) {
-      console.error('Error fetching chat:', error);
+      router.push('/chat')
+      // console.error('Error fetching chat:', error);
     } finally {
       setLoading(false);
     }

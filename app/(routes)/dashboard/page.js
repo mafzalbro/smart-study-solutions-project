@@ -8,7 +8,7 @@ export default function Dashboard() {
   const { user } = useAuth();
 
   return (
-    <div className="w-full md:w-3/4 min-h-screen bg-my-bg-1 text-foreground flex items-center justify-center">
+    <div className="w-full md:w-3/4 min-h-[65vh] bg-my-bg-1 text-foreground flex items-center justify-center">
       <div className="relative w-full max-w-md p-8 bg-my-bg-2 rounded-lg border border-neutral-100 dark:border-neutral-700 mx-4 bg-secondary dark:bg-neutral-800">
         <div className="absolute -top-16 left-1/2 transform -translate-x-1/2">
           <div className="relative w-32 h-32">

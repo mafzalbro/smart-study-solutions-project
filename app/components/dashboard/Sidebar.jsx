@@ -75,14 +75,21 @@ export default function Sidebar({ height }) {
       >
         {(loading) ? (
           <>
+          <div className='hidden md:block'>
             <Skeleton height={40} width={'80vw'} className='mx-auto' />
             <Skeleton height={40} count={6} className='mb-10' />
+          </div>
+          <div className='md:hidden flex flex-row'>
+            <Skeleton height={40} width={80} />
+            <Skeleton height={40} width={100} />
+            <Skeleton height={40} width={120} />
+          </div>
           </>
         ) : (
           <div className='flex md:flex-col'>
             {sidebarItems.map((item) => (
               <Link key={item.key} href={item.href}>
-                <span className={`block shadow py-2 px-4 mr-2 md:mr-0 md:my-2 rounded-lg ${selectedData === item.key ? 'bg-accent-500 text-secondary' : 'bg-secondary dark:bg-neutral-700 text-neutral-400 hover:bg-neutral-50 dark:hover:bg-accent-800 md:bg-transparent md:dark:bg-transparent'}`}>
+                <span className={`block py-2 px-4 mr-2 md:mr-0 md:my-2 rounded-lg ${selectedData === item.key ? 'bg-accent-500 text-secondary' : 'bg-secondary dark:bg-neutral-700 text-neutral-400 hover:bg-neutral-50 dark:hover:text-secondary dark:hover:bg-accent-700 md:bg-transparent md:dark:bg-transparent'}`}>
                   {item.label}
                 </span>
               </Link>

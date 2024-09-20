@@ -23,7 +23,6 @@ const UpdateProfile = () => {
       .then(data => {
         if (data) {
           setUser(data);
-          console.log(data);
         } else {
           console.error('User data not found');
         }

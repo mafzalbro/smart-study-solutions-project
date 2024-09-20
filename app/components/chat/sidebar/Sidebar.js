@@ -26,7 +26,7 @@ export default function Sidebar({ chatHistory, slug, pdfuri }) {
   const [selectedChatSlug, setSelectedChatSlug] = useState(null);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('chat'); // State for active tab
-  const limit = 8
+  const limit = 10;
 
   const toggleSidebar = () => {
     setIsSidebarVisible(!isSidebarVisible);
@@ -35,47 +35,75 @@ export default function Sidebar({ chatHistory, slug, pdfuri }) {
   const router = useRouter();
   const modalRef = useRef(null);
 
-  // Fetch chats
-  const fetchChats = async () => {
-    setLoading(true);
-    try {
-      const endpoint = `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/titles?page=${chatPage}&limit=${limit}`;
-      const data = await fetcher(endpoint);
-      if (data && data.data) {
-        const sortedChats = data.data.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-        const updatedChats = chatPage === 1 ? sortedChats : [...chats, ...sortedChats];
-        setChats(updatedChats);
-        setTotalChats(data.totalResults);
-      } else {
-        console.error('Data structure is unexpected or data is null.');
-      }
-    } catch (error) {
-      console.error('Error fetching chats:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Helper function to get unique items based on 'slug'
+const getUniqueItemsBySlug = (items) => {
+  const uniqueItems = [];
+  const seenSlugs = new Set();
 
-  // Fetch PDFs
-  const fetchPDFs = async () => {
-    setLoading(true);
-    try {
-      const endpoint = `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/pdf-titles?page=${pdfPage}&limit=${limit}`;
-      const data = await fetcher(endpoint);
-      if (data && data.data) {
-        const sortedPDFs = data.data.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-        const updatedPDFs = pdfPage === 1 ? sortedPDFs : [...pdfChats, ...sortedPDFs];
-        setPdfChats(updatedPDFs);
-        setTotalPDFs(data.totalResults);
-      } else {
-        console.error('Data structure is unexpected or data is null.');
-      }
-    } catch (error) {
-      console.error('Error fetching PDFs:', error);
-    } finally {
-      setLoading(false);
+  for (const item of items) {
+    if (!seenSlugs.has(item.slug)) {
+      seenSlugs.add(item.slug);
+      uniqueItems.push(item);
     }
-  };
+  }
+
+  return uniqueItems;
+};
+
+// Fetch chats
+const fetchChats = async () => {
+  setLoading(true);
+  try {
+    const endpoint = `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/titles?page=${chatPage}&limit=${limit}`;
+    const data = await fetcher(endpoint);
+    if (data && data.data) {
+      const sortedChats = data.data
+        .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+        
+      const updatedChats = chatPage === 1 ? sortedChats : [...chats, ...sortedChats];
+
+      // Filter unique chats based on 'slug'
+      const uniqueChats = getUniqueItemsBySlug(updatedChats);
+
+      setChats(uniqueChats);
+      setTotalChats(data.totalResults);
+    } else {
+      console.error('Data structure is unexpected or data is null.');
+    }
+  } catch (error) {
+    console.error('Error fetching chats:', error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+// Fetch PDFs
+const fetchPDFs = async () => {
+  setLoading(true);
+  try {
+    const endpoint = `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/pdf-titles?page=${pdfPage}&limit=${limit}`;
+    const data = await fetcher(endpoint);
+    if (data && data.data) {
+      const sortedPDFs = data.data
+        .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+        
+      const updatedPDFs = pdfPage === 1 ? sortedPDFs : [...pdfChats, ...sortedPDFs];
+
+      // Filter unique PDFs based on 'slug'
+      const uniquePDFs = getUniqueItemsBySlug(updatedPDFs);
+
+      setPdfChats(uniquePDFs);
+      setTotalPDFs(data.totalResults);
+    } else {
+      console.error('Data structure is unexpected or data is null.');
+    }
+  } catch (error) {
+    console.error('Error fetching PDFs:', error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // Determine active tab based on slug and chat history
   useEffect(() => {
@@ -183,7 +211,7 @@ export default function Sidebar({ chatHistory, slug, pdfuri }) {
 
   return (
     <>
-      <div ref={sidebarRef} className={`text-sm md:text-base sidebar md:w-1/4 md:opacity-100 backdrop-blur-sm ${!isSidebarVisible ? 'w-0 p-0 opacity-0 pointer-events-none md:pointer-events-auto' : 'pointer-events-auto p-4 fixed md:relative w-[60%] h-screen opacity-100'} bg-secondary bg-opacity-80 dark:bg-opacity-80 bg-blend-color-dodge md:bg-transparent text-primary dark:text-secondary dark:bg-neutral-800 md:p-4 flex flex-col gap-8 md:gap-6 transition-opacity ease-in-out duration-500 z-20 dark:shadow-2xl md:border-r dark:border-none`}>
+      <div ref={sidebarRef} className={`text-sm md:text-base sidebar md:w-1/4 md:opacity-100 backdrop-blur-sm ${!isSidebarVisible ? 'w-0 p-0 overflow-hidden opacity-0 pointer-events-none md:pointer-events-auto' : 'pointer-events-auto p-4 overflow-visible fixed md:relative w-[60%] h-screen opacity-100'} bg-secondary bg-opacity-80 dark:bg-opacity-80 bg-blend-color-dodge md:bg-transparent text-primary dark:text-secondary dark:bg-neutral-800 md:p-4 flex flex-col gap-8 md:gap-6 transition-opacity ease-in-out duration-500 z-20 dark:shadow-2xl md:border-r dark:border-none`}>
         <SidebarHeader />
         <NewChatButton className='hidden md:block'/>
         <SidebarTabs activeTab={activeTab} setActiveTab={setActiveTab} />

@@ -1,59 +1,58 @@
 "use client";
 
-import Link from 'next/link';
-import { useState, useEffect, useRef } from 'react';
-import { FaUserCircle } from 'react-icons/fa';
-import { FiX, FiMoon, FiSun } from 'react-icons/fi';
+import Link from "next/link";
+import { useState, useEffect, useRef } from "react";
+import { FaUserCircle } from "react-icons/fa";
+import { FiX, FiMoon, FiSun } from "react-icons/fi";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
-import { usePathname, useSearchParams, useRouter } from 'next/navigation';
-import { useAuth } from '@/app/customHooks/AuthContext';
-import Skeleton from 'react-loading-skeleton';
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { useAuth } from "@/app/customHooks/AuthContext";
+import Skeleton from "react-loading-skeleton";
 
-import 'react-loading-skeleton/dist/skeleton.css';
-import StylishSpan from '../StylishSpan';
-import HoverLine from './HoverLine';
+import "react-loading-skeleton/dist/skeleton.css";
+import StylishSpan from "../StylishSpan";
+import HoverLine from "./HoverLine";
 
 const NavBar = () => {
-  const [scrollDirection, setScrollDirection] = useState('up');
+  const [scrollDirection, setScrollDirection] = useState("up");
   const [lastScrollTop, setLastScrollTop] = useState(0);
   const { isLoggedIn, user } = useAuth(); // Get isLoggedIn and user from AuthContext
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState('light');
+  const [darkMode, setDarkMode] = useState("light");
   const pathname = usePathname();
   const router = useRouter();
   const query = useSearchParams();
-  const token = query.get('token')
+  const token = query.get("token");
 
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
-
   useEffect(() => {
-    const savedToken = localStorage.getItem('token');
-    
-    if (!savedToken && token) {
-      localStorage.setItem('token', token)
+    const savedToken = localStorage.getItem("token");
+
+    if (!savedToken && token && pathname === "/") {
+      localStorage.setItem("token", token);
+      router.push("/");
     }
+  }, [token]);
 
-    router.push('/')
-  }, []);
-  
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    
+    const savedTheme = localStorage.getItem("theme");
+
     if (savedTheme) {
       setDarkMode(savedTheme);
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+      document.documentElement.classList.toggle("dark", savedTheme === "dark");
     } else {
-      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const defaultTheme = prefersDarkMode ? 'dark' : 'light';
+      const prefersDarkMode = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+      const defaultTheme = prefersDarkMode ? "dark" : "light";
       setDarkMode(defaultTheme);
-      document.documentElement.classList.toggle('dark', prefersDarkMode);
-      localStorage.setItem('theme', defaultTheme);
+      document.documentElement.classList.toggle("dark", prefersDarkMode);
+      localStorage.setItem("theme", defaultTheme);
     }
   }, []);
-  
 
   useEffect(() => {
     setIsDropdownOpen(false);
@@ -65,14 +64,17 @@ const NavBar = () => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target)
+      ) {
         setIsMobileMenuOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -85,65 +87,61 @@ const NavBar = () => {
   };
 
   const toggleDarkMode = () => {
-    const newDarkMode = darkMode === 'dark' ? 'light' : 'dark';
-    
+    const newDarkMode = darkMode === "dark" ? "light" : "dark";
+
     setDarkMode(newDarkMode);
-    document.documentElement.classList.toggle('dark', newDarkMode === 'dark');
-    localStorage.setItem('theme', newDarkMode);
+    document.documentElement.classList.toggle("dark", newDarkMode === "dark");
+    localStorage.setItem("theme", newDarkMode);
   };
 
-  
   useEffect(() => {
-    const chatScroll = document.querySelector('.chat-scroll')
+    const chatScroll = document.querySelector(".chat-scroll");
     const handleScroll = () => {
       const currentScrollTop = document.documentElement.scrollTop;
-      
-      if(chatScroll) {
+
+      if (chatScroll) {
         const currentChatScrollTop = chatScroll.scrollTop;
         if (currentChatScrollTop > 100) {
           if (currentChatScrollTop > lastScrollTop) {
-            setScrollDirection('down');
-          }
-          else {
-            setScrollDirection('up');
+            setScrollDirection("down");
+          } else {
+            setScrollDirection("up");
           }
         } else {
-          setScrollDirection('up');
+          setScrollDirection("up");
         }
         setLastScrollTop(currentChatScrollTop <= 0 ? 0 : currentChatScrollTop);
       } else {
         if (currentScrollTop > 100) {
           if (currentScrollTop > lastScrollTop) {
-            setScrollDirection('down');
-          }
-          else {
-            setScrollDirection('up');
+            setScrollDirection("down");
+          } else {
+            setScrollDirection("up");
           }
         } else {
-          setScrollDirection('up');
+          setScrollDirection("up");
         }
         // Update lastScrollTop, ensuring it's never negative
         setLastScrollTop(currentScrollTop <= 0 ? 0 : currentScrollTop);
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    chatScroll?.addEventListener('scroll', handleScroll);
-    
+    window.addEventListener("scroll", handleScroll);
+    chatScroll?.addEventListener("scroll", handleScroll);
+
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      chatScroll?.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
+      chatScroll?.removeEventListener("scroll", handleScroll);
     };
   }, [lastScrollTop]);
-  
-  
+
   if (user === null) {
     return (
       <nav
-      className={`sticky top-0 translate-y-0 z-50 bg-opacity-80 dark:bg-opacity-80 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-3 px-4 md:p-4 shadow-lg text-primary dark:text-secondary ${
-        scrollDirection === 'down' ? 'translate-y-[-100%]' : 'translate-y-0'
-      }`}
-    >
+        className={`sticky top-0 translate-y-0 z-50 bg-opacity-80 dark:bg-opacity-80 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-3 px-4 md:p-4 shadow-lg text-primary dark:text-secondary ${
+          scrollDirection === "down" ? "translate-y-[-100%]" : "translate-y-0"
+        }`}
+      >
         <div className="container mx-auto flex justify-between items-center">
           <Skeleton width={100} height={30} />
           <div className="space-x-6 items-center hidden md:flex">
@@ -163,15 +161,20 @@ const NavBar = () => {
     );
   }
   const getActiveLinkClass = (linkPath, isHome) => {
-    if(isHome) return pathname === linkPath ? 'text-blue-500 dark:text-blue-300 pointer-events-none' : '';
-    return pathname.includes(linkPath) ? 'text-blue-500 dark:text-blue-300' : '';
+    if (isHome)
+      return pathname === linkPath
+        ? "text-blue-500 dark:text-blue-300 pointer-events-none"
+        : "";
+    return pathname.includes(linkPath)
+      ? "text-blue-500 dark:text-blue-300"
+      : "";
     // return pathname.includes(linkPath) ? 'text-blue-500 dark:text-blue-300 pointer-events-none' : '';
   };
 
   return (
     <nav
-    className={`sticky top-0 z-50 bg-opacity-80 dark:bg-opacity-50 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-2 px-4 md:p-4 shadow-lg text-primary dark:text-secondary ${
-        scrollDirection === 'down' ? 'translate-y-[-100%]' : 'translate-y-0'
+      className={`sticky top-0 z-50 bg-opacity-80 dark:bg-opacity-50 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-2 px-4 md:p-4 shadow-lg text-primary dark:text-secondary ${
+        scrollDirection === "down" ? "translate-y-[-100%]" : "translate-y-0"
       }`}
     >
       <div className="container mx-auto flex justify-between items-center">
@@ -184,39 +187,63 @@ const NavBar = () => {
           <ul
             ref={mobileMenuRef}
             className={`${
-              isMobileMenuOpen ? 'block z-0 top-14 opcity-100 md:opacity-100 pointer-events-auto' : 'pointer-events-none opacity-0 md:opacity-100 top-8'
+              isMobileMenuOpen
+                ? "block z-0 top-14 opcity-100 md:opacity-100 pointer-events-auto"
+                : "pointer-events-none opacity-0 md:opacity-100 top-8"
             } md:pointer-events-auto md:flex md:space-x-6 p-6 md:p-0 md:items-center absolute md:static bg-secondary dark:bg-neutral-800 md:dark:bg-transparent md:bg-transparent left-0 w-full md:w-auto shadow-lg md:shadow-none text-center transition-all duration-300 ease-in-out`}
           >
             <li>
-              <Link href="/" passHref className={`inline-block relative group py-2 md:py-0 ${getActiveLinkClass('/', true)}`}>
-                  Home
-                  <HoverLine hide={pathname === '/'}/>
+              <Link
+                href="/"
+                passHref
+                className={`inline-block relative group py-2 md:py-0 ${getActiveLinkClass(
+                  "/",
+                  true
+                )}`}
+              >
+                Home
+                <HoverLine hide={pathname === "/"} />
               </Link>
             </li>
             <li>
-              <Link href="/resources" passHref className={`inline-block relative group py-2 md:py-0 ${getActiveLinkClass('/resources')}`}>
-                  Resources
-
-                  <HoverLine hide={pathname.includes('/resources')}/>
+              <Link
+                href="/resources"
+                passHref
+                className={`inline-block relative group py-2 md:py-0 ${getActiveLinkClass(
+                  "/resources"
+                )}`}
+              >
+                Resources
+                <HoverLine hide={pathname.includes("/resources")} />
               </Link>
             </li>
             <li>
-              <Link href="/forum" passHref className={`inline-block relative group py-2 md:py-0 ${getActiveLinkClass('/forum')}`}>
-                  Forum
-
-                  <HoverLine hide={pathname.includes('/forum')}/>
+              <Link
+                href="/forum"
+                passHref
+                className={`inline-block relative group py-2 md:py-0 ${getActiveLinkClass(
+                  "/forum"
+                )}`}
+              >
+                Forum
+                <HoverLine hide={pathname.includes("/forum")} />
               </Link>
             </li>
             {isLoggedIn && (
               <li>
-                <Link href="/chat" passHref className={`inline-block relative group py-2 md:py-0 ${getActiveLinkClass('/chat')}`}>
-                    Ask AI
-
-                    <HoverLine hide={pathname.includes('/chat')}/>
+                <Link
+                  href="/chat"
+                  passHref
+                  className={`inline-block relative group py-2 md:py-0 ${getActiveLinkClass(
+                    "/chat"
+                  )}`}
+                >
+                  Ask AI
+                  <HoverLine hide={pathname.includes("/chat")} />
                 </Link>
               </li>
             )}
-            {pathname.includes('/forum') && (
+            {pathname.includes("/forum") && (
               <li>
                 <Link href="/forum/submit" passHref>
                   <button className="my-4 md:my-0 py-2 px-4 bg-link text-white rounded-lg shadow-md hover:bg-link-hover dark:bg-link-hover dark:hover:bg-link">
@@ -268,7 +295,11 @@ const NavBar = () => {
             onClick={toggleDarkMode}
             className="ml-4 p-2 bg-neutral-200 dark:bg-neutral-700 rounded-lg focus:outline-none"
           >
-            {darkMode === 'dark' ? <FiSun className="text-yellow-500" /> : <FiMoon className="text-neutral-800 dark:text-neutral-200" />}
+            {darkMode === "dark" ? (
+              <FiSun className="text-yellow-500" />
+            ) : (
+              <FiMoon className="text-neutral-800 dark:text-neutral-200" />
+            )}
           </button>
           <button
             className="block md:hidden ml-4"

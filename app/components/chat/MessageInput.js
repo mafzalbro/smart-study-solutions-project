@@ -53,14 +53,14 @@ export default function MessageInput({ chatId, addMessageToChatHistory, chatHist
   }, [isSending, waitingMessageIndex]);
 
   useEffect(() => {
-    if (endOfChatRef.current) {
+    if (endOfChatRef && endOfChatRef.current) {
       endOfChatRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [reply]);
   
   useEffect(() => {
     // Focus on the input field when component mounts or after a message is sent
-    if (inputRef.current) {
+    if (inputRef && inputRef.current) {
       inputRef.current.focus();
     } 
     // else {
@@ -127,7 +127,7 @@ export default function MessageInput({ chatId, addMessageToChatHistory, chatHist
       setPdfUrl('');
       setShowPdfInput(false);
       setIsSending(false);
-      if (inputRef.current) {
+      if (inputRef && inputRef.current) {
         inputRef.current.focus();
       }
     } catch (error) {
