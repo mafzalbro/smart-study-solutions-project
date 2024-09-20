@@ -15,6 +15,7 @@ export default function Sidebar({ chatHistory, slug, pdfuri }) {
   const [chats, setChats] = useState([]);
   const [pdfChats, setPdfChats] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
   const [chatPage, setChatPage] = useState(1);
   const [pdfPage, setPdfPage] = useState(1);
   const [totalChats, setTotalChats] = useState(0);
@@ -151,7 +152,9 @@ const fetchPDFs = async () => {
   // Handle deleting chat
   const handleDelete = async (chatSlug) => {
     try {
+      setDeleting(true)
       const res = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/${chatSlug}`, 'DELETE');
+      setDeleting(false)
       if (res) {
         if (activeTab === 'chat') {
           setChats(chats.filter(chat => chat.slug !== chatSlug));
@@ -228,6 +231,7 @@ const fetchPDFs = async () => {
           handleEdit={handleEdit}
           handleDelete={handleDelete}
           loading={loading}
+          deleting={deleting}
           setChatPage={setChatPage}
           setPdfPage={setPdfPage}
           chatPage={chatPage}
@@ -246,6 +250,7 @@ const fetchPDFs = async () => {
           pdfChats={pdfChats}
           selectedChatSlug={selectedChatSlug}
           activeTab={activeTab}
+          deleting={deleting}
         />
       </div>
       <SidebarToggleButton

@@ -38,7 +38,7 @@ export default function ChatList({
 
   return (
     <>
-      <div className="sidebar-chat-list overflow-y-auto h-1/2">
+      <div className={`sidebar-chat-list overflow-y-auto ${items?.length !== 0 && 'h-1/2'}`}>
         {items.map((chat) => (
           <ChatItem
             key={chat.slug}

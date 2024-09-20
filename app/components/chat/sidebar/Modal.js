@@ -4,7 +4,7 @@ import { MdDriveFileRenameOutline, MdOutlineDeleteOutline, MdPictureAsPdf, MdLin
 import { FiX } from 'react-icons/fi';
 import Link from 'next/link';
 
-export default function Modal({ modalVisible, modalRef, modalPosition, handleEdit, handleDelete, setModalVisible, chats, pdfChats, selectedChatSlug, activeTab }) {
+export default function Modal({ modalVisible, modalRef, modalPosition, handleEdit, handleDelete, setModalVisible, chats, pdfChats, selectedChatSlug, activeTab, deleting }) {
   return modalVisible ? (
     <div className="fixed top-0 left-0 w-full flex items-center justify-center bg-primary bg-opacity-50 z-50">
       <div
@@ -19,10 +19,11 @@ export default function Modal({ modalVisible, modalRef, modalPosition, handleEdi
           <MdDriveFileRenameOutline className="mr-2" /> Rename
         </button>
         <button
+        disabled={deleting}
           onClick={() => handleDelete(selectedChatSlug)}
-          className="flex items-center w-full text-left p-2 hover:bg-neutral-200 dark:hover:bg-accent-800"
+          className="flex items-center w-full text-left p-2 hover:bg-neutral-200 dark:hover:bg-accent-800 disabled:text-neutral-700 disabled:dark:text-neutral-400"
         >
-          <MdOutlineDeleteOutline className="mr-2" /> Delete
+          <MdOutlineDeleteOutline className="mr-2" /> {deleting ? 'Deleting...':'Delete'}
         </button>
         {activeTab === 'pdf'  && <Link href={`${pdfChats.find((chat) => chat.slug === selectedChatSlug)?.pdfUrls}`} className="flex items-center w-full text-left p-2 hover:bg-neutral-200 dark:hover:bg-accent-800" target='_blank'><MdLink className="mr-2"/>PDF</Link>}
         
