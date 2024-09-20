@@ -9,9 +9,10 @@ const { connect } = require('./src/config/db');
 require('dotenv').config();
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
-const swaggerFile = require('./swagger-output.json'); // Import the generated swagger file
+const swaggerFile = require('./swagger-output.json');
 
-
+// Import the cache middleware
+const { cacheMiddleware, clearExpiredCache } = require('./src/middlewares/cacheMiddleware');
 
 const app = express();
 
@@ -40,8 +41,7 @@ app.use(cors({
   credentials: true
 }));
 
-console.log(process.env.FRONTEND_ORIGIN, process.env.FRONTEND_ORIGIN_1)
-
+console.log(process.env.FRONTEND_ORIGIN, process.env.FRONTEND_ORIGIN_1, process.env.MONGODB_URI)
 
 // Session configuration
 app.use(session({
@@ -49,7 +49,8 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
-  cookie: {maxAge: 3600000,
+  cookie: {
+    maxAge: 3600000,
     // sameSite: None,
     // secure: true,
     // httpOnly: true
@@ -59,6 +60,9 @@ app.use(session({
 // Initialize Passport
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Use the cache middleware for all GET routes
+app.use(cacheMiddleware); // Apply globally to cache GET requests
 
 // Routes
 app.use('/api/admin', adminAuthRoutes);

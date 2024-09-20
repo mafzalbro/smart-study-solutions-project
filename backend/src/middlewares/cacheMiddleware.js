@@ -1,22 +1,37 @@
-// cacheMiddleware.js
 const NodeCache = require('node-cache');
-const cache = new NodeCache();
 
+// Initialize cache with a 1-minute expiration (60 seconds)
+const cache = new NodeCache({ stdTTL: 60, checkperiod: 120 });
+
+// Cache middleware
 const cacheMiddleware = (req, res, next) => {
-  const key = req.originalUrl || req.url;
-  const cachedData = cache.get(key);
-  
-  if (cachedData) {
-    return res.send(cachedData);
+  // Only cache GET requests
+  if (req.method !== 'GET') {
+    return next();
   }
 
-  res.sendResponse = res.send;
-  res.send = (body) => {
-    cache.set(key, body, 10); // Cache for 10 seconds
-    res.sendResponse(body);
+  const key = req.originalUrl || req.url; // Use URL as the key
+
+  // Check if data is in cache
+  const cachedData = cache.get(key);
+  if (cachedData) {
+    console.log('Serving from cache:', key);
+    return res.json(cachedData); // Send cached response
+  }
+
+  // Override res.json to cache the response data
+  res.sendResponse = res.json;
+  res.json = (body) => {
+    cache.set(key, body); // Store response in cache
+    res.sendResponse(body); // Send response to client
   };
 
-  next();
+  next(); // Move to the next middleware/route handler
 };
 
-module.exports = cacheMiddleware;
+// Function to manually clear expired cache entries
+const clearExpiredCache = () => {
+  cache.flushAll(); // Clears the entire cache
+};
+
+module.exports = { cacheMiddleware, clearExpiredCache };

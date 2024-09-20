@@ -10,7 +10,7 @@ export default function Modal({ modalVisible, modalRef, modalPosition, handleEdi
       <div
         ref={modalRef}
         className="bg-secondary dark:bg-accent-700 p-4 rounded-lg shadow-md"
-        style={{ top: modalPosition.y, left: modalPosition.x, position: 'absolute' }}
+        style={{ top: modalPosition.y / 1.3, left: modalPosition.x * 1.1, position: 'absolute' }}
       >
         <button
           onClick={() => handleEdit({ slug: selectedChatSlug, title: (activeTab === 'chat' ? chats : pdfChats).find(chat => chat.slug === selectedChatSlug)?.title })}

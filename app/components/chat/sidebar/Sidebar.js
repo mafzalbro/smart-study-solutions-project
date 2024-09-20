@@ -26,7 +26,7 @@ export default function Sidebar({ chatHistory, slug, pdfuri }) {
   const [selectedChatSlug, setSelectedChatSlug] = useState(null);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('chat'); // State for active tab
-  const limit = 5
+  const limit = 8
 
   const toggleSidebar = () => {
     setIsSidebarVisible(!isSidebarVisible);
@@ -161,6 +161,7 @@ export default function Sidebar({ chatHistory, slug, pdfuri }) {
   };
 
   const openModal = (event, chatSlug) => {
+
     const { clientX, clientY } = event;
     setModalPosition({ x: clientX, y: clientY });
     setSelectedChatSlug(chatSlug);
