@@ -39,9 +39,9 @@ const Testimonials = () => {
 
   return (
     <>
-      <Slider {...settings}>
+      <Slider {...settings} >
         {testimonials.map((testimonial, index) => (
-          <div key={index} className="p-8 bg-secondary dark:bg-neutral-800 rounded-lg">
+          <div key={index} className="bg-secondary dark:bg-neutral-800 p-6 rounded-lg text-center my-auto m-1">
             <div className="flex items-center justify-center mb-4">
               <FaQuoteLeft className="text-3xl text-accent-600 mr-2" />
               <p className="text-lg italic text-primary dark:text-secondary text-center">{testimonial.quote}</p>

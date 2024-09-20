@@ -5,10 +5,9 @@ import { useState, useEffect, useRef } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 import { FiX, FiMoon, FiSun } from 'react-icons/fi';
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/app/customHooks/AuthContext';
 import Skeleton from 'react-loading-skeleton';
-import { ToastContainer } from 'react-toastify';
 
 import 'react-loading-skeleton/dist/skeleton.css';
 import StylishSpan from '../StylishSpan';
@@ -22,11 +21,24 @@ const NavBar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [darkMode, setDarkMode] = useState('light');
   const pathname = usePathname();
-  
+  const router = useRouter();
+  const query = useSearchParams();
+  const token = query.get('token')
+
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
 
+  useEffect(() => {
+    const savedToken = localStorage.getItem('token');
+    
+    if (!savedToken && token) {
+      localStorage.setItem('token', token)
+    }
+
+    router.push('/')
+  }, []);
+  
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     

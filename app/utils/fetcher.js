@@ -60,6 +60,11 @@ export const fetcher = async (url, method = 'GET', body = null, headers = {}) =>
     await setCachedData(cacheKey, data); // Cache the new data
   }
 
+   // Store new token if available in the response body
+  //  if (data.token) {
+  //   localStorage.setItem('token', data.token); // Store token
+  // }
+
   return data;
 };
 

@@ -8,7 +8,7 @@ passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: `${process.env.BACKEND_ORIGIN}/api/auth/google/callback`,
-},
+}, 
 async (accessToken, refreshToken, profile, done) => {
   try {
     // Check if user already exists by googleId
@@ -44,7 +44,7 @@ async (accessToken, refreshToken, profile, done) => {
 }));
 
 passport.serializeUser((user, done) => {
-  console.log('Serializing user:', user); // Debugging
+  // console.log('Serializing user:', user); // Debugging
   done(null, user._id.toString()); // Ensure the ID is a string
 });
 
@@ -52,7 +52,7 @@ passport.deserializeUser(async (id, done) => {
   console.log('Deserializing user ID:', id.id); // Debugging
   try {
     const user = await User.findById(id);
-    console.log('Deserialized user:', user); // Debugging
+    // console.log('Deserialized user:', user); // Debugging
     done(null, user);
   } catch (error) {
     done(error, null);

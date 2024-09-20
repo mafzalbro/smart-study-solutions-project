@@ -14,6 +14,9 @@ const swaggerFile = require('./swagger-output.json');
 // Import the cache middleware
 const { cacheMiddleware, clearExpiredCache } = require('./src/middlewares/cacheMiddleware');
 
+
+clearExpiredCache()
+
 const app = express();
 
 // Import Routes

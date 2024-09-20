@@ -39,6 +39,7 @@ router.get('/google', (req, res, next) => {
   passport.authenticate('google', { scope: ['profile', 'email'], state: req.query.state })(req, res, next);
 });
 
+
 // Route to handle Google OAuth callback
 router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
   const user = req.user;
@@ -55,9 +56,16 @@ router.get('/google/callback', passport.authenticate('google', { failureRedirect
     { expiresIn: JWT_EXPIRATION }
   );
 
-  // Redirect with the token as a query parameter
-  const redirectUrl = `${process.env.FRONTEND_ORIGIN}/?token=${token}`;
-  res.redirect(redirectUrl);
+  // Send token in both redirect URL and as JSON response
+  if (req.query.state === 'json') {
+    // If state query is 'json', send the token in JSON response (for flexibility)
+    return res.json({ token });
+  } else {
+    // By default, redirect with the token in the query parameter
+    const redirectUrl = `${process.env.FRONTEND_ORIGIN}/?token=${token}`;
+    res.redirect(redirectUrl);
+  }
 });
+
 
 module.exports = router;

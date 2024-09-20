@@ -61,11 +61,11 @@ const LoginForm = () => {
       setPassword('');
       toast.success(userData.message);
       if (userData.message.includes('successfully')) {
-        const restrictedPaths = ['/register', '/reset-password', '/forgot-password', '/logout'];
-        const previousPath = document.referrer;
-      console.log(previousPath)
+      //   const restrictedPaths = ['/register', '/reset-password', '/forgot-password', '/logout'];
+      //   const previousPath = document.referrer;
+      // console.log(previousPath)
         // Check if the previous path includes any of the restricted paths
-        const isRestrictedPath = restrictedPaths.some(path => previousPath.includes(path));
+        // const isRestrictedPath = restrictedPaths.some(path => previousPath.includes(path));
       
         // if (!isRestrictedPath) {
           // if(pathname.includes('/login')) router.push('/');
