@@ -49,7 +49,7 @@ export default function ChatList({
             newTitle={newTitle}
             setNewTitle={setNewTitle}
             handleUpdate={handleUpdate}
-            openModal={openModal}
+            openModal={openModal} 
             handleEdit={handleEdit}
           />
         ))}

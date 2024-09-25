@@ -116,8 +116,8 @@ const getAllQuestions = async (req, res) => {
       question: question.question,
       askedBy: {
         _id: question.askedBy?._id,
-        username: question.askedBy.username,
-        slug: question.askedBy.slug,
+        username: question.askedBy?.username,
+        slug: question.askedBy?.slug,
       },
       category: {
         name: question.category.name,
@@ -200,7 +200,7 @@ const getQuestionBySlug = async (req, res) => {
       answers: answers,
       askedBy: {
         _id: question.askedBy?._id,
-        username: question.askedBy.username,
+        username: question.askedBy?.username,
         slug: question.askedBy.slug,
       },
       category: {

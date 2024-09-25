@@ -16,6 +16,7 @@ import CardContainer from './WhiteContainer';
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -36,7 +37,7 @@ const LoginForm = () => {
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{5,}$/;
 
     if (emailRegex.test(username)) {
-      toast.error('Username must not be an email address.');
+      setEmail(username)
       return false;
     }
 
@@ -56,7 +57,8 @@ const LoginForm = () => {
     setLoading(true);
 
     try {
-      const userData = await loginUser(username, password);
+      const userData = await loginUser(username, email, password);
+      setEmail('');
       setUsername('');
       setPassword('');
       toast.success(userData.message);

@@ -239,6 +239,7 @@ const fetchPDFs = async () => {
           totalChats={totalChats}
           totalPDFs={totalPDFs}
         />
+
         <Modal
           modalVisible={modalVisible}
           modalRef={modalRef}
@@ -259,4 +260,4 @@ const fetchPDFs = async () => {
       />
     </>
   );
-}  
+}

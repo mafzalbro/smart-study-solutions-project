@@ -12,10 +12,8 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('./swagger-output.json');
 
 // Import the cache middleware
-const { cacheMiddleware, clearExpiredCache } = require('./src/middlewares/cacheMiddleware');
+const { cacheMiddleware } = require('./src/middlewares/cacheMiddleware');
 
-
-clearExpiredCache()
 
 const app = express();
 
@@ -29,6 +27,7 @@ const qnaRoutes = require('./src/routes/qnaRoutes');
 const resourceRoutes = require('./src/routes/resourceRoutes');
 const userRoutes = require('./src/routes/userRoutes');
 const contactRoutes = require('./src/routes/contactRoutes');
+const paymentsRoutes = require('./src/routes/jazzCashRoutes');
 
 // Database Connection
 connect(); // Connect to MongoDB
@@ -77,6 +76,8 @@ app.use('/api/qna', qnaRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/contact', contactRoutes);
+app.use('/api/payments', paymentsRoutes);
 
 // Error handling middleware
 app.use(errorHandler);

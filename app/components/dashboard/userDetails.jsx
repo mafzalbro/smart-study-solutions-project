@@ -1,4 +1,4 @@
-import UpdateProfile from '../UpdateProfile';
+import UpdateProfile from './UpdateProfile';
 
 
 export default function UserDetails() {

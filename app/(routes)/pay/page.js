@@ -1,8 +1,5 @@
-"use client"
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { fetcher } from '@/app/utils/fetcher';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 const Pricing = () => {
   const router = useRouter();
@@ -10,38 +7,48 @@ const Pricing = () => {
 
   // Redirect to JazzCash payment page
   const handlePayment = async (amount, description) => {
-    // try {
-      const data = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/payments/jazzcash`, 'POST', {
-        amount,
-        description,
-        paymentMethod, // Pass the selected payment method
-        customerMobile: '03001234567', // Replace with actual customer mobile
-      })
-      if (data) {
-        router.push(data.paymentUrl); // Redirect to JazzCash or Bank transfer payment URL
+    try {
+      const response = await fetch('/api/payments/jazzcash', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount,
+          description,
+          paymentMethod, // Pass the selected payment method
+          customerMobile: '03001234567', // Replace with actual customer mobile
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        window.location.href = data.paymentUrl; // Redirect to JazzCash or Bank transfer payment URL
       } else {
         alert('Payment failed: ' + data.message);
       }
-    // } catch (error) {
-    //   console.error('Payment error: ', error);
-    // }
+    } catch (error) {
+      console.error('Payment error: ', error);
+    }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Free Version */}
-        <div className="bg-secondary dark:bg-accent-800 shadow-lg rounded-lg p-6">
+        <div className="bg-white shadow-lg rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Free Version</h2>
           <p>Limited access to AI chat (20 chats/day)</p>
           <p>Access 2 documents per day</p>
           <p>Limited access to the Q&A forum</p>
           <div className="mt-6">
-            <Link href='/'
-              className="bg-gray-500 text-white py-2 px-4 rounded-full"
+            <button
+              onClick={() => router.push('/free')}
+              className="bg-gray-500 text-white py-2 px-4 rounded"
             >
               Continue for Free
-            </Link>
+            </button>
           </div>
         </div>
 

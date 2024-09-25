@@ -4,7 +4,6 @@ const passport = require('../config/passport');
 const jwt = require('jsonwebtoken');
 const { changePassword, registerUser, loginUser, logoutUser, forgotPassword, verifyToken, resetPassword, checkAuth } = require('../controllers/authController');
 const { auth } = require('../middlewares/auth');
-const { noCache } = require('../middlewares/noCache');
 
 // JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -41,31 +40,28 @@ router.get('/google', (req, res, next) => {
 
 
 // Route to handle Google OAuth callback
-router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
+router.get('/google/callback', passport.authenticate('google', { failureRedirect: `${process.env.FRONTEND_ORIGIN}/login` }), (req, res) => {
   const user = req.user;
 
+  console.log({email: user.email})
   // Generate a JWT token for the user
   const token = jwt.sign(
     {
       id: user._id,
       role: user.role,
-      profileImage: user.profileImage,
+      // profileImage: user.profileImage,
       email: user.email
     },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRATION }
   );
 
-  // Send token in both redirect URL and as JSON response
-  if (req.query.state === 'json') {
-    // If state query is 'json', send the token in JSON response (for flexibility)
-    return res.json({ token });
-  } else {
-    // By default, redirect with the token in the query parameter
+  if(token){
     const redirectUrl = `${process.env.FRONTEND_ORIGIN}/?token=${token}`;
-    res.redirect(redirectUrl);
+    return res.redirect(redirectUrl);
   }
-});
+  }
+);
 
 
 module.exports = router;

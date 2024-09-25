@@ -1,11 +1,16 @@
 "use client";
 
-import { clearExpiredCache, getCachedData, setCachedData, removeOlderCache } from '@/app/utils/caching'
+import { clearExpiredCache, getCachedData, setCachedData, removeOlderCacheAfterMutation, removeUserCacheHistory } from '@/app/utils/caching'
 
 export const fetcher = async (url, method = 'GET', body = null, headers = {}) => {
   await clearExpiredCache(); // Check and remove all expired items
 
   const token = localStorage.getItem('token'); // Get token from local storage
+  
+  if (token === null)
+     await removeUserCacheHistory()
+
+
   const path = window.location.pathname;
 
   // Cache key for GET requests
@@ -15,14 +20,14 @@ export const fetcher = async (url, method = 'GET', body = null, headers = {}) =>
   if (method === 'GET') {
     const cachedData = await getCachedData(cacheKey);
     if (cachedData) {
-      // console.log("Serving From Cache: ", cachedData)
+      console.log("Serving From Cache: ", cachedData)
       return cachedData.data; // Return cached data if available
     }
   }
 
   // Remove cached data for DELETE or PUT requests if present
   if (method === 'DELETE' || method === 'PUT') {
-    await removeOlderCache('/chat/')
+    await removeOlderCacheAfterMutation('/chat/')
   }
 
   
@@ -51,6 +56,8 @@ export const fetcher = async (url, method = 'GET', body = null, headers = {}) =>
   }
 
   const data = await response.json();
+
+  console.log({data, status: response.status})
 
   if (!response.ok) {
     throw new Error(data.message || 'Something went wrong');

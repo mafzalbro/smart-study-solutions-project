@@ -22,7 +22,8 @@ const registerUser = async (req, res) => {
 
     const newUser = new User({
       serialNumber,
-      username,
+      fullname: username,
+      username: username.split(' ').join('-').toLowerCase(),
       password: hashedPassword,
       email,
       role,
@@ -41,11 +42,17 @@ const registerUser = async (req, res) => {
 
 // Login User
 const loginUser = async (req, res) => {
-  const { username, password } = req.body;
+  const { username, email, password } = req.body;
   try {
-    const user = await User.findOne({ username });
-    if (!user) return res.status(400).json({ message: 'Incorrect username or password' });
+    let user;
+    if(email) user = await User.findOne({ email });
+    if(username) user = await User.findOne({ username });
+    if (!user) return res.status(400).json({ message: 'User with these credentails does not exists!' });
 
+    if(!password){
+      return res.status(400).json({ message: 'Please set password to login!'})
+    }
+    
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Incorrect username or password' });
 
@@ -163,7 +170,8 @@ const resetPassword = async (req, res) => {
 
 // Check Auth (optional with JWT, can just verify token)
 const checkAuth = (req, res) => {
-  res.status(200).json({ auth: true, user: req.user });
+  const { username, email } = req.user
+  res.status(200).json({ auth: true, user: { username, email } });
 };
 
 module.exports = { registerUser, loginUser, logoutUser, changePassword, forgotPassword, verifyToken, resetPassword, checkAuth, 

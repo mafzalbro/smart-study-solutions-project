@@ -8,7 +8,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { fetcher } from '@/app/utils/fetcher';
-import TextInputField from './TextInputField'; // Import the custom TextInputField component
+import TextInputField from '../TextInputField'; // Import the custom TextInputField component
+import imageCompression from 'browser-image-compression';
+
 
 const UpdateProfile = () => {
   const router = useRouter();
@@ -32,17 +34,44 @@ const UpdateProfile = () => {
       });
   }, [router]);
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
+
+const handleImageUpload = async (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    try {
+      // Set image compression options to target 20KB (0.02MB)
+      const options = {
+        maxSizeMB: 0.02, // Maximum size in MB (20KB = 0.02MB)
+        maxWidthOrHeight: 500, // Reduce dimensions to help compress (you can adjust this as needed)
+        useWebWorker: true, // Use Web Worker for better performance
+        fileType: 'image/jpeg', // Use JPEG format for better compression than PNG
+      };
+
+      // Compress the image
+      const compressedFile = await imageCompression(file, options);
+
+      // Check if the compressed file size is still over 20KB and reduce further if necessary
+      let compressedFileSize = compressedFile.size / 1024; // Convert size to KB
+      while (compressedFileSize > 20) {
+        options.maxSizeMB = options.maxSizeMB * 0.9; // Further reduce size
+        const furtherCompressedFile = await imageCompression(compressedFile, options);
+        compressedFileSize = furtherCompressedFile.size / 1024;
+      }
+
+      // Convert the final compressed image to base64
       const reader = new FileReader();
       reader.onloadend = () => {
         setImageBase64(reader.result);
-        setProfileImage(URL.createObjectURL(file));
+        setProfileImage(URL.createObjectURL(compressedFile));
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(compressedFile);
+    } catch (error) {
+      console.error('Error compressing image:', error);
+      toast.error('Error uploading image. Please try again.');
     }
-  };
+  }
+};
+
 
   const handleRemoveImage = () => {
     setProfileImage(null);
@@ -100,6 +129,7 @@ const UpdateProfile = () => {
           <input
             type="file"
             accept="image/*"
+            
             onChange={handleImageUpload}
             className="hidden"
             id="fileInput"

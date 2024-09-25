@@ -19,15 +19,18 @@ async (accessToken, refreshToken, profile, done) => {
       user = await User.findOne({ email: profile.emails[0].value });
 
       if (user) {
+        console.log('User already there: ', {email: user.email})
         // Update existing user with googleId
         user.googleId = profile.id;
         user.profileImage = profile.photos[0].value; // Update profile image if available
         await user.save();
       } else {
         // If user doesn't exist, create a new one
+        console.log('New User: ', {email: profile.emails[0].value})
         user = new User({
           googleId: profile.id,
-          username: profile.displayName,
+          fullname: profile.displayName,
+          username: profile.username,
           email: profile.emails[0].value,
           profileImage: profile.photos[0].value,
           role: 'student',
@@ -44,7 +47,7 @@ async (accessToken, refreshToken, profile, done) => {
 }));
 
 passport.serializeUser((user, done) => {
-  // console.log('Serializing user:', user); // Debugging
+  console.log('Serializing user:', user.email); // Debugging
   done(null, user._id.toString()); // Ensure the ID is a string
 });
 
