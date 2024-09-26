@@ -120,7 +120,7 @@ const getAllQuestions = async (req, res) => {
         slug: question.askedBy?.slug,
       },
       category: {
-        name: question.category.name,
+        name: question.category?.name,
         _id: question.category?._id,
       },
     }));

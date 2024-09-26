@@ -38,7 +38,8 @@ const LoginForm = () => {
 
     if (emailRegex.test(username)) {
       setEmail(username)
-      return false;
+      setUsername('');
+      return true;
     }
 
     if (!passwordRegex.test(password)) {
@@ -101,7 +102,7 @@ const LoginForm = () => {
             value={username}
             type="text"
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Username"
+            placeholder="Username or Email"
             className="pl-12"
             required
           />

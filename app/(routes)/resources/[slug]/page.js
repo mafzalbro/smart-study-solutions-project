@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import ResourceCard from '@/app/components/resources/ResourceCard';
 import PdfModal from '@/app/components/resources/PdfModal';
 import BookViewer from '@/app/components/resources/BookViewer';
@@ -13,6 +14,8 @@ import { FaThumbsUp, FaThumbsDown, FaStar, FaChevronLeft } from 'react-icons/fa'
 import { fetcher } from '@/app/utils/fetcher';
 import LinkButton from '@/app/components/LinkButton';
 import { MdShoppingCart } from 'react-icons/md';
+
+
 
 export default function ResourcePage({ params }) {
   const [resource, setResource] = useState(null);
@@ -124,6 +127,9 @@ export default function ResourcePage({ params }) {
       const data = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/${slug}`);
       if (!data) {
         throw new Error('Failed to fetch resource data');
+      }
+      if(data.message == "Resource not found"){
+        return notFound()
       }
       document.title = data.title;
       setResource(data);

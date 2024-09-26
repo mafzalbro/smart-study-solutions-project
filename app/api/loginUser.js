@@ -5,6 +5,12 @@
 import { removeUserCacheHistory } from '../utils/caching';
 import { fetcher } from '../utils/fetcher';
 const loginUser = async (username, email, password) => {
+
+  if(email !== '' && email.includes('@')){
+    username = ''
+  }
+
+
   try {
     const url = `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/login`;
     await removeUserCacheHistory()

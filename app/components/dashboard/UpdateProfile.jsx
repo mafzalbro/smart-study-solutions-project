@@ -10,6 +10,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import { fetcher } from '@/app/utils/fetcher';
 import TextInputField from '../TextInputField'; // Import the custom TextInputField component
 import imageCompression from 'browser-image-compression';
+import { removeUserCacheHistory } from '@/app/utils/caching';
 
 
 const UpdateProfile = () => {
@@ -17,10 +18,11 @@ const UpdateProfile = () => {
   const [user, setUser] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
   const [imageBase64, setImageBase64] = useState(null);
+  const [loadingImage, setLoadingImage] = useState(false); // New state for loading
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    // Fetch user details using fetcher function)
+    // Fetch user details using fetcher function
     fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/user/get/one`)
       .then(data => {
         if (data) {
@@ -34,44 +36,45 @@ const UpdateProfile = () => {
       });
   }, [router]);
 
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setLoadingImage(true); // Start image loading
+      try {
+        // Set image compression options to target 20KB (0.02MB)
+        const options = {
+          maxSizeMB: 0.02, // Maximum size in MB (20KB = 0.02MB)
+          maxWidthOrHeight: 500, // Reduce dimensions to help compress
+          useWebWorker: true, // Use Web Worker for better performance
+          fileType: 'image/jpeg', // Use JPEG format for better compression
+        };
 
-const handleImageUpload = async (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    try {
-      // Set image compression options to target 20KB (0.02MB)
-      const options = {
-        maxSizeMB: 0.02, // Maximum size in MB (20KB = 0.02MB)
-        maxWidthOrHeight: 500, // Reduce dimensions to help compress (you can adjust this as needed)
-        useWebWorker: true, // Use Web Worker for better performance
-        fileType: 'image/jpeg', // Use JPEG format for better compression than PNG
-      };
+        // Compress the image
+        const compressedFile = await imageCompression(file, options);
 
-      // Compress the image
-      const compressedFile = await imageCompression(file, options);
+        // Check if the compressed file size is still over 20KB and reduce further if necessary
+        let compressedFileSize = compressedFile.size / 1024; // Convert size to KB
+        while (compressedFileSize > 20) {
+          options.maxSizeMB = options.maxSizeMB * 0.9; // Further reduce size
+          const furtherCompressedFile = await imageCompression(compressedFile, options);
+          compressedFileSize = furtherCompressedFile.size / 1024;
+        }
 
-      // Check if the compressed file size is still over 20KB and reduce further if necessary
-      let compressedFileSize = compressedFile.size / 1024; // Convert size to KB
-      while (compressedFileSize > 20) {
-        options.maxSizeMB = options.maxSizeMB * 0.9; // Further reduce size
-        const furtherCompressedFile = await imageCompression(compressedFile, options);
-        compressedFileSize = furtherCompressedFile.size / 1024;
+        // Convert the final compressed image to base64
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImageBase64(reader.result);
+          setProfileImage(URL.createObjectURL(compressedFile));
+          setLoadingImage(false); // Stop image loading
+        };
+        reader.readAsDataURL(compressedFile);
+      } catch (error) {
+        setLoadingImage(false); // Stop image loading in case of error
+        console.error('Error compressing image:', error);
+        toast.error('Error uploading image. Please try again.');
       }
-
-      // Convert the final compressed image to base64
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImageBase64(reader.result);
-        setProfileImage(URL.createObjectURL(compressedFile));
-      };
-      reader.readAsDataURL(compressedFile);
-    } catch (error) {
-      console.error('Error compressing image:', error);
-      toast.error('Error uploading image. Please try again.');
     }
-  }
-};
-
+  };
 
   const handleRemoveImage = () => {
     setProfileImage(null);
@@ -96,6 +99,7 @@ const handleImageUpload = async (event) => {
       const response = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/user/${user._id}`, 'PUT', updatedUserData);
 
       if (response) {
+        removeUserCacheHistory()
         toast.success('Profile updated successfully');
       } else {
         toast.error(`Error updating profile: ${response.message || 'Unknown error'}`);
@@ -129,7 +133,6 @@ const handleImageUpload = async (event) => {
           <input
             type="file"
             accept="image/*"
-            
             onChange={handleImageUpload}
             className="hidden"
             id="fileInput"
@@ -142,12 +145,14 @@ const handleImageUpload = async (event) => {
             <MdOutlineCloudUpload className="text-accent-600" /> <span>Choose File</span>
           </label>
 
-          {profileImage ? (
+          {loadingImage ? (
+          <Skeleton height={300} className="my-10" />
+        ) : profileImage ? (
             <div className="relative">
               <img
                 src={profileImage}
                 alt="Profile Preview"
-                className="block my-10 rounded-lg border mx-auto h-auto w-[100%] "
+                className="block my-10 rounded-lg border mx-auto h-auto w-[100%]"
                 style={{ maxWidth: '300px' }}
               />
               <button
@@ -204,19 +209,6 @@ const handleImageUpload = async (event) => {
           placeholder="Favorite Genre"
           required
         />
-        {/* Additional Fields */}
-        {/* <TextInputField
-          type="tel"
-          value={user.phone || ''}
-          onChange={(e) => setUser({ ...user, phone: e.target.value })}
-          placeholder="Phone Number"
-        />
-        <TextInputField
-          type="text"
-          value={user.address || ''}
-          onChange={(e) => setUser({ ...user, address: e.target.value })}
-          placeholder="Address"
-        /> */}
         <button type="submit" className="w-full py-2 px-4 bg-accent-600 text-white rounded-lg shadow-md hover:bg-accent-700 focus:outline-none focus:ring-2 focus:ring-accent-600">
           Update Profile
         </button>
