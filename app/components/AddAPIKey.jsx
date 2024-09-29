@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import LinkButton from './LinkButton';
 import { FaArrowLeft } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
+import { HiChat } from 'react-icons/hi';
 
 const AddAPIKey = () => {
   const router = useRouter();
@@ -95,8 +96,21 @@ const AddAPIKey = () => {
 
   return (
     <WhiteContainer className="relative">
+      <div className='flex justify-between items-center'>
       <h1 className="text-2xl font-bold mb-6 text-primary dark:text-secondary">API Key Validator</h1>
-      <LinkButton text='See Chat' link='/chat' icon={<FaArrowLeft />} />
+      <LinkButton text='See Chat' link='/chat' icon={<HiChat />} 
+      className='mb-6 mt-0'
+      />
+      </div>
+      {isChangingApiKey && (
+            <button
+              onClick={handleCancelChange}
+              className="px-3 py-4"
+            >
+              <FaArrowLeft className='inline-block mr-2'/>
+              {/* <MdClose size='20'/> */}
+            </button>
+          )}
       {initialLoad ? (
         <Spinner />
       ) : valid && apiKey && !isChangingApiKey ? (
@@ -119,14 +133,14 @@ const AddAPIKey = () => {
         </div>
       ) : (
         <>
-          {isChangingApiKey && (
+          {/* {isChangingApiKey && (
             <button
               onClick={handleCancelChange}
               className="absolute top-10 right-10 transition-opacity duration-1000"
             >
               <MdClose size='20'/>
             </button>
-          )}
+          )} */}
           <TextInputField
             value={apiKey}
             onChange={handleApiKeyChange}

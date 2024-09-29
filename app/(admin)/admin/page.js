@@ -1,9 +1,9 @@
 "use client"
 
 import React, { useState } from 'react';
-import '@/app/components/admin/Admin.css';
-import Sidebar from '@/app/components/admin/Sidebar';
-import UserList from '@/app/components/admin/UserList';
+import '@/app/(admin)/components/admin/Admin.css';
+import Sidebar from '@/app/(admin)/components/admin/Sidebar';
+import UserList from '@/app/(admin)/components/admin/UserList';
 
 function AdminPage() {
   const [selectedSection, setSelectedSection] = useState('userlist');

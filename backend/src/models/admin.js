@@ -36,10 +36,7 @@ const adminSchema = new Schema({
   },
   profileImage: {
     type: String,
-  },
-  favoriteGenre: {
-    type: String,
-  },
+  }
 }, { timestamps: true });
 
 let isNewAdmin = true; // Custom flag to track new admin state

@@ -7,6 +7,8 @@ const { sendPasswordResetEmail, sendGenericEmail } = require('../services/emailS
 // JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRATION = process.env.JWT_EXPIRES;
+const JWT_EXPIRATION_EXTENDED = process.env.JWT_EXPIRES_EXTENDED;
+
 
 // Register User
 const registerUser = async (req, res) => {
@@ -42,9 +44,9 @@ const registerUser = async (req, res) => {
 
 // Login User
 const loginUser = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, remember } = req.body;
 
-  // console.log(req.body)
+  console.log({ expiresIn: remember ? JWT_EXPIRATION_EXTENDED : JWT_EXPIRATION })
   
   try {
     let user;
@@ -59,7 +61,8 @@ const loginUser = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Incorrect username or password' });
 
-    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: JWT_EXPIRATION });
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: remember ? JWT_EXPIRATION_EXTENDED : JWT_EXPIRATION });
+
     res.status(200).json({ message: 'Logged in successfully', token });
   } catch (error) {
     console.error('Error logging in user:', error);

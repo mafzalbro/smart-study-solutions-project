@@ -19,7 +19,7 @@ const adminAuth = async (req, res, next) => {
     }
 
     // Attach admin data to request object
-    req.user = admin;
+    req.admin = admin;
 
     // Proceed to the next middleware
     next();

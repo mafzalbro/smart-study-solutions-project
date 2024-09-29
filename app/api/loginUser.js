@@ -4,7 +4,7 @@
 
 import { removeUserCacheHistory } from '../utils/caching';
 import { fetcher } from '../utils/fetcher';
-const loginUser = async (username, email, password) => {
+const loginUser = async (username, email, password, remember) => {
 
   if(email !== '' && email.includes('@')){
     username = ''
@@ -14,7 +14,7 @@ const loginUser = async (username, email, password) => {
   try {
     const url = `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/login`;
     await removeUserCacheHistory()
-    return await fetcher(url, 'POST', { username, email, password });
+    return await fetcher(url, 'POST', { username, email, password, remember });
   } catch (error) {
     console.error('Error logging in:', error.message);
     throw error.message;
