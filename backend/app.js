@@ -1,9 +1,9 @@
 const express = require('express');
+const path = require('path');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const { errorHandler } = require('./src/middlewares/errorHandler');
 const passport = require('./src/config/passport');
 const { connect } = require('./src/config/db');
 require('dotenv').config();
@@ -14,13 +14,15 @@ const swaggerFile = require('./swagger-output.json');
 // Import the cache middleware
 const { cacheMiddleware } = require('./src/middlewares/cacheMiddleware');
 
-
 const app = express();
+
+
+app.use(express.static(path.join('backend/public')))
+
 
 // Import Routes
 const adminAuthRoutes = require('./src/routes/adminAuthRoutes');
 const authRoutes = require('./src/routes/authRoutes');
-const bookRoutes = require('./src/routes/bookRoutes');
 const chatWithPdfRoutes = require('./src/routes/chatWithPdfRoutes');
 const notificationRoutes = require('./src/routes/notificationRoutes');
 const qnaRoutes = require('./src/routes/qnaRoutes');
@@ -69,7 +71,6 @@ app.use(cacheMiddleware); // Apply globally to cache GET requests
 // Routes
 app.use('/api/admin', adminAuthRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/books', bookRoutes);
 app.use('/api/chat', chatWithPdfRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/qna', qnaRoutes);
@@ -79,11 +80,9 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/payments', paymentsRoutes);
 
-// Error handling middleware
-app.use(errorHandler);
 
 // Swagger UI setup
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
+app.use('/api/docs-setup', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // Start the server
 const PORT = process.env.PORT || 3000;
