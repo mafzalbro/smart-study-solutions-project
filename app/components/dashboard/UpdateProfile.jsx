@@ -90,6 +90,7 @@ const UpdateProfile = () => {
     try {
       const updatedUserData = {
         username: user.username,
+        fullname: user.fullname,
         email: user.email,
         role: user.role,
         favoriteGenre: user.favoriteGenre,
@@ -178,18 +179,30 @@ const UpdateProfile = () => {
         </label>
         <TextInputField
           type="text"
+          value={user.fullname || ''}
+          onChange={(e) => setUser({ ...user, fullname: e.target.value })}
+          placeholder="Full Name"
+          required
+        />
+
+        <TextInputField
+          type="text"
           value={user.username || ''}
           onChange={(e) => setUser({ ...user, username: e.target.value })}
           placeholder="Username"
           required
         />
-        <TextInputField
+        <p>
+        <span className='text-primary dark:text-secondary'>{user.email}</span>
+        <span className='text-neutral-500 dark:text-neutral-400 text-sm'> ( You can't change your email )</span>
+        </p>
+        {/* <TextInputField
           type="email"
           value={user.email || ''}
           onChange={(e) => setUser({ ...user, email: e.target.value })}
           placeholder="Email"
           required
-        />
+        /> */}
         <label className="block mb-4">
           Role:
           <select

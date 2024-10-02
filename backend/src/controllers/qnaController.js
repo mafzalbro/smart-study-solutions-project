@@ -113,6 +113,8 @@ const getAllQuestions = async (req, res) => {
     const formattedQuestions = questions?.data.map(question => ({
       _id: question?._id,
       slug: question.slug,
+      createdAt: question.createdAt,
+      askedBy: question.askedBy,
       question: question.question,
       askedBy: {
         _id: question.askedBy?._id,
@@ -153,11 +155,15 @@ const getQuestionBySlug = async (req, res) => {
       .populate('category')
       .populate({
         path: 'askedBy',
-        select: 'username role profileImage favoriteGenre'
+        select: 'username role slug profileImage fullname favoriteGenre'
       })
       .populate({
         path: 'answers.answeredBy',
-        select: 'username role profileImage favoriteGenre'
+        select: 'username role slug profileImage fullname favoriteGenre'
+      })
+      .populate({
+        path: 'reports.reportedBy',
+        select: 'username role slug fullname favoriteGenre'
       });
 
     if (!question) {
@@ -192,25 +198,32 @@ const getQuestionBySlug = async (req, res) => {
 
       // console.log(JSON.stringify(answers, null, 2))
 
+      // const reports = question.reports?.map(report => ({
+      //   description: report.description,
+      //   createdAt: report.createdAt,
+      //   reportedBy: report.reportedBy
+      // }))
+
     // Prepare the response object including upvotes and downvotes
     const response = {
       _id: question?._id,
       slug: question.slug,
       question: question.question,
+      reports: question.reports,
       answers: answers,
       askedBy: {
         _id: question.askedBy?._id,
         username: question.askedBy?.username,
-        slug: question.askedBy.slug,
+        slug: question.askedBy?.slug,
       },
       category: {
-        name: question.category.name,
+        name: question.category?.name,
         _id: question.category?._id,
       },
       upvotesCount,
       downvotesCount,
       isUpvoted,
-      isDownvoted
+      isDownvoted,
     };
 
     res.status(200).json(response);
@@ -610,7 +623,7 @@ const createCategory = async (req, res) => {
       res.status(500).json({ error: 'Server Error' });
     }
   };
-    
+  
   // Function to get all categories with pagination, search, filter, and sort
 const getAllCategories = async (req, res) => {
   const { page = 1, limit = 10, sortBy, filterBy, query } = req.query;
@@ -706,6 +719,29 @@ const getCategoryBySlug = async (req, res) => {
     }
   };
 
+  // Function to create a category
+  const createGenre = async (req, res) => {
+      try {
+        const { name, description } = req.body;
+        
+        // Generate slug from name using slugify
+        const slug = slugify(name, { lower: true });
+    
+        // Create new category object
+        const newCategory = new Category({ name, description, slug });
+    
+        // Save new category to database
+        await newCategory.save();
+    
+        // Return successful response with created category
+        res.status(201).json(newCategory);
+      } catch (err) {
+        // Handle any errors
+        console.error(err);
+        res.status(500).json({ error: 'Server Error' });
+      }
+    };
+
 module.exports = {
   submitQuestion,
   answerQuestion,
@@ -729,5 +765,5 @@ module.exports = {
   getCategoryBySlug,
   updateCategoryBySlug,
   deleteCategoryBySlug,
-
+  createGenre,
 };

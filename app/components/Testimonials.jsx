@@ -41,7 +41,8 @@ const Testimonials = () => {
     <>
       <Slider {...settings} >
         {testimonials.map((testimonial, index) => (
-          <div key={index} className="bg-secondary dark:bg-neutral-800 p-6 rounded-lg text-center my-auto m-1">
+          <div  key={index} className="px-2">
+          <div className="bg-secondary dark:bg-neutral-800 p-6 rounded-lg text-center my-auto">
             <div className="flex items-center justify-center mb-4">
               <FaQuoteLeft className="text-3xl text-accent-600 mr-2" />
               <p className="text-lg italic text-primary dark:text-secondary text-center">{testimonial.quote}</p>
@@ -51,6 +52,7 @@ const Testimonials = () => {
               {testimonial.gender === "female" ? <SlUserFemale className="text-accent-600 mr-2" /> : <SlUser className="text-accent-600 mr-2" />}
               <span className="text-accent-500 text-sm">{testimonial.author}</span>
             </div>
+          </div>
           </div>
         ))}
       </Slider>

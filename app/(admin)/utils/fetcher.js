@@ -29,6 +29,7 @@ export const fetcher = async (url, method = 'GET', body = null, headers = {}) =>
     method,
     headers: {
       'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': 'true',
       ...headers,
       ...(token ? { 'Authorization': `Bearer ${token}` } : {}), // Include token in headers if available
     },

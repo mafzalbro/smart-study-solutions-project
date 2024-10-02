@@ -5,9 +5,12 @@ import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/f
 import Link from "next/link";
 import { getPathFromReferer } from "@/app/services/server/server";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/app/customHooks/AuthContext";
+
 
 // const Footer = async () => {
-const Footer = () => {
+  const Footer = () => {
+  const { isLoggedIn } = useAuth()
   const pathname = usePathname();
   // const pathname = await getPathFromReferer();
 
@@ -49,7 +52,9 @@ const Footer = () => {
               <li><Link href="/" className="hover:text-neutral-200">Home</Link></li>
               <li><Link href="/resources" className="hover:text-neutral-200">Study Material</Link></li>
               <li><Link href="/forum" className="hover:text-neutral-200">QnA Forum</Link></li>
-              <li><Link href="/chat" className="hover:text-neutral-200">AI Chat</Link></li>
+              {isLoggedIn && 
+                <li><Link href="/chat" className="hover:text-neutral-200">AI Chat</Link></li>
+              }
             </ul>
           </div>
           <div>

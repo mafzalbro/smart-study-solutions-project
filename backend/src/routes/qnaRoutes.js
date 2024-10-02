@@ -22,19 +22,21 @@ const {
   getAllCategories, 
   getCategoryBySlug, 
   updateCategoryBySlug, 
-  deleteCategoryBySlug 
+  deleteCategoryBySlug,
+  createGenre
 } = require('../controllers/qnaController');
 const { auth } = require('../middlewares/auth');
+const { adminAuth } = require('../middlewares/adminAuth');
 
 // Question routes
 router.post('/submit', auth, submitQuestion);
+router.post('/question/:slug/answer', auth, answerQuestion); // Updated endpoint to use slug
 router.get('/questions', getAllQuestions);
 router.get('/question/:slug', getQuestionBySlug); // Updated endpoint to use slug
-router.put('/question/:slug', auth, updateQuestion); // Updated endpoint to use slug
-router.delete('/question/:slug', auth, deleteQuestion); // Updated endpoint to use slug
-router.post('/question/:slug/answer', auth, answerQuestion); // Updated endpoint to use slug
-router.put('/question/:slug/answers/:answerId', auth, updateAnswer); // Updated endpoint to use slug and answerId
-router.delete('/question/:slug/answers/:answerId', auth, deleteAnswer); // Updated endpoint to use slug and answerId
+router.put('/question/:slug', adminAuth, updateQuestion); // Updated endpoint to use slug
+router.delete('/question/:slug', adminAuth, deleteQuestion); // Updated endpoint to use slug
+router.put('/question/:slug/answers/:answerId', adminAuth, updateAnswer); // Updated endpoint to use slug and answerId
+router.delete('/question/:slug/answers/:answerId', adminAuth, deleteAnswer); // Updated endpoint to use slug and answerId
 router.get('/user/:userSlug/questions', getUserQuestions); // Updated endpoint to use userSlug
 router.get('/user/:userSlug/answers', getUserAnswers); // Updated endpoint to use userSlug
 router.get('/recommendations', auth, getQuestionRecommendations);
@@ -55,10 +57,12 @@ router.post('/question/:questionId/answers/:answerId/report', auth, reportAnswer
 
 
 // Category routes
-router.post('/category', auth, createCategory);
+router.post('/category', adminAuth, createCategory);
 router.get('/categories', getAllCategories);
 router.get('/category/:slug', getCategoryBySlug);
-router.put('/category/:slug', auth, updateCategoryBySlug);
-router.delete('/category/:slug', auth, deleteCategoryBySlug);
+router.put('/category/:slug', adminAuth, updateCategoryBySlug);
+router.delete('/category/:slug', adminAuth, deleteCategoryBySlug);
+
+router.post('/genre', createGenre);
 
 module.exports = router;

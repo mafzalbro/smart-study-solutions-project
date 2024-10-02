@@ -77,12 +77,16 @@ app.use('/api/qna', qnaRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/contact', contactRoutes);
-app.use('/api/contact', contactRoutes);
 app.use('/api/payments', paymentsRoutes);
 
 
 // Swagger UI setup
 app.use('/api/docs-setup', swaggerUi.serve, swaggerUi.setup(swaggerFile));
+
+
+// redirect to frontend
+app.use('/frontend', (req, res)=>{res.redirect(`${process.env.FRONTEND_ORIGIN}`)});
+app.use('/api', (req, res)=>{res.redirect(`${process.env.FRONTEND_ORIGIN}`)});
 
 // Start the server
 const PORT = process.env.PORT || 3000;

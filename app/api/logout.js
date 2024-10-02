@@ -16,7 +16,7 @@ const handleLogout = async (router) => {
       await removeUserCacheHistory()
       localStorage.removeItem('token'); // Remove the token from local storage
       // localStorage.removeItem('isLoggedIn'); // Optionally remove the isLoggedIn flag
-      router.push('/login'); // Redirect to the login page
+      router.replace('/login'); // Redirect to the login page
     // }
   } catch (error) {
     console.error('Error logging out:', error);

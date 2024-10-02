@@ -26,7 +26,7 @@ export default function Dashboard() {
         <div className="pt-16 pb-8 px-4 text-center">
           <LinkButton text={<FaPen size={18} />} link='/dashboard/profile' className="absolute top-4 right-4 p-2 rounded-full bg-primary text-white hover:bg-primary-dark transition duration-200" />
           <h2 className="text-4xl font-bold mb-2 text-center rounded-lg">
-            {user?.username || "Dear User"}
+            {user?.fullname || "Dear User"}
           </h2>
           <p className="text-lg text-neutral-600 dark:text-neutral-300 mb-4">
             {user?.email || "your-email@example.com"}

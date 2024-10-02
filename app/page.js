@@ -5,7 +5,7 @@ import GetStartedButtons from './components/GetStartedButtons';
 import Features from './components/Features';
 import Testimonials from './components/Testimonials';
 import ContactUs from './components/ContactUs';
-import { ToastContainer, toast } from 'react-toastify';
+// import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Announcements from './components/Announcements';
 import MainHeading from './components/MainHeading.jsx';
@@ -16,7 +16,7 @@ const LandingPage = () => {
   return (
     <div className="container mx-auto mt-5 md:my-20">
       <div className="flex flex-col md:flex-row items-center justify-center gap-20">
-        <div className="md:w-1/2 text-center md:text-left">
+        <div className="mx-2 md:mx-4 md:w-1/2 text-center md:text-left">
 
           {/* <StylishTitle colored='Hey PU Buddy,' addBr simple='You are At the Right Place!' /> */}
 

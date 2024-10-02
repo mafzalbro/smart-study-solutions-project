@@ -10,7 +10,7 @@ import structure from '@/app/lib/bs_syllabus_metadata.js';
 import { FaFile, FaBook, FaStickyNote } from 'react-icons/fa';
 
 const SideArea = ({ sortBy, handleSortChange, filterBy, handleFilterChange }) => {
-  const isMediumScreen = useMediaQuery({ minWidth: 768 });
+  const isMediumScreen = useMediaQuery({ maxWidth: 768 });
   const [selectedDegree, setSelectedDegree] = useState(null);
   const [selectedSemester, setSelectedSemester] = useState(null);
   const [selectedSubDir, setSelectedSubDir] = useState(null);
@@ -77,7 +77,7 @@ const SideArea = ({ sortBy, handleSortChange, filterBy, handleFilterChange }) =>
   };
 
   return (
-    <aside className={`mb-10 md:mb-0 rounded-lg ${isMediumScreen ? 'w-60 h-screen sticky top-0' : 'w-full md:w-60 mt-4 md:mt-0 text-sm'}`}>
+    <aside className={`rounded-lg ${isMediumScreen ? 'w-full md:w-60 mt-4 md:mt-0 text-sm mb-10' : 'md:mb-0 pt-4 w-60 h-screen sticky top-0'}`}>
       {/* <ClickButton className="py-2 px-4 mb-4 bg-transparent hover:bg-transparent dark:hover:bg-transparent dark:bg-transparent text-center text-accent-500 hover:text-accent-600 shadow-none" text='Clear All' onClick={() => window.location.reload()} /> */}
       <div className="space-y-4">
         <CustomSelect

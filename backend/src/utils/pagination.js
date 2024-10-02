@@ -1,10 +1,19 @@
-const paginateResults = async (query, page, limit) => {
+const paginateResults = async (query, page, limit, showAll = false) => {
   const totalResults = await query.clone().countDocuments(); // Use clone to count without affecting the main query
-  const results = await query.skip((page - 1) * limit).limit(limit);
-  return {
-    totalResults,
-    data: results
-  };
+  if(showAll){
+    const results = await query;
+    return {
+      totalResults,
+      data: results
+    };
+  } else {
+    const results = await query.skip((page - 1) * limit).limit(limit);
+    // console.log({results, page, limit})
+    return {
+      totalResults,
+      data: results
+    };
+  }
 };
 
 

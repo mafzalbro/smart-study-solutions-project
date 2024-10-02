@@ -57,9 +57,14 @@ const userSchema = new Schema({
      type: Boolean,
      default: false
   },
+  emailVerified: 
+  {
+     type: Boolean,
+     default: false
+  },
   slug: {
     type: String,
-    default: null,
+    default: uuidv4,
   },
   apiKey: {
     type: String,

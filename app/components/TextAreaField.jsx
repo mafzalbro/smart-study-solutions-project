@@ -2,7 +2,7 @@
 
 const TextAreaField = ({ value, onChange, placeholder, label, className, rows, required }) => (
   <div className="mb-4">
-    <label className="block dark:text-secondary font-bold mb-2">{label}</label>
+    {label && <label className="block dark:text-secondary font-bold mb-2">{label}</label>}
     <textarea
       value={value}
       onChange={onChange}

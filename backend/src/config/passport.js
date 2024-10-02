@@ -20,8 +20,11 @@ async (accessToken, refreshToken, profile, done) => {
 
       if (user) {
         console.log('User already there: ', {email: user.email})
+        console.log({profile})
         // Update existing user with googleId
         user.googleId = profile.id;
+        user.fullname = profile.displayName;
+        user.username = profile.displayName.split(' ').join('-').toLowerCase();
         user.profileImage = profile.photos[0].value; // Update profile image if available
         await user.save();
       } else {
@@ -30,9 +33,10 @@ async (accessToken, refreshToken, profile, done) => {
         user = new User({
           googleId: profile.id,
           fullname: profile.displayName,
-          username: profile.username,
+          username: profile.displayName.split(' ').join('-').toLowerCase(),
           email: profile.emails[0].value,
           profileImage: profile.photos[0].value,
+          emailVerified: profile._json.email_verified,
           role: 'student',
           favoriteGenre: 'fiction',
         });

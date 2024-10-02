@@ -8,10 +8,17 @@ import SubmitButton from '@/app/components/SubmitButton';
 import TextInputField from '@/app/components/TextInputField';
 import TextAreaField from '@/app/components/TextAreaField';
 import WhiteContainer from './WhiteContainer';
+import { useAuth } from '../customHooks/AuthContext';
+import Skeleton from 'react-loading-skeleton';
+import { fetcher } from '../utils/fetcher';
 
 const ContactUs = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+
+  const { user } = useAuth()
+
+  if(user !== null){
+  const [name, setName] = useState(user ? user.fullname: '');
+  const [email, setEmail] = useState(user ? user.email: '');
   const [message, setMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [errors, setErrors] = useState({});
@@ -49,16 +56,10 @@ const ContactUs = () => {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/contact`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, message }),
-      });
-      const data = await response.json();
+      const data = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/contact`, 'POST', { name, email, message });
+      // const data = await response.json();
       
-      if (response.ok) {
+      if (data) {
         toast.success('Message sent successfully.');
         setName('');
         setEmail('');
@@ -68,16 +69,17 @@ const ContactUs = () => {
         toast.error('Failed to send message.');
       }
     } catch (error) {
-      toast.error('Error sending message.');
+      toast.error('Error sending message.' + error.message);
     } finally {
       setIsSending(false);
     }
   };
+  
 
-  return (
-        <form onSubmit={handleSubmit} className="space-y-4">
+    return (
+      <form onSubmit={handleSubmit} className="space-y-4">
           <div className="relative">
-            <MdPerson className="absolute left-4 top-1/3 transform -translate-y-1/4 text-gray-400 dark:text-gray-500" size={20} />
+            <MdPerson className="absolute left-4 top-1/2 transform -translate-y-1/4 text-gray-400 dark:text-gray-500" size={20} />
             <TextInputField
               type="text"
               value={name}
@@ -90,7 +92,7 @@ const ContactUs = () => {
             {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
           </div>
           <div className="relative">
-            <MdEmail className="absolute left-4 top-1/3 transform -translate-y-1/4 text-gray-400 dark:text-gray-500" size={20} />
+            <MdEmail className="absolute left-4 top-1/2 transform -translate-y-1/4 text-gray-400 dark:text-gray-500" size={20} />
             <TextInputField
               type="email"
               value={email}
@@ -124,6 +126,20 @@ const ContactUs = () => {
           </SubmitButton>
         </form>
   );
+} else {
+  return (
+    <>
+    <Skeleton height={50} className='my-10'/> 
+    <label className="block dark:text-secondary font-bold my-2">Name</label>
+    <Skeleton height={70}/>
+    <label className="block dark:text-secondary font-bold my-2">Email</label>
+    <Skeleton height={70}/>
+    <label className="block dark:text-secondary font-bold my-2">Message</label>
+    <Skeleton height={200}/>
+    <Skeleton height={50} className='rounded-full mt-4'/> 
+    </>
+  )
+} 
 };
 
 export default ContactUs;

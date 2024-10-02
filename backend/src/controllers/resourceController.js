@@ -4,6 +4,94 @@ const { recommendResources } = require('../services/resourceRecommendation');
 const { getNextSequenceValue } = require('../utils/autoIncrement');
 const { paginateResults } = require('../utils/pagination');
 
+// Get all resources with optional sorting, filtering, and searching
+const getAllResources = async (req, res) => {
+  const { page = 1, limit = 5, sortBy, filterBy, query, showAll, showFullJSON } = req.query;
+
+  // console.log({ page, limit, sortBy, filterBy, query });
+
+  let queryOptions = {};
+  let sortOptions = {};
+
+  try {
+    // Parse sorting options
+    if (sortBy) {
+      const [field, direction] = sortBy.split(':');
+      sortOptions[field] = direction === 'desc' ? -1 : 1;
+    }
+
+    // if(degree){
+    //   console.log("degree decodeURIComponent --", JSON.parse(decodeURIComponent(degree)))
+    //   const degObj = JSON.parse(decodeURIComponent(degree));
+    //   const degArray = Object.entries(degObj)
+    //   console.log(degArray)
+    //   const deg = degArray[0][0]
+    //   const semester = degArray[0][1]
+    //   Object.assign(queryOptions, {degree: deg});
+    //   Object.assign(queryOptions, {semester});
+    // }
+
+    
+    // Parse filtering options
+    if (filterBy) {
+      try {
+        const filter = JSON.parse(decodeURIComponent(filterBy));
+        Object.assign(queryOptions, filter);
+      } catch (error) {
+        return res.status(400).json({ message: 'Invalid filterBy parameter' });
+      }
+    }
+
+    // Parse search query
+    if (query) {
+      queryOptions.$or = [
+        { title: { $regex: query, $options: 'i' } },
+        { author: { $regex: query, $options: 'i' } },
+        { genre: { $regex: query, $options: 'i' } },
+        { description: { $regex: query, $options: 'i' } }
+      ];
+    }
+
+    console.log("queryOptions", queryOptions)
+
+    // console.log(await Resource.find())
+
+    if(showAll){
+      // Fetch results with pagination and sorting
+      const results = await paginateResults(
+        Resource.find(queryOptions).sort(sortOptions),
+        null,
+        null,
+        showAll
+      );
+      
+      res.status(200).json({ results });
+    } else if(showFullJSON){
+      // Fetch results with pagination and sorting
+      const results = await paginateResults(
+        Resource.find(queryOptions).sort(sortOptions),
+        parseInt(page),
+        parseInt(limit)
+      );
+      
+      res.status(200).json({ results });
+    } 
+    else {
+      // Fetch results with pagination and sorting
+      const results = await paginateResults(
+        Resource.find(queryOptions, {title: 1, description: 1, slug: 1, semester: 1, degree: 1, type: 1, createdAt: 1, likes: 1, profileImage: 1}).sort(sortOptions),
+        parseInt(page),
+        parseInt(limit)
+      );
+      
+      res.status(200).json({ results });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Error fetching resources', error: error });
+  }
+};
+
 // Recommend a resource for the authenticated user
 const recommendResource = async (req, res) => {
   try {
@@ -18,7 +106,7 @@ const recommendResource = async (req, res) => {
   }
 };
 
-
+ 
 
 // Get a resource by slug
 const getResourceBySlug = async (req, res) => {
@@ -72,7 +160,10 @@ const getResourceBySlug = async (req, res) => {
 
 // Add a new resource
 const addResource = async (req, res) => {
-  const { title, author, genre, description, status, slug, type, ai_approval, tags } = req.body;
+  const { title, author, genre, description, status, slug, type, ai_approval, tags, source, semester, degree } = req.body;
+
+  console.log(req.body)
+
   try {
     const existingResource = await Resource.findOne({ slug });
     if (existingResource) {
@@ -80,7 +171,7 @@ const addResource = async (req, res) => {
     }
 
     const serialNumber = await getNextSequenceValue('resourceSerial', 'Resource');
-    const newResource = new Resource({ serialNumber, title, author, description, genre, status, slug, type, ai_approval, tags });
+    const newResource = new Resource({ serialNumber, title, author, description, genre, status, slug, type, ai_approval, tags, source, semester, degree });
     await newResource.save();
     res.status(201).json({ message: 'Resource added successfully', resource: newResource });
   } catch (error) {
@@ -92,14 +183,18 @@ const addResource = async (req, res) => {
 // Update a resource by slug
 const updateResourceBySlug = async (req, res) => {
   const { slug } = req.params;
-  const { title, author, genre, description, status, type, ai_approval, tags, rating, ratingCount, likes, dislikes } = req.body;
+
+  const { title, author, genre, description, status, type, ai_approval, tags, rating, ratingCount, likes, dislikes, source } = req.body;
+
+
+
   try {
     const existingResource = await Resource.findOne({ slug });
     if (!existingResource) {
       return res.status(404).json({ message: 'Resource not found' });
     }
 
-    const updatedResource = await Resource.findOneAndUpdate({ slug }, { title, author, description, genre, status, type, ai_approval, tags, rating, ratingCount, likes, dislikes }, { new: true });
+    const updatedResource = await Resource.findOneAndUpdate({ slug }, { title, author, description, genre, status, type, ai_approval, tags, rating, ratingCount, likes, dislikes, source }, { new: true });
     if (!updatedResource) {
       return res.status(404).json({ message: 'Resource not found' });
     }
@@ -108,7 +203,7 @@ const updateResourceBySlug = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Error updating resource' });
   }
-};
+}; 
 
 // Delete a resource by slug
 const deleteResourceBySlug = async (req, res) => {
@@ -125,71 +220,6 @@ const deleteResourceBySlug = async (req, res) => {
   }
 };
 
-// Get all resources with optional sorting, filtering, and searching
-const getAllResources = async (req, res) => {
-  const { page = 1, limit = 5, sortBy, filterBy, query } = req.query;
-
-  // console.log({ page, limit, sortBy, filterBy, query });
-
-  let queryOptions = {};
-  let sortOptions = {};
-
-  try {
-    // Parse sorting options
-    if (sortBy) {
-      const [field, direction] = sortBy.split(':');
-      sortOptions[field] = direction === 'desc' ? -1 : 1;
-    }
-
-    // if(degree){
-    //   console.log("degree decodeURIComponent --", JSON.parse(decodeURIComponent(degree)))
-    //   const degObj = JSON.parse(decodeURIComponent(degree));
-    //   const degArray = Object.entries(degObj)
-    //   console.log(degArray)
-    //   const deg = degArray[0][0]
-    //   const semester = degArray[0][1]
-    //   Object.assign(queryOptions, {degree: deg});
-    //   Object.assign(queryOptions, {semester});
-    // }
-
-    
-    // Parse filtering options
-    if (filterBy) {
-      try {
-        const filter = JSON.parse(decodeURIComponent(filterBy));
-        Object.assign(queryOptions, filter);
-      } catch (error) {
-        return res.status(400).json({ message: 'Invalid filterBy parameter' });
-      }
-    }
-
-    // Parse search query
-    if (query) {
-      queryOptions.$or = [
-        { title: { $regex: query, $options: 'i' } },
-        { author: { $regex: query, $options: 'i' } },
-        { genre: { $regex: query, $options: 'i' } },
-        { description: { $regex: query, $options: 'i' } }
-      ];
-    }
-
-    console.log("queryOptions", queryOptions)
-
-    // console.log(await Resource.find())
-    // Fetch results with pagination and sorting
-    const results = await paginateResults(
-      Resource.find(queryOptions, {title: 1, description: 1, slug: 1}).sort(sortOptions),
-      parseInt(page),
-      parseInt(limit)
-    );
-    
-    
-    res.status(200).json({ results });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error fetching resources' });
-  }
-};
 
 
 // Like a resource by slug

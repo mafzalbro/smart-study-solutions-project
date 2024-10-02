@@ -4,10 +4,10 @@ const router = express.Router();
 const {
 //   createUser,
   getAllUsers,
-  getUserById,
+  getUserBySlug,
   getUser,
-  updateUserById,
-  deleteUserById
+  updateUserBySlug,
+  deleteUserBySlug
 } = require('../controllers/userController');
 const { auth } = require('../middlewares/auth');
 const { adminAuth } = require('../middlewares/adminAuth');
@@ -18,21 +18,21 @@ const { adminAuth } = require('../middlewares/adminAuth');
 
 // Route to get all users
 // router.get('/', adminAuth, getAllUsers);
-router.get('/', adminAuth, getAllUsers);
+router.get('/', getAllUsers);
 
 
 // Route to get a user by ID
 // router.get('/:id', auth, getUserById);
-router.get('/:id', getUserById);
+router.get('/:slug', getUserBySlug);
 
 // Route to get a user
 router.get('/get/one', auth, getUser);
 
 // Route to update a user by ID
 // router.put('/:id', auth, updateUserById);
-router.put('/:id', updateUserById);
+router.put('/:slug', adminAuth, updateUserBySlug);
 
 // Route to delete a user by ID
-router.delete('/:id', auth, deleteUserById);
+router.delete('/:slug', adminAuth, deleteUserBySlug);
 
 module.exports = router;

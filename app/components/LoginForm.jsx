@@ -83,7 +83,7 @@ const LoginForm = () => {
         // }
       }
     } catch (error) {
-      toast.error("Login failed");
+      toast.error("Login failed" + error.message);
     } finally {
       setLoading(false);
     }

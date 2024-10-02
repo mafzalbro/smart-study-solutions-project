@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { getNextSequenceValue } = require('../utils/autoIncrement'); // Adjust the path as needed
 const { sendPasswordResetEmail, sendGenericEmail } = require('../services/emailService'); // Adjust path as needed
+const { default: slugify } = require('slugify');
 
 // JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -12,7 +13,7 @@ const JWT_EXPIRATION_EXTENDED = process.env.JWT_EXPIRES_EXTENDED;
 
 // Register User
 const registerUser = async (req, res) => {
-  const { username, email, password, role, favoriteGenre } = req.body;
+  const { username, fullname, email, password, role, favoriteGenre } = req.body;
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -22,18 +23,23 @@ const registerUser = async (req, res) => {
     const serialNumber = await getNextSequenceValue('userSerial', 'User');
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const slug = slugify(username)
+
     const newUser = new User({
       serialNumber,
-      fullname: username,
+      fullname: fullname,
       username: username.split(' ').join('-').toLowerCase(),
       password: hashedPassword,
+      slug: slug,
       email,
       role,
-      favoriteGenre
+      favoriteGenre,
     });
     
     await newUser.save();
     
+
+    console.log(newUser)
     const token = jwt.sign({ id: newUser._id, role: newUser.role }, JWT_SECRET, { expiresIn: JWT_EXPIRATION });
     res.status(201).json({ message: 'User registered successfully', token });
   } catch (error) {

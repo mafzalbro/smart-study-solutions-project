@@ -1,5 +1,6 @@
 // controllers/userController.js
 const User = require('../models/user');
+const { paginateResults } = require('../utils/pagination');
 // const bcrypt = require('bcrypt');
 
 // // Create a new user
@@ -24,22 +25,24 @@ const User = require('../models/user');
 
 // Get all users
 const getAllUsers = async (req, res) => {
+  const {page = 1, limit = 5} = req.query;
   try {
     // const users = await User.find({}, '-password -_id -__v');
-    const users = await User.find({}, '-chatOptions -password');
-    res.status(200).json(users);
+    const users = User.find({}, '-chatOptions -password');
+    const paginatedResults = await paginateResults(users, parseInt(page), parseInt(limit))
+    res.status(200).json(paginatedResults);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error fetching users' });
   }
 };
 
-// Get a user by ID
-const getUserById = async (req, res) => {
-  const { id } = req.params;
+// Get a user by Slug
+const getUserBySlug = async (req, res) => {
+  const { slug } = req.params;
   // const id = req.user.id
   try {
-    const user = await User.findById(id, '-chatOptions -password -__v');
+    const user = await User.findOne({slug}, '-chatOptions -password -__v');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -68,10 +71,13 @@ const getUser = async (req, res) => {
   }
 };
 
-// Update a user by ID
-const updateUserById = async (req, res) => {
-  const { id } = req.params;
-  const { username, email, favoriteGenre, role, profileImage } = req.body;
+// Update a user by Slug
+const updateUserBySlug = async (req, res) => {
+  const { slug } = req.params;
+
+  const user = await User.findOne({slug});
+
+  const { username, fullname, email, favoriteGenre, role, profileImage } = req.body;
   
   try {
     if(!username){
@@ -79,6 +85,7 @@ const updateUserById = async (req, res) => {
     }
     const updateData = {
       username,
+      fullname,
       email,
       favoriteGenre,
       role
@@ -89,7 +96,7 @@ const updateUserById = async (req, res) => {
       updateData.profileImage = profileImage;
     }
 
-    const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true, select: '-chatOptions -password -__v' });
+    const updatedUser = await User.findByIdAndUpdate(user._id, updateData, { new: true, select: '-chatOptions -password -__v' });
 
     if (!updatedUser) {
       return res.status(404).json({ message: 'User not found' });
@@ -102,13 +109,17 @@ const updateUserById = async (req, res) => {
 };
 
 
-// Delete a user by ID
-const deleteUserById = async (req, res) => {
-  // const { id } = req.params;
-  const id = req.user.id;
+// Delete a user by Slug
+const deleteUserBySlug = async (req, res) => {
+  const { slug } = req.params;
+  // const id = req.user.id;
   
   try {
-    const deletedUser = await User.findByIdAndDelete(id);
+
+    const user = await User.findOne({slug});
+
+    const deletedUser = await User.findByIdAndDelete(user._id);
+
     if (!deletedUser) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -122,8 +133,8 @@ const deleteUserById = async (req, res) => {
 module.exports = {
   // createUser,
   getAllUsers,
-  getUserById,
+  getUserBySlug,
   getUser,
-  updateUserById,
-  deleteUserById
+  updateUserBySlug,
+  deleteUserBySlug
 };

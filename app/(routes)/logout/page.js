@@ -18,7 +18,7 @@ const LogoutPage = () => {
         await handleLogout(router);
         toast.success('You have been logged out successfully.');
       } catch (error) {
-        toast.error('Failed to log out. Please try again.');
+        toast.error('Failed to log out. Please try again.' + error.message);
         console.error('Logout failed:', error.message);
       }
     };
@@ -34,7 +34,7 @@ const LogoutPage = () => {
         <h2 className="text-2xl font-bold mb-6 text-primary dark:text-secondary">Redirecting to login page</h2>
         <Spinner />
         <WideLinkButton link='/login' text='Try Login Button'/>
-        <ToastContainer />
+        {/* <ToastContainer /> */}
       </div>
     </div>
   );

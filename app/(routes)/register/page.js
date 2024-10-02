@@ -17,6 +17,7 @@ import { FaUser } from 'react-icons/fa';
 
 const RegisterForm = () => {
   const [username, setUsername] = useState('');
+  const [fullname, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('student');
@@ -24,10 +25,45 @@ const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+
+  const handleForm = (formdata) => {
+    console.log({formdata});
+    
+    const data = formdata.entries();
+    
+    console.log({data, data2: Object.fromEntries(data)});
+  }
+
+  const validateInput = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{5,}$/;
+
+    if (emailRegex.test(username)) {
+      // setEmail(username);
+      // setUsername("");
+      return true;
+    }
+
+    if (!passwordRegex.test(password)) {
+      toast.error(
+        "Password must be at least 5 characters long and contain both letters and numbers."
+      );
+      return false;
+    }
+
+    return true;
+  };
+
+
   const handleRegister = async () => {
+
+    if(!validateInput){
+      return;
+    }
+
     setLoading(true);
     try {
-      const userData = await registerUser({ username, email, password, role, favoriteGenre });
+      const userData = await registerUser({ username, fullname, email, password, role, favoriteGenre });
       if (userData.message && userData.message.includes('successfully')) {
         toast.success(userData.message);
         setUsername('');
@@ -35,6 +71,7 @@ const RegisterForm = () => {
         setPassword('');
         setRole('student');
         setFavoriteGenre('');
+        setFullName('');
         router.push('/login');
       } else {
         toast.error(userData.message || 'Registration failed. Please try again.');
@@ -51,12 +88,23 @@ const RegisterForm = () => {
       <CardContainer className="w-full max-w-md p-6 md:p-8 bg-secondary shadow-lg rounded-lg">
         <h2 className="text-2xl font-bold mb-6 text-primary dark:text-secondary">Create an Account</h2>
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleRegister();
-          }}
+        action={
+          handleForm
+        }
+          // onSubmit={(e) => {
+          //   e.preventDefault();
+          //   handleRegister();
+          // }}
           className="space-y-4"
         >
+          <TextInputField
+            icon={FaUser}
+            placeholder="Full Name"
+            value={fullname}
+            onChange={(e) => setFullName(e.target.value)}
+            required
+            />
+
           <TextInputField
             icon={FaUser}
             placeholder="Username"
@@ -102,7 +150,7 @@ const RegisterForm = () => {
           <SubmitButton
             type="submit"
             processing={loading}
-            disabled={loading || !username || !email || !password || !favoriteGenre}
+            disabled={loading || !username || !email || !password || !fullname || !favoriteGenre}
             className="w-full"
           >
             Register

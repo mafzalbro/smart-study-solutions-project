@@ -33,7 +33,7 @@ const RootLayout = ({ children }) => {
           color="#eeeeee0"
           highlightColor="#44444410"
           baseColor="#eeeeee02"
-        >
+          >
           <div className="gradient-skeleton">
             <ToastContainer
               stacked
@@ -44,16 +44,16 @@ const RootLayout = ({ children }) => {
               autoClose
               containerId={font.className}
               theme="dark"
-            />
-            <AuthProvider>
+              />
+              <AuthProvider>
               {/* <AppStateProvider> */}
               <ProgressBar>
                 <NavBar />
                 {children}
               </ProgressBar>
               {/* </AppStateProvider> */}
-            </AuthProvider>
             <Footer />
+            </AuthProvider>
           </div>
         </SkeletonTheme>
       </body>
