@@ -64,11 +64,6 @@ const getContactByUserId = async (req, res) => {
   try {
     const { userId } = req.params;
     
-    // Ensure the user is authenticated
-    if (!req.isAuthenticated || req.user._id.toString() !== userId) {
-      return res.status(403).json({ success: false, error: 'Unauthorized access' });
-    }
-
     const user = await User.findById(userId).populate('contacts');
     if (!user) {
       return res.status(404).json({ success: false, error: 'User not found' });

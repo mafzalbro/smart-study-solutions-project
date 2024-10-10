@@ -5,13 +5,13 @@ import { fetcher } from "@/app/utils/fetcher";
 import ResourceCard from "@/app/components/resources/ResourceCard";
 import Spinner from "@/app/components/Spinner";
 import StylishTitle from "@/app/components/StylishTitle";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import Skeleton from "react-loading-skeleton";
 import TextInputField from "@/app/components/TextInputField";
-import SideArea from "@/app/components/resources/SideArea"; // Adjust path as needed
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next-nprogress-bar";
+import SideArea from "@/app/components/resources/SideArea";
+import { useSearchParams, useRouter } from "next/navigation";
+// import { useRouter } from "next-nprogress-bar";
 import Link from "next/link";
 import { FaChevronLeft } from "react-icons/fa";
 
@@ -33,86 +33,113 @@ export default function ResourcesPage({ params }) {
   const [filterBy, setFilterBy] = useState({}); // For filtering options
   const results = 20;
 
-  // if(q){
-  // console.log(q)
-  //   setSearchTerm(q)
-  // }
+  // Debounce search term
+  useEffect(() => {
+    if (q && debouncedSearchTerm == "" && searchTerm == "") {
+      setSearchTerm(q.split("-").join(" "));
+    }
+    const debounceTimeout = setTimeout(() => {
+      // if (searchTerm === "") {
+      //   router.push(`/resources`);
 
- // Debounce search term
-useEffect(() => {
-  const debounceTimeout = setTimeout(() => {
-    // if (searchTerm === "") {
-    //   router.push(`/resources`);;
-    // } else {
+      // } else {
       setDebouncedSearchTerm(searchTerm);
-    // }
-  }, 500);
+      // }
+    }, 1000);
 
-  return () => clearTimeout(debounceTimeout);
-}, [searchTerm, router]);
+    return () => clearTimeout(debounceTimeout);
+  }, [searchTerm, router]);
 
-// Updated fetchResources
-const fetchResources = async (newPage = 1, reset = false) => {
-  setIsLoading(true);
-  setError(null);
+  // Updated fetchResources
+  const fetchResources = async (newPage = 1, reset = false) => {
+    setIsLoading(true);
+    setError(null);
 
-  try {
-    const queryParams = new URLSearchParams();
-    queryParams.append("page", newPage);
-    queryParams.append("limit", results);
+    try {
+      const queryParams = new URLSearchParams();
+      queryParams.append("page", newPage);
+      queryParams.append("limit", results);
 
-    // If the search term is cleared, remove the query parameter
-    if (debouncedSearchTerm) {
-      router.push(`?query=${debouncedSearchTerm}`);
-      queryParams.append("query", debouncedSearchTerm || q);
-    } else if(routes[1] && debouncedSearchTerm == ""){
-      router.push(`/resources/${routes[0]}/${routes[1]}`);
-    } else if (debouncedSearchTerm === "") {
-      router.push(`/resources`);
+      // If the search term is cleared, remove the query parameter
+      if (debouncedSearchTerm) {
+        router.push(
+          `?query=${debouncedSearchTerm
+            .trim()
+            .split(" ")
+            .join("-")
+            .toLowerCase()}`
+        );
+        queryParams.append("query", debouncedSearchTerm || q);
+        // } else if(routes[1] && debouncedSearchTerm == ""){
+        //   router.push(`/resources/${routes[0]}/${routes[1]}`);
+        // } else if (debouncedSearchTerm === "") {
+        //   router.push(`/resources`);
+      }
+
+      if (sortBy) {
+        queryParams.append("sortBy", sortBy);
+      }
+
+      const filterParams = { ...filterBy };
+
+    //Adding api endpoint query params from url
+    
+      if (routes.length > 0) {
+        if (routes[0] === "type") {
+          filterParams.type = routes[1].split("-").join(" ");
+        } else if (routes[0] === "tag") {
+          filterParams.tags = routes[1].split("-").join(" ");
+        } else if (routes[0] === "category") {
+          filterParams.category = routes[1].split("-").join(" ");
+        } else if (routes[1]?.includes("semester")) {
+          if (routes[2]) {
+            filterParams.degree = routes[0].split("-").join(" ");
+            filterParams.semester = routes[1].split("-").join(" ");
+            filterParams.type = routes[2].split("-").join(" ");
+          } else {
+            filterParams.degree = routes[0].split("-").join(" ");
+            filterParams.semester = routes[1].split("-").join(" ");
+          }
+        }
+      }
+
+      if (Object.keys(filterParams).length > 0) {
+        queryParams.append("filterBy", JSON.stringify(filterParams));
+      } else if (q && routes[1] && debouncedSearchTerm == "") {
+        router.push(`/resources/${routes[0]}/${routes[1]}`);
+      } else if (q && debouncedSearchTerm === "") {
+        router.push(`/resources`);
+      }
+
+      const url = `${
+        process.env.NEXT_PUBLIC_BACKEND_ORIGIN
+      }/api/resources?${queryParams.toString()}`;
+      const data = await fetcher(url);
+      const { data: fetchedResources, totalResults } = data.results;
+
+      // Handle fetched resources
+      if (reset || debouncedSearchTerm) {
+        setResources(fetchedResources);
+      } else {
+        setResources((prevResources) => [
+          ...prevResources,
+          ...fetchedResources,
+        ]);
+      }
+
+      setPage(newPage);
+      setHasMore(newPage * results < totalResults);
+    } catch (error) {
+      setError(error);
+      toast.error(`Error fetching resources: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+      setIsLoadingMore(false);
     }
+  };
 
-    if (sortBy) {
-      queryParams.append("sortBy", sortBy);
-    }
-
-    const filterParams = { ...filterBy };
-
-    if (routes.length > 0) {
-      // Add filter params logic here
-      // ...
-    }
-
-    if (Object.keys(filterParams).length > 0) {
-      queryParams.append("filterBy", JSON.stringify(filterParams));
-    }
-
-    const url = `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources?${queryParams.toString()}`;
-    const data = await fetcher(url);
-    const { data: fetchedResources, totalResults } = data.results;
-
-    // Handle fetched resources
-    if (reset || debouncedSearchTerm) {
-      setResources(fetchedResources);
-    } else {
-      setResources((prevResources) => [
-        ...prevResources,
-        ...fetchedResources,
-      ]);
-    }
-
-    setPage(newPage);
-    setHasMore(newPage * results < totalResults);
-  } catch (error) {
-    setError(error);
-    toast.error(`Error fetching resources: ${error.message}`);
-  } finally {
-    setIsLoading(false);
-    setIsLoadingMore(false);
-  }
-};
-
-useEffect(() => {
-  fetchResources(1, true);
+  useEffect(() => {
+    fetchResources(1, true);
   }, [debouncedSearchTerm, sortBy, filterBy]);
 
   const handleLoadMore = () => {
@@ -140,22 +167,26 @@ useEffect(() => {
   useEffect(() => {
     if (routes.length > 0) {
       const title =
-        (!q ? routes[0].toUpperCase() : '') +
-        (q ? `You searched for ${q}` : routes[1] ? ` - ${routes[1].toUpperCase()}` : "");
+        (!q ? routes[0].toUpperCase() : "") +
+        (q
+          ? `You searched for ${q}`
+          : routes[1]
+          ? ` - ${routes[1].toUpperCase()}`
+          : "");
       document.title = title;
     } else {
       document.title = "Resources"; // Default title if no routes
     }
   }, [routes]);
-  
-  const queryParams = new URLSearchParams();
-  console.log(queryParams)
+
+  // const queryParams = new URLSearchParams();
+  // console.log(queryParams)
 
   return (
     <div className="flex flex-col md:flex-row mb-10">
       <main className="flex-1">
         <section className="p-1 md:p-8 dark:text-secondary w-full">
-          {(routes[0] || q) ? (
+          {routes[0] || q ? (
             <Link
               href="/resources"
               className="text-accent-600 dark:text-accent-300 inline-flex items-center mt-6 mx-2"
@@ -182,16 +213,16 @@ useEffect(() => {
             simple={
               q
                 ? `${
-                  routes[1]
-                    ? ` in ${decodeURIComponent(routes[0])
-                        .split("-")
-                        .join(" ")
-                        .toUpperCase()}: ${decodeURIComponent(routes[1])
-                        .split("-")
-                        .join(" ")
-                        .toUpperCase()}`
-                    : ""
-                }`
+                    routes[1]
+                      ? ` in ${decodeURIComponent(routes[0])
+                          .split("-")
+                          .join(" ")
+                          .toUpperCase()}: ${decodeURIComponent(routes[1])
+                          .split("-")
+                          .join(" ")
+                          .toUpperCase()}`
+                      : ""
+                  }`
                 : routes[1]
                 ? ": " +
                   decodeURIComponent(routes[1])
@@ -206,7 +237,7 @@ useEffect(() => {
           <div className="mx-4 my-20" autoFocus>
             <TextInputField
               type="text"
-              placeholder="Search questions..."
+              placeholder="Search study materials..."
               value={searchTerm}
               noMargin
               onChange={handleSearchChange}

@@ -6,7 +6,7 @@ import AdminQuestionCard from "../../components/forum/AdminQuestionCard";
 import Skeleton from "react-loading-skeleton";
 
 export default function AdminForumPage() {
-  const count = 2;
+  const count = 20;
   const [questions, setQuestions] = useState(null);
   const [loading, setLoading] = useState(true);
   const getForumQuestions = async () => {

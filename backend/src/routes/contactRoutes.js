@@ -6,7 +6,7 @@ const { auth } = require('../middlewares/auth'); // Adjust path and middleware a
 const router = express.Router();
 
 router.post('/', createContactMessage);
-router.get('/all', getAllContacts);
+router.get('/', getAllContacts);
 router.get('/user/:userId', auth, getContactByUserId);
 router.post('/newsletter', subscribeToNewsletter);
 

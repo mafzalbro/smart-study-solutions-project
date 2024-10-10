@@ -31,6 +31,7 @@ export default function Sidebar({ height }) {
   const sidebarItems = [
     { label: 'Home', href: '/admin', key: 'admin' },
     { label: 'Users', href: '/admin/users', key: 'users' },
+    { label: 'Contacts', href: '/admin/contacts', key: 'contacts' },
     { label: 'Resources', href: '/admin/resources', key: 'resources' },
     { label: 'Forum', href: '/admin/forum', key: 'forum' },
   ];

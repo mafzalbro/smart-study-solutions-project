@@ -8,7 +8,7 @@ import LinkButton from "@/app/components/LinkButton";
 import { BiPlus } from "react-icons/bi";
 
 export default function Resources() {
-  const count = 2;
+  const count = 20;
   const [resources, setResources] = useState(null);
   const [loading, setLoading] = useState(true);
   // const response = await (await fetch(
