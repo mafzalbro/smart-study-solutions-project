@@ -105,7 +105,9 @@ export default function ResourcesPage({ params }) {
 
       if (Object.keys(filterParams).length > 0) {
         queryParams.append("filterBy", JSON.stringify(filterParams));
-      } else if (q && routes[1] && debouncedSearchTerm == "") {
+      }
+       
+      if (q && routes[1] && debouncedSearchTerm == "") {
         router.push(`/resources/${routes[0]}/${routes[1]}`);
       } else if (q && debouncedSearchTerm === "") {
         router.push(`/resources`);
