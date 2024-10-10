@@ -36,7 +36,7 @@ const ResourceCard = ({ resource }) => {
           {resource.degree && (
             <Link
               className="text-neutral-600 dark:text-neutral-300 bg-neutral-200 dark:bg-neutral-800 px-4 py-2 rounded-full hover:text-link dark:hover:text-link cursor-pointer flex justify-center items-center"
-              href={`resources/${resource.degree
+              href={`/resources/${resource.degree
                 ?.split(" ")
                 .join("-")}/${resource.semester?.split(" ").join("-")}`}
             >
@@ -50,7 +50,7 @@ const ResourceCard = ({ resource }) => {
           {resource.type && (
             <Link
               className="text-neutral-600 dark:text-neutral-300 bg-neutral-200 dark:bg-neutral-800 px-4 py-2 rounded-full hover:text-link dark:hover:text-link cursor-pointer flex justify-center items-center"
-              href={`resources/${resource.degree
+              href={`/resources/${resource.degree
                 ?.split(" ")
                 .join("-")}/${resource.semester
                 ?.split(" ")
