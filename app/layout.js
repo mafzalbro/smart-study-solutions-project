@@ -33,26 +33,26 @@ const RootLayout = ({ children }) => {
           color="#eeeeee0"
           highlightColor="#44444410"
           baseColor="#eeeeee02"
-          >
+        >
           <div className="gradient-skeleton">
-            <ToastContainer
-              stacked
-              position="bottom-center"
-              draggable
-              newestOnTop
-              pauseOnHover
-              autoClose
-              containerId={font.className}
-              theme="dark"
-              />
-              <AuthProvider>
+            <AuthProvider>
               {/* <AppStateProvider> */}
               <ProgressBar>
                 <NavBar />
+                <ToastContainer
+                  stacked
+                  position="bottom-center"
+                  draggable
+                  newestOnTop
+                  pauseOnHover
+                  autoClose
+                  containerId={font.className}
+                  theme="dark"
+                />
                 {children}
               </ProgressBar>
               {/* </AppStateProvider> */}
-            <Footer />
+              <Footer />
             </AuthProvider>
           </div>
         </SkeletonTheme>

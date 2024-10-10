@@ -8,7 +8,7 @@ const GoogleLogin = () => {
     removeUserCacheHistory()
     // Redirect to the backend's Google OAuth endpoint
     const googleAuthUrl = `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/auth/google`;
-    window.location.replace = googleAuthUrl;
+    window.location.replace(googleAuthUrl);
   }, []);
 
   return <div className='flex h-screen justify-center items-center'>Redirecting to Google Login...</div>;

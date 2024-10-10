@@ -56,9 +56,6 @@ export const AdminAuthProvider = ({ children }) => {
     }, [router, path]);
   }
 
-  if(!admin && !isAdminLoggedIn){
-    router.replace('/admin/login')
-  }
     return (
       <AuthContext.Provider
       value={{ isAdminLoggedIn, setIsAdminLoggedIn, admin }}

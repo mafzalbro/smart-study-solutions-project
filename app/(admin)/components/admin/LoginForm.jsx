@@ -25,7 +25,7 @@ const LoginForm = () => {
 
     if (emailRegex.test(username)) {
       setEmail(username);
-      setUsername("");
+      // setUsername("");
       return true;
     }
 
@@ -56,7 +56,7 @@ const LoginForm = () => {
         router.push("/admin");
       }
     } catch (error) {
-      toast.error("Login failed");
+      toast.error("Login failed: " + (error ? error: ''));
     } finally {
       setLoading(false);
     }

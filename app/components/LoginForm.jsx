@@ -40,7 +40,7 @@ const LoginForm = () => {
 
     if (emailRegex.test(username)) {
       setEmail(username);
-      setUsername("");
+      // setUsername("");
       return true;
     }
 
@@ -83,7 +83,7 @@ const LoginForm = () => {
         // }
       }
     } catch (error) {
-      toast.error("Login failed" + error.message);
+      toast.error("Login failed: " + (error ? error: ''));
     } finally {
       setLoading(false);
     }
@@ -123,6 +123,13 @@ const LoginForm = () => {
           placeholder="Password"
           required
         />
+        <div className="mt-4 flex justify-between items-center">
+          <label className="flex items-center">
+            <input type="checkbox" className="form-checkbox text-accent-600" onChange={(e) => handleCheck(e.target.checked)
+            } checked={isRememberMe}/>
+            <span className="ml-2 text-neutral-500 dark:text-neutral-300">Remember Me</span>
+          </label>
+        </div>
         <SubmitButton
           onClick={handleLogin}
           disabled={loading || username.trim() === "" || password.trim() === ""}
@@ -136,13 +143,6 @@ const LoginForm = () => {
         <Link href="/forgot-password" className="text-link hover:underline">
           Forgot Password?
         </Link>
-      </div>
-      <div className="mt-4 flex justify-between items-center">
-        <label className="flex items-center">
-          <input type="checkbox" className="form-checkbox text-accent-600" onChange={(e) => handleCheck(e.target.checked)
-          } checked={isRememberMe}/>
-          <span className="ml-2 text-neutral-500 dark:text-neutral-300">Remember Me</span>
-        </label>
       </div>
       <hr className="my-10 border-t border-accent-300 w-[50%] mx-auto" />
       <Link
