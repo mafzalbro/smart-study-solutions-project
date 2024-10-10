@@ -17,8 +17,7 @@ const { cacheMiddleware } = require('./src/middlewares/cacheMiddleware');
 const app = express();
 
 
-app.use(express.static(path.join('backend/public')))
-
+app.use(express.static(path.join(__dirname, './public')))
 
 // Import Routes
 const adminAuthRoutes = require('./src/routes/adminAuthRoutes');
