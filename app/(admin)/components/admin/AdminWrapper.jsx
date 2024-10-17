@@ -2,15 +2,21 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "../../customHooks/AdminAuthProvider";
+import { useEffect } from "react";
 
 const AdminWrapper = ({ children }) => {
-  const { admin } = useAuth();
-
+  // const { admin } = useAuth();
+  const path = usePathname();
   const router = useRouter();
 
-  const path = usePathname();
-
-  if (!admin) router.push("/admin/login");
+  useEffect(() => {
+    const token = localStorage.getItem("admin_token");
+    if (token) {
+      router.push("/admin");
+    } else {
+      router.push("/admin/login");
+    }
+  }, [router]);
 
   if (["login", "logout"].some((pathname) => path.includes(pathname))) {
     return (

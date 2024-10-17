@@ -13,9 +13,9 @@ const generateFakeData = () => {
   for (let i = 0; i < 10; i++) { // Adjust the number of questions you want to insert
     const fakeQuestion = {
       question: faker.lorem.sentence(),
-      askedBy: "66f4eb669ca841f42343eba5", // Mock user ID
+      askedBy: "670f561203250c343930d6f0", // Mock user ID
       category: faker.helpers.arrayElement([
-        "66f4ef43afcbf6946858ef81",
+        "670f561203250c343930d6f0",
         "66f4ef43afcbf6946858ef82",
         "66f4ef43afcbf6946858ef83",
         "66f4ef43afcbf6946858ef84",

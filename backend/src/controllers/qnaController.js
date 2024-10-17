@@ -80,7 +80,10 @@ const getAllQuestions = async (req, res) => {
     // Parse filtering options
     if (filterBy) {
       try {
+        console.log({filterBy});
         const filter = JSON.parse(filterBy);
+        console.log({filter});
+        
         Object.assign(queryOptions, filter);
       } catch (error) {
         return res.status(400).json({ message: 'Invalid filterBy parameter' });
@@ -103,7 +106,7 @@ const getAllQuestions = async (req, res) => {
         })
         .populate({
           path: 'category',
-          select: 'name _id',
+          select: 'name _id slug',
         }).sort(sortOptions),
       parseInt(page),
       parseInt(limit),
@@ -124,6 +127,7 @@ const getAllQuestions = async (req, res) => {
       category: {
         name: question.category?.name,
         _id: question.category?._id,
+        slug: question.category?.slug,
       },
     }));
 

@@ -90,7 +90,7 @@ const ForumPage = () => {
         value={searchTerm}
         onChange={handleSearchChange}
         placeholder="Search questions..."
-        className="py-5 px-10 border border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800 outline-none focus:ring-accent-400 rounded-full focus:outline-none focus:ring-2 ring-accent-500"
+        className="py-5 px-10 border border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 outline-none focus:ring-accent-400 rounded-full focus:outline-none focus:ring-2 ring-accent-500"
         noMargin
         disabled={isLoading}
       />

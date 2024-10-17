@@ -108,6 +108,47 @@ const updateUserBySlug = async (req, res) => {
   }
 };
 
+// Update a user by Slug
+const updateUserById= async (req, res) => {
+  const { id } = req.params;
+
+  const user = await User.findById(id);
+
+  if(!user){
+    return res.status(404).json({ message: 'user not found' });
+  }
+
+  const { username, fullname, email, favoriteGenre, role, profileImage } = req.body;
+  
+  try {
+    if(!username){
+      return res.status(404).json({ message: 'username not found' });
+    }
+    const updateData = {
+      username,
+      fullname,
+      email,
+      favoriteGenre,
+      role
+    };
+
+    if (profileImage !== undefined) {
+      // Process base64 encoded image string
+      updateData.profileImage = profileImage;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(user._id, updateData, { new: true, select: '-chatOptions -password -__v' });
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error updating user' });
+  }
+};
+
 
 // Delete a user by Slug
 const deleteUserBySlug = async (req, res) => {
@@ -135,6 +176,7 @@ module.exports = {
   getAllUsers,
   getUserBySlug,
   getUser,
+  updateUserById,
   updateUserBySlug,
   deleteUserBySlug
 };

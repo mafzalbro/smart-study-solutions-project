@@ -11,6 +11,7 @@ const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('./swagger-output.json');
 
+
 // Import the cache middleware
 const { cacheMiddleware } = require('./src/middlewares/cacheMiddleware');
 

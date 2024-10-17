@@ -7,7 +7,7 @@ import { FiX, FiMoon, FiSun } from "react-icons/fi";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/app/customHooks/AuthContext";
-import NavBarAdmin from "../../(admin)/components/navbar/NavBarAdmin";
+// import NavBarAdmin from "../../(admin)/components/navbar/NavBarAdmin";
 import Skeleton from "react-loading-skeleton";
 
 import "react-loading-skeleton/dist/skeleton.css";
@@ -16,7 +16,8 @@ import HoverLine from "./HoverLine";
 
 const NavBar = () => {
   const pathname = usePathname();
-  if (!pathname.includes("/admin")){
+  if (!pathname.includes("/admin")) {
+    const [adminToken, setAdminToken] = useState("");
     const [scrollDirection, setScrollDirection] = useState("up");
     const [lastScrollTop, setLastScrollTop] = useState(0);
     const { isLoggedIn, user } = useAuth(); // Get isLoggedIn and user from AuthContext
@@ -32,11 +33,14 @@ const NavBar = () => {
 
     useEffect(() => {
       const savedToken = localStorage.getItem("token");
+      const savedAdminToken = localStorage.getItem("admin_token");
 
       if (!savedToken && token && pathname === "/") {
         localStorage.setItem("token", token);
         router.push("/");
       }
+
+      savedAdminToken ? setAdminToken(savedAdminToken) : setAdminToken("");
     }, [token]);
 
     useEffect(() => {
@@ -215,6 +219,20 @@ const NavBar = () => {
                   <HoverLine hide={pathname === "/"} />
                 </Link>
               </li>
+              {adminToken && (
+                <li>
+                  <Link
+                    href="/admin"
+                    passHref
+                    className={`inline-block relative group py-2 md:py-0 ${getActiveLinkClass(
+                      "/admin"
+                    )}`}
+                  >
+                    Admin
+                    <HoverLine hide={pathname.includes("/admin")} />
+                  </Link>
+                </li>
+              )}
               <li>
                 <Link
                   href="/resources"
@@ -279,8 +297,8 @@ const NavBar = () => {
                     <FaUserCircle size={40} />
                   )}
                 </div>
-                {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-800 rounded-lg shadow-lg py-2 z-50">
+                {/* {isDropdownOpen && ( */}
+                  <div className={`absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-800 rounded-lg shadow-lg py-2 z-50 transition-all duration-200 ${isDropdownOpen ? 'mt-2 opacity-100 pointer-events-auto' : '-mt-4 opacity-0 pointer-events-none'}`}>
                     <Link href="/dashboard" passHref>
                       <span className="block px-4 py-2 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
                         Dashboard
@@ -292,7 +310,7 @@ const NavBar = () => {
                       </span>
                     </Link>
                   </div>
-                )}
+                {/* )} */}
               </div>
             ) : (
               <Link href="/login" passHref>

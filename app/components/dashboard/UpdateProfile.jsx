@@ -1,17 +1,16 @@
 "use client";
 
-import { useEffect, useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { MdOutlineCloudUpload, MdDelete } from "react-icons/md";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import Skeleton from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css';
-import { fetcher } from '@/app/utils/fetcher';
-import TextInputField from '../TextInputField'; // Import the custom TextInputField component
-import imageCompression from 'browser-image-compression';
-import { removeUserCacheHistory } from '@/app/utils/caching';
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import { fetcher } from "@/app/utils/fetcher";
+import TextInputField from "../TextInputField"; // Import the custom TextInputField component
+import imageCompression from "browser-image-compression";
+import { removeUserCacheHistory } from "@/app/utils/caching";
 
 const UpdateProfile = () => {
   const router = useRouter();
@@ -24,15 +23,15 @@ const UpdateProfile = () => {
   useEffect(() => {
     // Fetch user details using fetcher function
     fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/user/get/one`)
-      .then(data => {
+      .then((data) => {
         if (data) {
           setUser(data);
         } else {
-          console.error('User data not found');
+          console.error("User data not found");
         }
       })
       .catch(() => {
-        console.error('Error fetching user data');
+        console.error("Error fetching user data");
       });
   }, [router]);
 
@@ -46,7 +45,7 @@ const UpdateProfile = () => {
           maxSizeMB: 0.02, // Maximum size in MB (20KB = 0.02MB)
           maxWidthOrHeight: 500, // Reduce dimensions to help compress
           useWebWorker: true, // Use Web Worker for better performance
-          fileType: 'image/jpeg', // Use JPEG format for better compression
+          fileType: "image/jpeg", // Use JPEG format for better compression
         };
 
         // Compress the image
@@ -56,7 +55,10 @@ const UpdateProfile = () => {
         let compressedFileSize = compressedFile.size / 1024; // Convert size to KB
         while (compressedFileSize > 20) {
           options.maxSizeMB = options.maxSizeMB * 0.9; // Further reduce size
-          const furtherCompressedFile = await imageCompression(compressedFile, options);
+          const furtherCompressedFile = await imageCompression(
+            compressedFile,
+            options
+          );
           compressedFileSize = furtherCompressedFile.size / 1024;
         }
 
@@ -70,8 +72,8 @@ const UpdateProfile = () => {
         reader.readAsDataURL(compressedFile);
       } catch (error) {
         setLoadingImage(false); // Stop image loading in case of error
-        console.error('Error compressing image:', error);
-        toast.error('Error uploading image. Please try again.');
+        console.error("Error compressing image:", error);
+        toast.error("Error uploading image. Please try again.");
       }
     }
   };
@@ -80,7 +82,7 @@ const UpdateProfile = () => {
     setProfileImage(null);
     setImageBase64(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = ''; // Reset the file input element
+      fileInputRef.current.value = ""; // Reset the file input element
     }
   };
 
@@ -94,16 +96,24 @@ const UpdateProfile = () => {
         email: user.email,
         role: user.role,
         favoriteGenre: user.favoriteGenre,
-        profileImage: imageBase64
+        profileImage: imageBase64,
       };
 
-      const response = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/user/${user._id}`, 'PUT', updatedUserData);
+      console.log({ user });
+
+      const response = await fetcher(
+        `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/user/${user._id}`,
+        "PUT",
+        updatedUserData
+      );
 
       if (response) {
-        removeUserCacheHistory()
-        toast.success('Profile updated successfully');
+        removeUserCacheHistory();
+        toast.success("Profile updated successfully");
       } else {
-        toast.error(`Error updating profile: ${response.message || 'Unknown error'}`);
+        toast.error(
+          `Error updating profile: ${response.message || "Unknown error"}`
+        );
       }
     } catch (error) {
       toast.error(`Error updating profile: ${error.message}`);
@@ -128,7 +138,9 @@ const UpdateProfile = () => {
   return (
     <div className="text-foreground flex items-center justify-center">
       <form onSubmit={handleSubmit} className="w-full md:w-3/4 max-w-sm p-8">
-        <h2 className="text-2xl font-bold mb-6 text-primary dark:text-secondary">Update Profile</h2>
+        <h2 className="text-2xl font-bold mb-6 text-primary dark:text-secondary">
+          Update Profile
+        </h2>
         <label className="block mb-4">
           Profile Image:
           <input
@@ -143,18 +155,18 @@ const UpdateProfile = () => {
             htmlFor="fileInput"
             className="flex items-center gap-4 w-full mt-1 py-4 px-4 border rounded-lg cursor-pointer focus:ring-2 focus:ring-accent-600 outline-none bg-white dark:bg-neutral-800 text-gray-800 dark:text-gray-300 border-neutral-300 dark:border-neutral-600"
           >
-            <MdOutlineCloudUpload className="text-accent-600" /> <span>Choose File</span>
+            <MdOutlineCloudUpload className="text-accent-600" />{" "}
+            <span>Choose File</span>
           </label>
-
           {loadingImage ? (
-          <Skeleton height={300} className="my-10" />
-        ) : profileImage ? (
+            <Skeleton height={300} className="my-10" />
+          ) : profileImage ? (
             <div className="relative">
               <img
                 src={profileImage}
                 alt="Profile Preview"
                 className="block my-10 rounded-lg border mx-auto h-auto w-[100%]"
-                style={{ maxWidth: '300px' }}
+                style={{ maxWidth: "300px" }}
               />
               <button
                 type="button"
@@ -170,7 +182,7 @@ const UpdateProfile = () => {
                 src={user.profileImage}
                 alt="Profile"
                 className="block my-10 rounded-lg border border-neutral-300 dark:border-neutral-700 mx-auto h-auto w-[100%]"
-                style={{ maxWidth: '300px' }}
+                style={{ maxWidth: "300px" }}
               />
             </div>
           ) : (
@@ -179,7 +191,7 @@ const UpdateProfile = () => {
         </label>
         <TextInputField
           type="text"
-          value={user.fullname || ''}
+          value={user.fullname || ""}
           onChange={(e) => setUser({ ...user, fullname: e.target.value })}
           placeholder="Full Name"
           required
@@ -187,14 +199,17 @@ const UpdateProfile = () => {
 
         <TextInputField
           type="text"
-          value={user.username || ''}
+          value={user.username || ""}
           onChange={(e) => setUser({ ...user, username: e.target.value })}
           placeholder="Username"
           required
         />
         <p>
-        <span className='text-primary dark:text-secondary'>{user.email}</span>
-        <span className='text-neutral-500 dark:text-neutral-400 text-sm'> ( You can't change your email )</span>
+          <span className="text-primary dark:text-secondary">{user.email}</span>
+          <span className="text-neutral-500 dark:text-neutral-400 text-sm">
+            {" "}
+            ( You can't change your email )
+          </span>
         </p>
         {/* <TextInputField
           type="email"
@@ -206,7 +221,7 @@ const UpdateProfile = () => {
         <label className="block mb-4">
           Role:
           <select
-            value={user.role || ''}
+            value={user.role || ""}
             onChange={(e) => setUser({ ...user, role: e.target.value })}
             required
             className="block w-full mt-1 py-4 px-4 border rounded-lg focus:ring-2 focus:ring-accent-600 outline-none bg-white dark:bg-neutral-800 text-gray-800 dark:text-gray-300 border-neutral-300 dark:border-neutral-700"
@@ -217,12 +232,15 @@ const UpdateProfile = () => {
         </label>
         <TextInputField
           type="text"
-          value={user.favoriteGenre || ''}
+          value={user.favoriteGenre || ""}
           onChange={(e) => setUser({ ...user, favoriteGenre: e.target.value })}
           placeholder="Favorite Genre"
           required
         />
-        <button type="submit" className="w-full py-2 px-4 bg-accent-600 text-white rounded-lg shadow-md hover:bg-accent-700 focus:outline-none focus:ring-2 focus:ring-accent-600">
+        <button
+          type="submit"
+          className="w-full py-2 px-4 bg-accent-600 text-white rounded-lg shadow-md hover:bg-accent-700 focus:outline-none focus:ring-2 focus:ring-accent-600"
+        >
           Update Profile
         </button>
         <ToastContainer />

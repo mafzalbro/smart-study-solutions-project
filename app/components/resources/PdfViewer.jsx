@@ -1,4 +1,6 @@
 import React from 'react';
+
+import { version } from 'pdfjs-dist';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin, DefaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import { toolbarPlugin } from '@react-pdf-viewer/toolbar';
@@ -9,7 +11,7 @@ import { IoClose } from 'react-icons/io5';
 import { RxEnterFullScreen, RxExitFullScreen } from 'react-icons/rx';
 import './PdfViewer.css'; // Import custom CSS for transitions
 
-const PdfViewer = ({ fileUrl, onClose, onFullscreen, isFullscreen, version = '3.11.174' }) => {
+const PdfViewer = ({ fileUrl, onClose, onFullscreen, isFullscreen }) => {
   // Create instances of the plugins
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const toolbarPluginInstance = toolbarPlugin();
@@ -53,7 +55,7 @@ const PdfViewer = ({ fileUrl, onClose, onFullscreen, isFullscreen, version = '3.
         </button>
 
         <div className="p-2 md:p-4 h-full overflow-auto">
-          <Worker workerUrl={`https://unpkg.com/pdfjs-dist@${version}/build/pdf.worker.min.js`}>
+          <Worker workerUrl={`http://unpkg.com/pdfjs-dist@${version}/build/pdf.worker.min.js`}>
             <Viewer
               fileUrl={fileUrl}
               plugins={[

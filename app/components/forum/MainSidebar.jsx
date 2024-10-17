@@ -7,10 +7,10 @@ import Dropdown from './Dropdown';
 import { fetcher } from '@/app/utils/fetcher'; // Adjust path as needed
 
 const defaultSidebarItems = [
-  { href: '/forum/home', label: 'Home', icon: <FaHome className="mr-2" /> },
+  { href: '/forum', label: 'Home', icon: <FaHome className="mr-2" /> },
   { href: '/forum/profile', label: 'Profile', icon: <FaUser className="mr-2" /> },
-  { href: '/forum/about', label: 'About', icon: <FaInfoCircle className="mr-2" /> },
-  { href: '/forum/contact', label: 'Contact', icon: <FaEnvelope className="mr-2" /> },
+  { href: '/about', label: 'About', icon: <FaInfoCircle className="mr-2" /> },
+  { href: '/contact', label: 'Contact', icon: <FaEnvelope className="mr-2" /> },
 ];
 
 const MainSidebar = () => {

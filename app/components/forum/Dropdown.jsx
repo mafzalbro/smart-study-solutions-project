@@ -48,7 +48,7 @@ const Dropdown = ({ items, onSelect, categories }) => {
             <ul>
               {categories.map((category) => (
                 <li key={category.slug} className="mb-2">
-                  <Link href={`/forum/categories/${category.slug}`}>
+                  <Link href={`/forum/category/${category.slug}`}>
                     <span className="flex items-center text-accent-500 dark:text-accent-400 hover:text-accent-600 dark:hover:text-accent-300 transition duration-300 ease-in-out">
                       <FaTags className="mr-2" />
                       <span className="text-base font-medium">{category.name}</span>

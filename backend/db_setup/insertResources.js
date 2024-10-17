@@ -49,11 +49,11 @@ const generateFakeResources = () => {
       ratingCount: faker.number.int({ min: 0, max: 100 }),
       likes: faker.number.int({ min: 0, max: 100 }),
       dislikes: faker.number.int({ min: 0, max: 50 }),
-      likedBy: ["66f4eb669ca841f42343eba5"], // Mock user IDs
+      likedBy: ["670f561203250c343930d6f0"], // Mock user IDs
       dislikedBy: [], // Mock user IDs
       ratings: [
         {
-          userId: "66f4eb669ca841f42343eba5", // Mock user ID
+          userId: "670f561203250c343930d6f0", // Mock user ID
           rating: faker.number.int({ min: 1, max: 5 }),
         },
       ],
