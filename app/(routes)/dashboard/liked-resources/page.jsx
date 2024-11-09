@@ -6,13 +6,14 @@ import ResourceCard from "@/app/components/resources/ResourceCard";
 import Pagination from "@/app/components/dashboard/Pagination";
 import { fetcher } from "@/app/utils/fetcher";
 import { TfiFaceSad } from "react-icons/tfi";
-
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const LikedResources = () => {
+  const count = 1;
   const [likedResources, setLikedResources] = useState([]);
   const [page, setPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
-  const [count, setCount] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -22,10 +23,11 @@ const LikedResources = () => {
       const data = await fetcher(
         `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/user/liked-resources?page=${page}&limit=${count}`
       );
-      console.log(data);
 
       if (data?.data) {
-        setLikedResources((prev) => [...prev, ...data.data]);
+        setLikedResources(
+          page === 1 ? data.data : (prev) => [...prev, ...data.data]
+        );
         setTotalResults(data.totalResults);
       } else {
         setLikedResources([]);
@@ -53,33 +55,33 @@ const LikedResources = () => {
         Liked Resources
       </h1>
 
-      {loading && (
-        <div className="text-center text-gray-500 dark:text-gray-300">
-          Loading your liked resources...
+      {loading ? (
+        // Display skeletons while loading
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, index) => (
+            <div key={index} className="p-4 border rounded-lg">
+              <Skeleton height={20} width="80%" className="mb-2" />
+              <Skeleton height={15} width="60%" />
+              <Skeleton height={200} className="mt-4" />
+            </div>
+          ))}
         </div>
-      )}
+      ) : (
+        <>
+          {!loading && likedResources.length === 0 && (
+            <div className="text-center text-gray-500 dark:text-gray-300 inline-flex gap-4">
+              <TfiFaceSad size={24} className="inline-block mb-4" />
+              You have no liked resources.
+            </div>
+          )}
 
-      {/* {error && (
-        <div className="text-center text-red-500 mb-4">
-          <AiOutlineHeart size={20} className="inline-block mr-2" />
-          {error}
-        </div>
-      )} */}
-
-      {!loading && likedResources.length === 0 && (
-        <div className="text-center text-gray-500 dark:text-gray-300 inline-flex gap-4">
-          <TfiFaceSad size={24} className="inline-block mb-4" />
-          You have no liked resources.
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {!loading && !error && likedResources.length > 0
-          ? likedResources.map((resource) => (
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            {likedResources.map((resource) => (
               <ResourceCard key={resource._id} resource={resource} />
-            ))
-          : ""}
-      </div>
+            ))}
+          </div>
+        </>
+      )}
 
       <Pagination
         page={page}

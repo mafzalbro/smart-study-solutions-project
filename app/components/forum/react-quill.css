@@ -1,0 +1,149 @@
+/* styles.css */
+
+/* Editor Container */
+.editor-container {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+  padding-top: 60px; /* Ensure there's space for fixed toolbar */
+}
+
+/* React Quill Base Styling */
+.react-quill {
+  background-color: white;
+  color: #1f2937; /* Dark text color */
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Fixed Toolbar */
+.react-quill .ql-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  background-color: #f3f4f6; /* Light background for toolbar */
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Toolbar Button Styles */
+.react-quill .ql-toolbar .ql-formats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.react-quill .ql-toolbar button {
+  background: transparent;
+  color: #4b5563; /* Text color */
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Button hover and active state */
+.react-quill .ql-toolbar button:hover {
+  background-color: #e5e7eb; /* Light hover effect */
+}
+
+.react-quill .ql-toolbar button:active {
+  color: #3b82f6; /* Blue active state */
+}
+
+/* Editor Area */
+.react-quill .ql-editor {
+  min-height: 200px;
+  margin-top: 80px; /* Ensures content is below fixed toolbar */
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 16px;
+  transition: border-color 0.2s ease;
+}
+
+/* Editor Focus State */
+.react-quill .ql-editor:focus {
+  border-color: #3b82f6; /* Blue border on focus */
+}
+
+/* Placeholder Text Styling */
+.react-quill .ql-editor.ql-blank::before {
+  color: #9ca3af; /* Placeholder text color */
+}
+
+/* Editor Content (Text) Styling */
+.react-quill .ql-editor p {
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+/* Links within the editor */
+.react-quill .ql-editor a {
+  color: #3b82f6; /* Link color */
+  text-decoration: none;
+}
+
+.react-quill .ql-editor a:hover {
+  text-decoration: underline;
+}
+
+/* Quill Image Styling */
+.react-quill .ql-editor img {
+  max-width: 100%;
+  border-radius: 8px;
+  border: 2px solid #e5e7eb;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+/* Dark Mode Specific Styles */
+html.dark .react-quill {
+  background-color: #1f2937 !important; /* Dark background */
+  color: #f3f4f6 !important; /* Light text color */
+}
+
+html.dark .react-quill .ql-toolbar {
+  background-color: #4b5563 !important; /* Dark toolbar */
+}
+
+html.dark .react-quill .ql-editor {
+  border-color: #374151 !important; /* Dark border for editor */
+}
+
+html.dark .react-quill .ql-editor.ql-blank::before {
+  color: #9ca3af !important; /* Light placeholder text */
+}
+
+html.dark .react-quill .ql-editor a {
+  color: #3b82f6 !important; /* Link color for dark mode */
+}
+
+html.dark .react-quill .ql-toolbar button {
+  color: #d1d5db !important; /* Light button text */
+}
+
+html.dark .react-quill .ql-toolbar button:hover {
+  background-color: #374151 !important; /* Dark hover state */
+}
+
+html.dark .react-quill .ql-editor:focus {
+  border-color: #3b82f6 !important; /* Blue border on focus for dark mode */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .react-quill .ql-editor {
+    min-height: 150px !important;
+  }
+
+  .react-quill .ql-toolbar {
+    padding: 8px !important;
+  }
+}

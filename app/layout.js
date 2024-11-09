@@ -7,6 +7,7 @@ import "./globals.css";
 import Footer from "./components/Footer";
 import { ToastContainer } from "react-toastify";
 import { SkeletonTheme } from "react-loading-skeleton";
+import "react-toastify/dist/ReactToastify.css";
 
 export const metadata = {
   title: "Smart Study Solutions",

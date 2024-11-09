@@ -259,173 +259,200 @@ const QuestionPage = ({ params }) => {
   if (!isLoading && !question) return <div className='text-center py-80 px-4 md:px-8 text-red-600'>Question Details Failed to Load!</div>;
 
   return (
-    <section className="px-4 py-8 md:p-10">
-        <Link href="/forum" className="text-accent-600 dark:text-accent-300 inline-flex items-center">
-          <FaChevronLeft className="mr-1" /> Back to Forum Home
-        </Link>
-
-      <p className='flex gap-4 mt-10'>
-        <ClickButton text="Ask Question" icon={<FaQuestion />} onClick={handleQuestionModalOpen} />
-        <ClickButton text="Write Answer" icon={<TbEdit />} onClick={handleAnswerModalOpen} />
-      </p>
-
-      {isLoading ? (<QuestionPageSkeleton />) : (
-        <div className='main-qna-container'>
-          <h1 className="text-3xl font-bold my-8">{question?.question}</h1>
-          <div className="my-4">
-            {question?.askedBy && <p className="mb-2">Asked by:</p>}
-            <div className="flex items-center">
-              {question?.askedBy?.profileImage && (
-                <img
-                  src={question?.askedBy?.profileImage}
-                  alt={`${question?.askedBy?.username}'s profile`}
-                  className="w-10 h-10 rounded-full mr-4"
-                />
+    <section className="px-4 py-8 md:px-10 max-w-screen-lg mx-auto">
+    <Link href="/forum" className="text-accent-600 dark:text-accent-300 inline-flex items-center">
+      <FaChevronLeft className="mr-1" /> Back to Forum Home
+    </Link>
+  
+    <p className='flex gap-4 mt-10'>
+      <ClickButton text="Ask Question" icon={<FaQuestion />} onClick={handleQuestionModalOpen} />
+      <ClickButton text="Write Answer" icon={<TbEdit />} onClick={handleAnswerModalOpen} />
+    </p>
+  
+    {isLoading ? (
+      <QuestionPageSkeleton />
+    ) : (
+      <div className='main-qna-container'>
+        <h1 className="text-3xl font-semibold my-8">{question?.question}</h1>
+        
+        <div className="my-4">
+          {question?.askedBy && <p className="mb-2 text-sm text-gray-600 dark:text-gray-400">Asked by:</p>}
+          <div className="flex items-center space-x-4">
+            {question?.askedBy?.profileImage && (
+              <img
+                src={question?.askedBy?.profileImage}
+                alt={`${question?.askedBy?.username}'s profile`}
+                className="w-12 h-12 rounded-full border-2 border-accent-500 dark:border-accent-300"
+              />
+            )}
+            <div>
+              {question?.askedBy?.username && (
+                <p className="font-semibold">{question?.askedBy?.username}</p>
               )}
-              <div>
-                {question?.askedBy?.username && (
-                  <p className="font-semibold">{question?.askedBy?.username}</p>
-                )}
-                {question?.askedBy?.role && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{question?.askedBy?.role}</p>
-                )}
-                {question?.askedBy?.favoriteGenre && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{question?.askedBy?.favoriteGenre}</p>
-                )}
-              </div>
+              {question?.askedBy?.role && (
+                <p className="text-sm text-gray-500 dark:text-gray-400">{question?.askedBy?.role}</p>
+              )}
+              {question?.askedBy?.favoriteGenre && (
+                <p className="text-sm text-gray-500 dark:text-gray-400">{question?.askedBy?.favoriteGenre}</p>
+              )}
             </div>
           </div>
-          <div className="p-5 my-10 rounded-lg dark:bg-neutral-800 dark:text-neutral-100">
-            <div className="flex items-center space-x-4">
-              <button disabled={isUpvoted} className="flex items-center cursor-pointer disabled:pointer-events-none" onClick={handleUpvote}>
-                {isUpvoted ? (
-                  <BiSolidUpvote className="text-accent-500 text-lg" />
-                ) : (
-                  <BiUpvote className="text-neutral-400 text-lg" />
-                )}
-                <span className="ml-1">{`(${upvotesCount})`}</span>
-              </button>
-              <button disabled={isDownvoted} className="flex items-center cursor-pointer disabled:pointer-events-none" onClick={handleDownvote}>
-                {isDownvoted ? (
-                  <BiSolidDownvote className="text-accent-500 text-lg" />
-                ) : (
-                  <BiDownvote className="text-neutral-400 text-lg" />
-                )}
-                <span className="ml-1">{`(${downvotesCount})`}</span>
-              </button>
-              <div className="flex items-center cursor-pointer" onClick={() => setIsReportModalOpen(true)}>
-                <FiAlertCircle className="text-neutral-400 text-lg" />
-                <span className="ml-1">Report</span>
-              </div>
+        </div>
+  
+        <div className="p-5 my-10 rounded-lg bg-neutral-50 dark:bg-neutral-950 dark:text-neutral-100 shadow-lg">
+          <div className="flex items-center space-x-4">
+            <button
+              disabled={isUpvoted}
+              className="flex items-center cursor-pointer disabled:pointer-events-none hover:text-accent-600"
+              onClick={handleUpvote}
+            >
+              {isUpvoted ? (
+                <BiSolidUpvote className="text-accent-500 text-lg" />
+              ) : (
+                <BiUpvote className="text-neutral-400 text-lg" />
+              )}
+              <span className="ml-1">{`(${upvotesCount})`}</span>
+            </button>
+  
+            <button
+              disabled={isDownvoted}
+              className="flex items-center cursor-pointer disabled:pointer-events-none hover:text-accent-600"
+              onClick={handleDownvote}
+            >
+              {isDownvoted ? (
+                <BiSolidDownvote className="text-accent-500 text-lg" />
+              ) : (
+                <BiDownvote className="text-neutral-400 text-lg" />
+              )}
+              <span className="ml-1">{`(${downvotesCount})`}</span>
+            </button>
+  
+            <div className="flex items-center cursor-pointer hover:text-accent-600" onClick={() => setIsReportModalOpen(true)}>
+              <FiAlertCircle className="text-neutral-400 text-lg" />
+              <span className="ml-1">Report</span>
             </div>
           </div>
-
-          {Array.isArray(question?.answers) && question?.answers?.length > 0 ? (
-            question?.answers?.map((answer, index) => (
-              <div key={index} className={`relative mb-4 p-8 pt-0 rounded-lg dark:bg-neutral-800 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-600 transition-all duration-300 ${expandedAnswers[index] ? 'h-full': 'h-auto'}`}>
-                <div className="flex justify-between cursor-pointer pt-8" onClick={()=> toggleAnswerVisibility(index)}>
+        </div>
+  
+        {Array.isArray(question?.answers) && question?.answers?.length > 0 ? (
+          question?.answers?.map((answer, index) => (
+            <div
+              key={index}
+              className={`relative mb-4 p-8 pt-0 rounded-lg dark:bg-neutral-950 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-800 transition-all duration-300 ${expandedAnswers[index] ? 'h-full' : 'h-auto'}`}
+            >
+              <div className="flex justify-between cursor-pointer pt-8" onClick={() => toggleAnswerVisibility(index)}>
                 <h3 className="text-lg font-medium">Answer {index + 1}</h3>
                 <span className='cursor-pointer'>
-                    {expandedAnswers[index] ? (
-                      <FiChevronUp className="text-neutral-400 hover:text-accent-300 dark:text-neutral-600 text-xl" />
-                    ) : (
-                      <FiChevronDown className="text-neutral-300 hover:text-accent-300 text-xl" />
-                    )}
-                  </span>
-                  </div>
-
-                {expandedAnswers[index] &&
-                <div className={`transition-all duration-400 ease-in-out ${expandedAnswers[index] ? '-top-10': 'top-0'}`}>
-                <hr className="w-60 my-5" />
-                <div
-                  dangerouslySetInnerHTML={{ __html: answer?.answerText }}
-                  className="question-container my-10"
-                  ></div>
-            <div className="p-5 my-10 rounded-lg dark:bg-neutral-800 dark:text-neutral-100">
-              <div className="flex items-center space-x-4">
-              <button disabled={isUpvotedAnswer[index]} className="flex items-center cursor-pointer disabled:pointer-events-none" onClick={() => handleAnswerUpvote(question?._id, answer?._id, index)}>
-                {isUpvotedAnswer[index] ? (
-                  <BiSolidUpvote className="text-accent-500 text-lg" />
-                ) : (
-                  <BiUpvote className="text-neutral-400 text-lg" />
-                )}
-                <span className="ml-1">{`(${upvotesAnswerCount[index]})`}</span>
-              </button>
-              <button disabled={isDownvotedAnswer[index]} className="flex items-center cursor-pointer disabled:pointer-events-none" onClick={() => handleAnswerDownvote(question?._id, answer?._id, index)}>
-                {isDownvotedAnswer[index] ? (
-                  <BiSolidDownvote className="text-accent-500 text-lg"/>
-                ) : (
-                  <BiDownvote className="text-neutral-400 text-lg" />
-                )}
-                <span className="ml-1">{`(${downvotesAnswerCount[index]})`}</span>
-              </button>
-              {/* <div className="flex items-center cursor-pointer" onClick={() => setIsReportModalOpen(true)}>
-                <FiAlertCircle className="text-neutral-400 text-lg" />
-                <span className="ml-1">Report</span>
-              </div> */}
-            </div>
-          </div>
-                <hr className="w-60 my-5" />
-                <div className="mb-2">
-                  {answer?.answeredBy && <p className="font-semibold my-4">Answered by:</p>}
-                  <div className="flex items-center">
-                    {answer?.answeredBy?.profileImage && (
-                      <img
-                        src={answer?.answeredBy?.profileImage}
-                        alt={`${answer?.answeredBy?.username}'s profile`}
-                        className="w-10 h-10 rounded-full mr-4"
-                      />
-                    )}
-                    <div>
-                      {answer?.answeredBy?.username && (
-                        <p className="font-semibold">{answer?.answeredBy?.username}</p>
-                      )}
-                      {answer?.answeredBy?.role && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400">{answer?.answeredBy?.role}</p>
-                      )}
-                      {answer?.answeredBy?.favoriteGenre && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400">{answer?.answeredBy?.favoriteGenre}</p>
-                      )}
+                  {expandedAnswers[index] ? (
+                    <FiChevronUp className="text-neutral-400 hover:text-accent-300 dark:text-neutral-600 text-xl" />
+                  ) : (
+                    <FiChevronDown className="text-neutral-300 hover:text-accent-300 text-xl" />
+                  )}
+                </span>
+              </div>
+  
+              {expandedAnswers[index] && (
+                <div className={`transition-all duration-400 ease-in-out ${expandedAnswers[index] ? '-top-10' : 'top-0'}`}>
+                  <hr className="w-60 my-5" />
+                  <div dangerouslySetInnerHTML={{ __html: answer?.answerText }} className="question-container my-10" />
+  
+                  <div className="p-5 my-10 rounded-lg dark:bg-neutral-900 dark:text-neutral-100">
+                    <div className="flex items-center space-x-4">
+                      <button
+                        disabled={isUpvotedAnswer[index]}
+                        className="flex items-center cursor-pointer disabled:pointer-events-none hover:text-accent-600"
+                        onClick={() => handleAnswerUpvote(question?._id, answer?._id, index)}
+                      >
+                        {isUpvotedAnswer[index] ? (
+                          <BiSolidUpvote className="text-accent-500 text-lg" />
+                        ) : (
+                          <BiUpvote className="text-neutral-400 text-lg" />
+                        )}
+                        <span className="ml-1">{`(${upvotesAnswerCount[index]})`}</span>
+                      </button>
+  
+                      <button
+                        disabled={isDownvotedAnswer[index]}
+                        className="flex items-center cursor-pointer disabled:pointer-events-none hover:text-accent-600"
+                        onClick={() => handleAnswerDownvote(question?._id, answer?._id, index)}
+                      >
+                        {isDownvotedAnswer[index] ? (
+                          <BiSolidDownvote className="text-accent-500 text-lg" />
+                        ) : (
+                          <BiDownvote className="text-neutral-400 text-lg" />
+                        )}
+                        <span className="ml-1">{`(${downvotesAnswerCount[index]})`}</span>
+                      </button>
                     </div>
                   </div>
+                  <hr className="w-60 my-5" />
+  
+                  <div className="mb-2">
+                    {answer?.answeredBy && <p className="font-semibold my-4">Answered by:</p>}
+                    <div className="flex items-center space-x-4">
+                      {answer?.answeredBy?.profileImage && (
+                        <img
+                          src={answer?.answeredBy?.profileImage}
+                          alt={`${answer?.answeredBy?.username}'s profile`}
+                          className="w-12 h-12 rounded-full border-2 border-accent-500 dark:border-accent-300"
+                        />
+                      )}
+                      <div>
+                        {answer?.answeredBy?.username && (
+                          <p className="font-semibold">{answer?.answeredBy?.username}</p>
+                        )}
+                        {answer?.answeredBy?.role && (
+                          <p className="text-sm text-gray-500 dark:text-gray-400">{answer?.answeredBy?.role}</p>
+                        )}
+                        {answer?.answeredBy?.favoriteGenre && (
+                          <p className="text-sm text-gray-500 dark:text-gray-400">{answer?.answeredBy?.favoriteGenre}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+  
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Answered at: {new Date(answer?.createdAt).toLocaleString()}
+                  </p>
                 </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Answered at: {new Date(answer?.createdAt).toLocaleString()}
-                </p>
-                </div>
-                }
-              </div>
-            ))
-          ) : (
-            <p className='py-4'>No Answers Available for this Question. Be the First 💗</p>
-          )}
-        </div>
-      )}
-      {isAnswerModalOpen && <AnswerModal isOpen={isAnswerModalOpen} onClose={handleAnswerModalClose}>
-        <AnswerForm questionSlug={question?.slug} onSuccess={handleAnswerModalClose} onClose={handleAnswerModalClose}/>
-      </AnswerModal>}
-
-      {isQuestionModalOpen && <QuestionModal isOpen={isQuestionModalOpen} onClose={handleQuestionModalClose}>
+              )}
+            </div>
+          ))
+        ) : (
+          <p className='py-4 text-center text-gray-500 dark:text-gray-400'>
+            No Answers Available for this Question. Be the First 💗
+          </p>
+        )}
+      </div>
+    )}
+  
+    {isAnswerModalOpen && (
+      <AnswerModal isOpen={isAnswerModalOpen} onClose={handleAnswerModalClose}>
+        <AnswerForm questionSlug={question?.slug} onSuccess={handleAnswerModalClose} onClose={handleAnswerModalClose} />
+      </AnswerModal>
+    )}
+  
+    {isQuestionModalOpen && (
+      <QuestionModal isOpen={isQuestionModalOpen} onClose={handleQuestionModalClose}>
         <QuestionForm />
-      </QuestionModal>}
+      </QuestionModal>
+    )}
+  
+    {isReportModalOpen && (
+      <ReportModal
+        onClose={() => setIsReportModalOpen(false)}
+        onSubmit={handleReportSubmit}
+        onChange={e => setReportDescription(e.target.value)}
+        value={reportDescription}
+      />
+    )}
+  
+    {alertMessage.message && (
+      <AlertMessage message={alertMessage.message} type={alertMessage.type} onClose={handleAlertClose} />
+    )}
+  </section>
+  
 
-      {isReportModalOpen && (
-        <ReportModal
-          onClose={() => setIsReportModalOpen(false)}
-          onSubmit={handleReportSubmit}
-          onChange={e => setReportDescription(e.target.value)}
-          value={reportDescription}
-        />
-      )}
-
-      {alertMessage.message && (
-        <AlertMessage
-          message={alertMessage.message}
-          type={alertMessage.type}
-          onClose={handleAlertClose}
-        />
-      )}
-    </section>
   );
 };
 

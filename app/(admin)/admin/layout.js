@@ -11,13 +11,13 @@ export const metadata = {
 const AdminRootLayout = async ({ children }) => {
   return (
     <AdminAuthProvider>
-      <ToastContainer />
       <NavBarAdmin />
       {/* <h2 className="text-4xl text-center my-10">Admin Dashboard</h2> */}
       <div className="flex flex-col md:flex-row p-2">
         <Sidebar />
         <AdminWrapper>{children}</AdminWrapper>
       </div>
+      <ToastContainer />
     </AdminAuthProvider>
   );
 };

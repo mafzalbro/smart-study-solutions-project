@@ -5,11 +5,10 @@ import { fetcher } from "@/app/(admin)/utils/fetcher";
 import Pagination from "@/app/(admin)/components/admin/Pagination";
 import SearchInput from "@/app/(admin)/components/admin/SearchInput";
 import GeneralExportButton from "@/app/(admin)/components/admin/GeneralExportButton";
-import LinkButton from "@/app/components/LinkButton";
 import Skeleton from "react-loading-skeleton";
-import { BiPlus } from "react-icons/bi";
 import { FiDownload } from "react-icons/fi";
 import Link from "next/link";
+import { removeOlderCacheAfterMutation } from "@/app/utils/caching";
 
 export default function Notifications() {
   const count = 10; // Number of notifications per page
@@ -21,6 +20,9 @@ export default function Notifications() {
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [deleteLoading, setDeleteLoading] = useState(false); // Loading state for delete
+  const [markAsReadLoading, setMarkAsReadLoading] = useState(false); // Loading state for marking as read
+
   const getNotifications = async (currentPage, query = "") => {
     currentPage === 1 ? setLoading(true) : setIsLoadingMore(true);
 
@@ -29,9 +31,7 @@ export default function Notifications() {
     );
 
     setNotifications((prevNotifications) =>
-      currentPage === 1
-        ? data.data
-        : [...prevNotifications, ...data.results.data]
+      currentPage === 1 ? data.data : [...prevNotifications, ...data.data]
     );
     setTotalResults(data.totalResults);
     setLoading(false);
@@ -55,7 +55,45 @@ export default function Notifications() {
     const data = await fetcher(
       `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/notifications?limit=${count}`
     );
-    return data.results.data;
+    return data.data;
+  };
+
+  const handleDeleteAll = async () => {
+    setDeleteLoading(true); // Set loading state when delete is triggered
+
+    // Call API to delete all notifications (example)
+    await fetcher(
+      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/notifications/delete-all`,
+      "DELETE"
+    );
+
+    removeOlderCacheAfterMutation(
+      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/notifications`
+    );
+
+    // Fetch updated notifications after deletion
+    getNotifications(page, searchQuery);
+
+    setDeleteLoading(false); // Reset loading state after deletion
+  };
+
+  const handleMarkAllAsRead = async () => {
+    setMarkAsReadLoading(true); // Set loading state when marking as read
+
+    // Call API to mark all notifications as read (example)
+    await fetcher(
+      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/notifications/mark-all-as-read`,
+      "PATCH"
+    );
+
+    removeOlderCacheAfterMutation(
+      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/notifications`
+    );
+
+    // Fetch updated notifications after marking as read
+    getNotifications(page, searchQuery);
+
+    setMarkAsReadLoading(false); // Reset loading state after marking as read
   };
 
   const categories = [
@@ -66,8 +104,6 @@ export default function Notifications() {
     "Reason",
     "Created At",
     "Sent At",
-    "Edit",
-    "Delete",
   ];
 
   return (
@@ -84,6 +120,24 @@ export default function Notifications() {
         <div className="flex items-center gap-2 w-full">
           <SearchInput onSearch={handleSearch} debounceDelay={1000} />
         </div>
+      </div>
+
+      {/* Action buttons for Mark as Read and Delete All */}
+      <div className="mb-4 flex justify-between">
+        <button
+          onClick={handleMarkAllAsRead}
+          disabled={markAsReadLoading}
+          className="bg-green-500 rounded-lg text-white py-2 px-4 disabled:bg-gray-400 px-6"
+        >
+          {markAsReadLoading ? "Marking..." : "Mark All as Read"}
+        </button>
+        <button
+          onClick={handleDeleteAll}
+          disabled={deleteLoading}
+          className="bg-red-500 text-white rounded-lg py-2 disabled:bg-gray-400 px-6"
+        >
+          {deleteLoading ? "Deleting..." : "Delete All"}
+        </button>
       </div>
 
       <table className="w-full border border-neutral-300 dark:border-neutral-600 rounded-lg overflow-hidden shadow">
@@ -117,6 +171,17 @@ export default function Notifications() {
                 <td className="p-4">{notification.type || "N/A"}</td>
                 <td className="p-4">{notification.reason || "N/A"}</td>
                 <td className="p-4">
+                  <span
+                    className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full ${
+                      notification.read === false
+                        ? "bg-red-500 text-white"
+                        : "bg-green-500 text-white"
+                    }`}
+                  >
+                    {notification.read === false ? "Unread" : "Already Read"}
+                  </span>
+                </td>
+                <td className="p-4">
                   {notification.created_at
                     ? new Date(notification.created_at).toLocaleString()
                     : "N/A"}
@@ -125,22 +190,6 @@ export default function Notifications() {
                   {notification.sent_at
                     ? new Date(notification.sent_at).toLocaleString()
                     : "N/A"}
-                </td>
-                <td className="p-4">
-                  <Link
-                    href={`/admin/notifications/${notification._id}/edit`}
-                    className="text-blue-500"
-                  >
-                    Edit
-                  </Link>
-                </td>
-                <td className="p-4">
-                  <Link
-                    href={`/admin/notifications/${notification._id}/delete`}
-                    className="dark:hover:text-red-700 hover:text-red-900 text-red-700 dark:text-red-400"
-                  >
-                    Delete
-                  </Link>
                 </td>
               </tr>
             ))}

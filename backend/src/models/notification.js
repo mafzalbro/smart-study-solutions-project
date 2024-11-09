@@ -8,7 +8,8 @@ const NotificationSchema = new Schema({
   type: { type: String, required: true },
   reason: { type: String },
   created_at: { type: Date, default: Date.now },
-  sent_at: { type: Date, default: Date.now }
+  sent_at: { type: Date, default: Date.now },
+  read: { type: Boolean, default: false }
 });
 
-module.exports = mongoose.model('Notification', NotificationSchema);
+module.exports = mongoose.model('Notification', NotificationSchema); 

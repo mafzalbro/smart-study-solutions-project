@@ -31,7 +31,7 @@ export default function Users() {
     setUsers((prevUsers) =>
       currentPage === 1
         ? data.data
-        : [...prevUsers, ...data.results.data]
+        : [...prevUsers, ...data.data]
     );
     setTotalResults(data.totalResults);
     setLoading(false);
@@ -55,7 +55,7 @@ export default function Users() {
     const data = await fetcher(
       `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/user/admin?limit=${count}`
     );
-    return data.results.data;
+    return data.data;
   };
 
   const categories = [

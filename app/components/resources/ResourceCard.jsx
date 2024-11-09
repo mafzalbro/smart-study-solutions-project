@@ -2,7 +2,7 @@ import Link from "next/link";
 import LinkButton from "../LinkButton";
 import { BiSolidRightTopArrowCircle } from "react-icons/bi";
 
-const ResourceCard = ({ resource }) => {
+const ResourceCard = ({ resource, noImg }) => {
   return (
     <div className="p-2 md:p-3 lg:p-6 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-900 h-full">
       {/* {console.log({resource})} */}

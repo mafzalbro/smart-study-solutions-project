@@ -67,6 +67,14 @@ export const AdminAuthProvider = ({ children }) => {
     );
   }
 
+  if (!isAdminLoggedIn && !admin) {
+    return (
+      <div className="h-screen flex justify-center items-center gap-4 bg-primary text-secondary">
+        <Spinner loading={true} /> Loading Data...
+      </div>
+    );
+  }
+
   const restrictedPaths = [
     "/admin/create-admin",
     "/admin/admins-list",

@@ -25,10 +25,10 @@ router.get("/", getAllUsers);
 router.get("/liked-resources", auth, getLikedResources);
 
 // Asked Question
-router.get("/asked-questions", auth, getAllAnswersByUser);
+router.get("/asked-questions", auth, getAllQuestionsByUser);
 
 // Answers
-router.get("/given-answers", auth, getAllQuestionsByUser);
+router.get("/given-answers", auth, getAllAnswersByUser);
 
 router.get("/admin", adminAuth, getAllUsers);
 

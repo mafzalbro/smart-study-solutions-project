@@ -1,7 +1,7 @@
 // controllers/userController.js
 const User = require("../models/user");
 const Resource = require("../models/resource");
-const { paginateResults } = require("../utils/pagination");
+const { paginateResults, paginateResultsForArray } = require("../utils/pagination");
 const Question = require("../models/qna");
 
 // const bcrypt = require('bcrypt');
@@ -240,11 +240,11 @@ const getAllAnswersByUser = async (req, res) => {
     const questionsWithAnswers = await Question.find({
       "answers.answeredBy": req.user.id,
     })
-      .populate({
-        path: "answers.answeredBy",
-        select: "username profileImage", // Populate the user info for the answer
-      })
-      .exec();
+      // .populate({
+      //   path: "answers.answeredBy",
+      //   select: "username profileImage", // Populate the user info for the answer
+      // })
+      // .exec();
 
     // Flatten the array of answers to just return answers by the user
     const answersByUser = questionsWithAnswers.reduce((answers, question) => {
@@ -264,7 +264,7 @@ const getAllAnswersByUser = async (req, res) => {
     }, []);
 
     // Paginate the answers
-    const paginatedResults = await paginateResults(
+    const paginatedResults = await paginateResultsForArray(
       answersByUser,
       parseInt(page),
       parseInt(limit)
@@ -297,10 +297,12 @@ const getAllQuestionsByUser = async (req, res) => {
     }
 
     // Fetch all questions where the user is the one who asked
-    const questionsQuery = Question.find({ askedBy: req.user.id }).populate(
-      "askedBy",
-      "username profileImage"
-    );
+    const questionsQuery = Question.find({ askedBy: req.user.id }).select('question slug createdAt')
+    
+    // .populate(
+    //   "askedBy",
+    //   "username profileImage"
+    // );
 
     const paginatedResults = await paginateResults(
       questionsQuery,

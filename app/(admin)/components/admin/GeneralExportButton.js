@@ -1,7 +1,7 @@
 // GeneralExportButton.js
 
 import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ClipLoader } from "react-spinners";
 import { LuFileJson } from "react-icons/lu";
@@ -49,7 +49,6 @@ export default function GeneralExportButton({ resource, count, requestData }) {
         )}
         <span>{isLoading ? "Exporting..." : `Export`}</span>
       </button>
-      <ToastContainer />
     </div>
   );
 }
