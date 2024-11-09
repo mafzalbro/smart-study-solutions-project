@@ -1,47 +1,112 @@
 "use client";
 
-import LinkButton from '@/app/components/LinkButton';
-import { useAuth } from '@/app/(admin)/customHooks/AdminAuthProvider';
-import { FaUserCircle, FaPen } from 'react-icons/fa';
+import Link from "next/link";
+import StylishTitle from "@/app/components/StylishTitle";
+import {
+  AiOutlineHome,
+  AiOutlineBell,
+  AiOutlineFileText,
+  AiOutlineMessage,
+  AiOutlineUser,
+  AiOutlineContacts,
+  AiOutlineUserAdd,
+  AiOutlineEdit,
+  AiOutlineTeam,
+} from "react-icons/ai";
+import { useAuth } from "../customHooks/AdminAuthProvider";
+
+const linkItems = [
+  { label: "Home", href: "/admin", icon: <AiOutlineHome />, key: "admin" },
+  {
+    label: "Notifications",
+    href: "/admin/notifications",
+    icon: <AiOutlineBell />,
+    key: "notifications",
+  },
+  {
+    label: "Resources",
+    href: "/admin/resources",
+    icon: <AiOutlineFileText />,
+    key: "resources",
+  },
+  {
+    label: "Forum",
+    href: "/admin/forum",
+    icon: <AiOutlineMessage />,
+    key: "forum",
+  },
+  {
+    label: "Users",
+    href: "/admin/users",
+    icon: <AiOutlineUser />,
+    key: "users",
+  },
+  {
+    label: "Contacts",
+    href: "/admin/contacts",
+    icon: <AiOutlineContacts />,
+    key: "contacts",
+  },
+  {
+    label: "Create Admin",
+    href: "/admin/create-admin",
+    icon: <AiOutlineUserAdd />,
+    key: "create-admin",
+  },
+  {
+    label: "Update Profile",
+    href: "/admin/update-admin-profile",
+    icon: <AiOutlineEdit />,
+    key: "update-profile",
+  },
+  {
+    label: "Admins List",
+    href: "/admin/admins-list",
+    icon: <AiOutlineTeam />,
+    key: "admins-list",
+  },
+];
+
+const restrictedItems = [
+  "/admin/create-admin",
+  "/admin/admins-list",
+];
+
 export default function Dashboard() {
   const { admin } = useAuth();
-
   return (
-    <div className='flex flex-col md:flex-row'>
-    <div className="w-full min-h-[65vh] bg-my-bg-1 text-foreground flex items-center justify-center">
-      <div className="relative w-full max-w-md p-8 bg-my-bg-2 rounded-lg border border-neutral-100 dark:border-neutral-700 mx-4 bg-secondary dark:bg-neutral-800">
-        <div className="absolute -top-16 left-1/2 transform -translate-x-1/2">
-          <div className="relative w-32 h-32">
-            {admin?.profileImage ? (
-              <img
-                src={admin.profileImage}
-                alt="Profile Picture"
-                className="w-full h-full rounded-full border-2 border-accent-500"
-              />
-            ) : (
-              <FaUserCircle size={128} className="text-neutral-400 dark:text-neutral-600" />
-            )}
-          </div>
-        </div>
-        <div className="pt-16 pb-8 px-4 text-center">
-          {/* <LinkButton text={<FaPen size={18} />} link='/dashboard/profile' className="absolute top-4 right-4 p-2 rounded-full bg-primary text-white hover:bg-primary-dark transition duration-200" /> */}
-          <h2 className="text-4xl font-bold mb-2 text-center rounded-lg">
-            {admin?.username || "Dear Admin"}
-          </h2>
-          <p className="text-lg text-neutral-600 dark:text-neutral-300 mb-4">
-            {admin?.email || "your-email@example.com"}
-          </p>
-        </div>
-        <div className="mt-2 text-center">
-          <p className="text-lg">
-            Welcome to your dashboard! We're currently updating this area to better serve you.
-          </p>
-          <p className="text-sm mt-5">
-            Thanks for your patience and for visiting!
-          </p>
+    admin && (
+      <div className="flex flex-col gap-10 mt-10">
+        {/* Dashboard Links Section */}
+        <StylishTitle
+          className="text-white text-center"
+          fontSize="3xl"
+          tagName="h2"
+          colored={"Quick Links"}
+        />
+        <div className="w-full mt-12 md:mt-0 flex flex-wrap gap-6 justify-center">
+          {linkItems.map((item) => {
+            if (
+              restrictedItems.includes(item.href) &&
+              admin?.role === "admin"
+            ) {
+              return null; // Don't render restricted items for "admin"
+            }
+            return (
+              <Link key={item.key} href={item.href} passHref>
+                <div className="group w-40 p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-700 hover:shadow-xl transition-transform transform hover:-translate-y-1 flex flex-col items-center justify-center text-center">
+                  <div className="text-3xl mb-2 text-accent-500 group-hover:text-accent-700">
+                    {item.icon}
+                  </div>
+                  <h3 className="text-md font-semibold text-neutral-800 dark:text-neutral-100 group-hover:text-accent-600">
+                    {item.label}
+                  </h3>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
-    </div>
-  </div>
+    )
   );
 }

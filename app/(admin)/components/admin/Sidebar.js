@@ -1,6 +1,5 @@
-
-import React, { useState } from 'react';
-import './Sidebar.css';
+import React, { useState } from "react";
+import "./Sidebar.css";
 
 function Sidebar() {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
@@ -16,7 +15,9 @@ function Sidebar() {
       <div className="menu-item" onClick={toggleUserDropdown}>
         <i className="fas fa-user"></i>
         <span>User</span>
-        <i className={`fas fa-chevron-${isUserDropdownOpen ? 'up' : 'down'}`}></i>
+        <i
+          className={`fas fa-chevron-${isUserDropdownOpen ? "up" : "down"}`}
+        ></i>
       </div>
 
       {isUserDropdownOpen && (

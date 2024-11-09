@@ -1,4 +1,4 @@
-const ClickButton = ({ onClick, text, icon, className }) => {
+const ClickButton = ({ onClick, text, icon, className, disabled}) => {
   return (
     <span
       onClick={onClick}
@@ -11,8 +11,6 @@ const ClickButton = ({ onClick, text, icon, className }) => {
 };
 
 export default ClickButton;
-
-
 
 // const ClickButton = ({ onClick, text, icon, className }) => {
 //   return (

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { changePassword, createAdmin, loginAdmin, logoutAdmin, forgotPassword, verifyToken, resetPassword, checkAuth } = require('../controllers/adminAuthController');
+const { changePassword, createAdmin, loginAdmin, logoutAdmin, forgotPassword, verifyToken, resetPassword, checkAuth, updateAdminProfile, getAdminsList } = require('../controllers/adminAuthController');
 const { adminAuth } = require('../middlewares/adminAuth');
 
 // Register a new admin
@@ -23,6 +23,12 @@ router.get('/verifyToken', verifyToken);
 
 // Reset password
 router.post('/resetPassword', resetPassword);
+
+// Check status
+router.put('/update-admin', adminAuth, updateAdminProfile);
+
+// get all admin
+router.get('/', adminAuth, getAdminsList);
 
 // Check status
 router.get('/check-auth', adminAuth, checkAuth);

@@ -1,15 +1,14 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/user');
-const { clearExpiredCache } = require('../middlewares/cacheMiddleware');
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
+const { clearExpiredCache } = require("../middlewares/cacheMiddleware");
 
 const auth = async (req, res, next) => {
-
   try {
     // const token = req.headers.authorization?.split(' ')[1];
-    const token = req.headers.authorization?.replace('Bearer ', '').trim();
+    const token = req.headers.authorization?.replace("Bearer ", "").trim();
     if (!token) {
-      await clearExpiredCache()
-      return res.status(401).json({ message: 'Unauthorized, token missing' });
+      await clearExpiredCache();
+      return res.status(401).json({ message: "Unauthorized, token missing" });
     }
 
     // Verify JWT token
@@ -19,7 +18,7 @@ const auth = async (req, res, next) => {
     const user = await User.findById(decoded.id);
 
     if (!user) {
-      return res.status(401).json({ message: 'Unauthorized, user not found' });
+      return res.status(401).json({ message: "Unauthorized, user not found" });
     }
 
     // Attach user data to request object
@@ -28,8 +27,13 @@ const auth = async (req, res, next) => {
     // Proceed to the next middleware
     next();
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    if (error.name === "TokenExpiredError") {
+      // Send a custom response if the token has expired
+      return res.status(401).json({ message: "Unauthorized, token expired" });
+    } else {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
   }
 };
 

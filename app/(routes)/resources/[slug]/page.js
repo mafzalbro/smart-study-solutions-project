@@ -313,7 +313,7 @@ export default function ResourcePage({ params }) {
         { relatedResources && (
           <>
           <StylishTitle colored={'Ralated Resources'} tagName='h2' fontSize='3xl text-4xl text-center' /> 
-          <section className="w-full flex gap-2 flex-wrap my-10">
+          <section className="w-full flex gap-2 flex-col md:flex-row my-10">
           {relatedResources.map(resource => <ResourceCard key={`${resource.slug}-${resource._id}-${Date.now()}`} resource={resource} />)}
         </section>
           </>

@@ -194,7 +194,7 @@ const NavBar = () => {
         <div className="container mx-auto flex justify-between items-center">
           <Link href="/">
             <h2 className="text-2xl font-bold cursor-pointer">
-              <StylishSpan>PU</StylishSpan> Verse
+              <StylishSpan>Smarter Study</StylishSpan> Hub
             </h2>
           </Link>
           <div className="flex items-center">
@@ -298,18 +298,24 @@ const NavBar = () => {
                   )}
                 </div>
                 {/* {isDropdownOpen && ( */}
-                  <div className={`absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-800 rounded-lg shadow-lg py-2 z-50 transition-all duration-200 ${isDropdownOpen ? 'mt-2 opacity-100 pointer-events-auto' : '-mt-4 opacity-0 pointer-events-none'}`}>
-                    <Link href="/dashboard" passHref>
-                      <span className="block px-4 py-2 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
-                        Dashboard
-                      </span>
-                    </Link>
-                    <Link href="/logout" passHref>
-                      <span className="block px-4 py-2 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
-                        Logout
-                      </span>
-                    </Link>
-                  </div>
+                <div
+                  className={`absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-800 rounded-lg shadow-lg py-2 z-50 transition-all duration-200 ${
+                    isDropdownOpen
+                      ? "mt-2 opacity-100 pointer-events-auto"
+                      : "-mt-4 opacity-0 pointer-events-none"
+                  }`}
+                >
+                  <Link href="/dashboard" passHref>
+                    <span className="block px-4 py-2 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                      User Dashboard
+                    </span>
+                  </Link>
+                  <Link href="/logout" passHref>
+                    <span className="block px-4 py-2 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                      Logout
+                    </span>
+                  </Link>
+                </div>
                 {/* )} */}
               </div>
             ) : (

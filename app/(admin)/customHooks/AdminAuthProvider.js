@@ -3,39 +3,41 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { fetcher } from "@/app/(admin)/utils/fetcher";
+import Spinner from "@/app/components/Spinner";
 
 export const AuthContext = createContext();
 
 export const AdminAuthProvider = ({ children }) => {
   const path = usePathname();
-    const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(null);
-    const [admin, setAdmin] = useState(null);
-    const router = useRouter();
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(null);
+  const [admin, setAdmin] = useState(null);
+  const [token, setToken] = useState(null);
+  const router = useRouter();
 
-    if(path.includes('/admin')){
+  if (path.includes("/admin")) {
     useEffect(() => {
       const checkAuth = async () => {
         const token = localStorage.getItem("admin_token");
+        setToken(token);
 
-          try {
-            const res = await fetcher(
-              `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/admin/check-auth`
-            );
-
-            console.log({res})
-            if (res.auth) {
-              setIsAdminLoggedIn(true);
-              setAdmin(res.admin);
-              // Fetch admin data separately
-            } else if (!res.auth) {
-              setAdmin({ message: "Admin Not Loaded" });
-              setIsAdminLoggedIn(false);
-              localStorage.removeItem("admin_token");
-            }
-          } catch (error) {
+        try {
+          const res = await fetcher(
+            `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/admin/check-auth`
+          );
+          if (res.auth) {
+            setIsAdminLoggedIn(true);
+            setAdmin(res.admin);
+            // Fetch admin data separately
+          } else if (!res.auth) {
+            router.push("/admin/login");
             setAdmin({ message: "Admin Not Loaded" });
-            console.error("Error checking auth:", error);
+            setIsAdminLoggedIn(false);
+            localStorage.removeItem("admin_token");
           }
+        } catch (error) {
+          setAdmin({ message: "Admin Not Loaded" });
+          console.error("Error checking auth:", error);
+        }
       };
 
       checkAuth();
@@ -56,13 +58,43 @@ export const AdminAuthProvider = ({ children }) => {
     }, [router, path]);
   }
 
+  if (!isAdminLoggedIn && !admin && !token) {
+    router.push("/admin/login");
     return (
+      <div className="h-screen flex justify-center items-center gap-4 bg-primary text-secondary">
+        <Spinner loading={true} /> Checking Access...
+      </div>
+    );
+  }
+
+  const restrictedPaths = [
+    "/admin/create-admin",
+    "/admin/admins-list",
+  ];
+
+  if (
+    restrictedPaths.some(
+      (pathname) => pathname === path && admin?.role === "admin"
+    )
+  ) {
+    console.log("WOW", path, restrictedPaths);
+    router.push("/admin");
+    return (
+      <div className="h-screen flex justify-center items-center gap-4 bg-primary text-secondary">
+        Cannot Access
+      </div>
+    );
+  }
+
+  return (
+    (isAdminLoggedIn || path == "/admin/login") && (
       <AuthContext.Provider
-      value={{ isAdminLoggedIn, setIsAdminLoggedIn, admin }}
+        value={{ isAdminLoggedIn, setIsAdminLoggedIn, admin, token }}
       >
         {children}
       </AuthContext.Provider>
-    );
+    )
+  );
 };
 
 // Export the useAuth hook

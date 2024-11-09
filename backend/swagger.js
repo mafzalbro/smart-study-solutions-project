@@ -20,7 +20,7 @@ const endpointsFiles = [
 
 swaggerAutogen(outputFile, endpointsFiles, doc).then(() => {
   console.log('Swagger documentation has been generated.');
-  exec('node app.js', (err, stdout, stderr) => {
+  exec('node backend/app.js', (err, stdout, stderr) => {
     if (err) {
       console.error(`Error executing app.js: ${err}`);
       return;

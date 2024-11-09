@@ -1,4 +1,4 @@
-const { createJazzCashPayment } = require('../controllers/jazzcashController')
+const { createJazzCashPayment } = require('../controllers/paymentsController')
 const { Router } = require('express')
 const { auth } = require('../middlewares/auth')
 const router = Router()

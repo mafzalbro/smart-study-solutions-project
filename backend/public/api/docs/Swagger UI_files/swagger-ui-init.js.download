@@ -278,6 +278,9 @@ window.onload = function() {
                   "username": {
                     "example": "any"
                   },
+                  "fullname": {
+                    "example": "any"
+                  },
                   "email": {
                     "example": "any"
                   },
@@ -532,350 +535,6 @@ window.onload = function() {
           "responses": {
             "200": {
               "description": "OK"
-            }
-          }
-        }
-      },
-      "/api/books/": {
-        "get": {
-          "description": "",
-          "parameters": [
-            {
-              "name": "page",
-              "in": "query",
-              "type": "string"
-            },
-            {
-              "name": "limit",
-              "in": "query",
-              "type": "string"
-            },
-            {
-              "name": "sortBy",
-              "in": "query",
-              "type": "string"
-            },
-            {
-              "name": "filterBy",
-              "in": "query",
-              "type": "string"
-            },
-            {
-              "name": "query",
-              "in": "query",
-              "type": "string"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK"
-            },
-            "500": {
-              "description": "Internal Server Error"
-            }
-          }
-        }
-      },
-      "/api/books/sort": {
-        "get": {
-          "description": "",
-          "parameters": [
-            {
-              "name": "page",
-              "in": "query",
-              "type": "string"
-            },
-            {
-              "name": "limit",
-              "in": "query",
-              "type": "string"
-            },
-            {
-              "name": "sortBy",
-              "in": "query",
-              "type": "string"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK"
-            },
-            "400": {
-              "description": "Bad Request"
-            },
-            "500": {
-              "description": "Internal Server Error"
-            }
-          }
-        }
-      },
-      "/api/books/filter": {
-        "get": {
-          "description": "",
-          "parameters": [
-            {
-              "name": "page",
-              "in": "query",
-              "type": "string"
-            },
-            {
-              "name": "limit",
-              "in": "query",
-              "type": "string"
-            },
-            {
-              "name": "filterBy",
-              "in": "query",
-              "type": "string"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK"
-            },
-            "500": {
-              "description": "Internal Server Error"
-            }
-          }
-        }
-      },
-      "/api/books/search": {
-        "get": {
-          "description": "",
-          "parameters": [
-            {
-              "name": "page",
-              "in": "query",
-              "type": "string"
-            },
-            {
-              "name": "limit",
-              "in": "query",
-              "type": "string"
-            },
-            {
-              "name": "query",
-              "in": "query",
-              "type": "string"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK"
-            },
-            "500": {
-              "description": "Internal Server Error"
-            }
-          }
-        }
-      },
-      "/api/books/recommend": {
-        "get": {
-          "description": "",
-          "parameters": [
-            {
-              "name": "authorization",
-              "in": "header",
-              "type": "string"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK"
-            },
-            "401": {
-              "description": "Unauthorized"
-            },
-            "500": {
-              "description": "Internal Server Error"
-            }
-          }
-        }
-      },
-      "/api/books/book/{id}": {
-        "get": {
-          "description": "",
-          "parameters": [
-            {
-              "name": "id",
-              "in": "path",
-              "required": true,
-              "type": "string"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK"
-            },
-            "404": {
-              "description": "Not Found"
-            },
-            "500": {
-              "description": "Internal Server Error"
-            }
-          }
-        },
-        "put": {
-          "description": "",
-          "parameters": [
-            {
-              "name": "id",
-              "in": "path",
-              "required": true,
-              "type": "string"
-            },
-            {
-              "name": "authorization",
-              "in": "header",
-              "type": "string"
-            },
-            {
-              "name": "body",
-              "in": "body",
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "title": {
-                    "example": "any"
-                  },
-                  "author": {
-                    "example": "any"
-                  },
-                  "genre": {
-                    "example": "any"
-                  },
-                  "description": {
-                    "example": "any"
-                  },
-                  "status": {
-                    "example": "any"
-                  },
-                  "slug": {
-                    "example": "any"
-                  },
-                  "type": {
-                    "example": "any"
-                  },
-                  "ai_approval": {
-                    "example": "any"
-                  },
-                  "tags": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK"
-            },
-            "400": {
-              "description": "Bad Request"
-            },
-            "401": {
-              "description": "Unauthorized"
-            },
-            "404": {
-              "description": "Not Found"
-            },
-            "500": {
-              "description": "Internal Server Error"
-            }
-          }
-        },
-        "delete": {
-          "description": "",
-          "parameters": [
-            {
-              "name": "id",
-              "in": "path",
-              "required": true,
-              "type": "string"
-            },
-            {
-              "name": "authorization",
-              "in": "header",
-              "type": "string"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK"
-            },
-            "401": {
-              "description": "Unauthorized"
-            },
-            "404": {
-              "description": "Not Found"
-            },
-            "500": {
-              "description": "Internal Server Error"
-            }
-          }
-        }
-      },
-      "/api/books/addBook/": {
-        "post": {
-          "description": "",
-          "parameters": [
-            {
-              "name": "authorization",
-              "in": "header",
-              "type": "string"
-            },
-            {
-              "name": "body",
-              "in": "body",
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "title": {
-                    "example": "any"
-                  },
-                  "author": {
-                    "example": "any"
-                  },
-                  "genre": {
-                    "example": "any"
-                  },
-                  "description": {
-                    "example": "any"
-                  },
-                  "status": {
-                    "example": "any"
-                  },
-                  "slug": {
-                    "example": "any"
-                  },
-                  "type": {
-                    "example": "any"
-                  },
-                  "ai_approval": {
-                    "example": "any"
-                  },
-                  "tags": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK"
-            },
-            "201": {
-              "description": "Created"
-            },
-            "400": {
-              "description": "Bad Request"
-            },
-            "401": {
-              "description": "Unauthorized"
-            },
-            "500": {
-              "description": "Internal Server Error"
             }
           }
         }
@@ -1424,6 +1083,53 @@ window.onload = function() {
           }
         }
       },
+      "/api/qna/question/{slug}/answer": {
+        "post": {
+          "description": "",
+          "parameters": [
+            {
+              "name": "slug",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "authorization",
+              "in": "header",
+              "type": "string"
+            },
+            {
+              "name": "body",
+              "in": "body",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "answerText": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK"
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
       "/api/qna/questions": {
         "get": {
           "description": "",
@@ -1460,6 +1166,57 @@ window.onload = function() {
             },
             "400": {
               "description": "Bad Request"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/api/qna/questions/admin": {
+        "get": {
+          "description": "",
+          "parameters": [
+            {
+              "name": "authorization",
+              "in": "header",
+              "type": "string"
+            },
+            {
+              "name": "page",
+              "in": "query",
+              "type": "string"
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "type": "string"
+            },
+            {
+              "name": "sortBy",
+              "in": "query",
+              "type": "string"
+            },
+            {
+              "name": "filterBy",
+              "in": "query",
+              "type": "string"
+            },
+            {
+              "name": "query",
+              "in": "query",
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK"
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "401": {
+              "description": "Unauthorized"
             },
             "500": {
               "description": "Internal Server Error"
@@ -1564,53 +1321,6 @@ window.onload = function() {
           "responses": {
             "200": {
               "description": "OK"
-            },
-            "401": {
-              "description": "Unauthorized"
-            },
-            "404": {
-              "description": "Not Found"
-            },
-            "500": {
-              "description": "Internal Server Error"
-            }
-          }
-        }
-      },
-      "/api/qna/question/{slug}/answer": {
-        "post": {
-          "description": "",
-          "parameters": [
-            {
-              "name": "slug",
-              "in": "path",
-              "required": true,
-              "type": "string"
-            },
-            {
-              "name": "authorization",
-              "in": "header",
-              "type": "string"
-            },
-            {
-              "name": "body",
-              "in": "body",
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "answerText": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK"
-            },
-            "400": {
-              "description": "Bad Request"
             },
             "401": {
               "description": "Unauthorized"
@@ -2186,6 +1896,39 @@ window.onload = function() {
           }
         }
       },
+      "/api/qna/genre": {
+        "post": {
+          "description": "",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "example": "any"
+                  },
+                  "description": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK"
+            },
+            "201": {
+              "description": "Created"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
       "/api/resources/": {
         "get": {
           "description": "",
@@ -2214,6 +1957,16 @@ window.onload = function() {
               "name": "query",
               "in": "query",
               "type": "string"
+            },
+            {
+              "name": "showAll",
+              "in": "query",
+              "type": "string"
+            },
+            {
+              "name": "showFullJSON",
+              "in": "query",
+              "type": "string"
             }
           ],
           "responses": {
@@ -2222,6 +1975,67 @@ window.onload = function() {
             },
             "400": {
               "description": "Bad Request"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/api/resources/admin": {
+        "get": {
+          "description": "",
+          "parameters": [
+            {
+              "name": "authorization",
+              "in": "header",
+              "type": "string"
+            },
+            {
+              "name": "page",
+              "in": "query",
+              "type": "string"
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "type": "string"
+            },
+            {
+              "name": "sortBy",
+              "in": "query",
+              "type": "string"
+            },
+            {
+              "name": "filterBy",
+              "in": "query",
+              "type": "string"
+            },
+            {
+              "name": "query",
+              "in": "query",
+              "type": "string"
+            },
+            {
+              "name": "showAll",
+              "in": "query",
+              "type": "string"
+            },
+            {
+              "name": "showFullJSON",
+              "in": "query",
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK"
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "401": {
+              "description": "Unauthorized"
             },
             "500": {
               "description": "Internal Server Error"
@@ -2335,6 +2149,9 @@ window.onload = function() {
                   },
                   "dislikes": {
                     "example": "any"
+                  },
+                  "source": {
+                    "example": "any"
                   }
                 }
               }
@@ -2426,6 +2243,15 @@ window.onload = function() {
                     "example": "any"
                   },
                   "tags": {
+                    "example": "any"
+                  },
+                  "source": {
+                    "example": "any"
+                  },
+                  "semester": {
+                    "example": "any"
+                  },
+                  "degree": {
                     "example": "any"
                   }
                 }
@@ -2573,8 +2399,43 @@ window.onload = function() {
           "description": "",
           "parameters": [
             {
+              "name": "page",
+              "in": "query",
+              "type": "string"
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/api/user/admin": {
+        "get": {
+          "description": "",
+          "parameters": [
+            {
               "name": "authorization",
               "in": "header",
+              "type": "string"
+            },
+            {
+              "name": "page",
+              "in": "query",
+              "type": "string"
+            },
+            {
+              "name": "limit",
+              "in": "query",
               "type": "string"
             }
           ],
@@ -2591,12 +2452,12 @@ window.onload = function() {
           }
         }
       },
-      "/api/user/{id}": {
+      "/api/user/{slug}": {
         "get": {
           "description": "",
           "parameters": [
             {
-              "name": "id",
+              "name": "slug",
               "in": "path",
               "required": true,
               "type": "string"
@@ -2618,9 +2479,14 @@ window.onload = function() {
           "description": "",
           "parameters": [
             {
-              "name": "id",
+              "name": "slug",
               "in": "path",
               "required": true,
+              "type": "string"
+            },
+            {
+              "name": "authorization",
+              "in": "header",
               "type": "string"
             },
             {
@@ -2630,6 +2496,9 @@ window.onload = function() {
                 "type": "object",
                 "properties": {
                   "username": {
+                    "example": "any"
+                  },
+                  "fullname": {
                     "example": "any"
                   },
                   "email": {
@@ -2652,6 +2521,9 @@ window.onload = function() {
             "200": {
               "description": "OK"
             },
+            "401": {
+              "description": "Unauthorized"
+            },
             "404": {
               "description": "Not Found"
             },
@@ -2664,7 +2536,7 @@ window.onload = function() {
           "description": "",
           "parameters": [
             {
-              "name": "id",
+              "name": "slug",
               "in": "path",
               "required": true,
               "type": "string"
@@ -2717,6 +2589,65 @@ window.onload = function() {
           }
         }
       },
+      "/api/user/{id}": {
+        "put": {
+          "description": "",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "authorization",
+              "in": "header",
+              "type": "string"
+            },
+            {
+              "name": "body",
+              "in": "body",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "example": "any"
+                  },
+                  "fullname": {
+                    "example": "any"
+                  },
+                  "email": {
+                    "example": "any"
+                  },
+                  "favoriteGenre": {
+                    "example": "any"
+                  },
+                  "role": {
+                    "example": "any"
+                  },
+                  "profileImage": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK"
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
       "/api/contact/": {
         "post": {
           "description": "",
@@ -2751,14 +2682,22 @@ window.onload = function() {
               "description": "Internal Server Error"
             }
           }
-        }
-      },
-      "/api/contact/all": {
+        },
         "get": {
           "description": "",
+          "parameters": [
+            {
+              "name": "authorization",
+              "in": "header",
+              "type": "string"
+            }
+          ],
           "responses": {
             "200": {
               "description": "OK"
+            },
+            "401": {
+              "description": "Unauthorized"
             },
             "500": {
               "description": "Internal Server Error"
@@ -2788,9 +2727,6 @@ window.onload = function() {
             },
             "401": {
               "description": "Unauthorized"
-            },
-            "403": {
-              "description": "Forbidden"
             },
             "404": {
               "description": "Not Found"

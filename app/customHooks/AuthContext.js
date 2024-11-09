@@ -8,12 +8,12 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const path = usePathname();
-    const [isLoggedIn, setIsLoggedIn] = useState(null);
-    const [user, setUser] = useState(null);
-    const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
+  const [user, setUser] = useState(null);
+  const router = useRouter();
 
-    useEffect(() => {
-      if(!path.includes('/admin')){
+  useEffect(() => {
+    if (!path.includes("/admin")) {
       const checkAuth = async () => {
         const token = localStorage.getItem("token");
 
@@ -68,12 +68,12 @@ export const AuthProvider = ({ children }) => {
         window.removeEventListener("tokenUpdated", handleTokenUpdate);
       };
     }
-    }, [router, path]);
-    return (
-      <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, user }}>
-        {children}
-      </AuthContext.Provider>
-    );
+  }, [router, path]);
+  return (
+    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, user }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 // Export the useAuth hook

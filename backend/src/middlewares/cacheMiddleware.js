@@ -7,7 +7,7 @@ const cache = new NodeCache({ stdTTL: 15, checkperiod: 30 });
 const cacheMiddleware = (req, res, next) => {
 
   const key = req.originalUrl || req.url; // Use URL as the key
-  const slugs = ["/check-auth"]
+  const slugs = ["/check-auth", "/api/admin"]
 
   // Only cache GET requests
   if (req.method !== 'GET'

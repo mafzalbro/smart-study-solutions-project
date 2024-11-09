@@ -4,7 +4,7 @@ const TextInputField = ({ type, value, onChange, label, onKeyPress, placeholder,
   <>
       {label && <label className="dark:text-secondary font-bold mb-2 block">{label}</label>}
   <div className={`${Icon ? 'relative' : ''} m-0 p-0`} autoFocus>
-    {Icon && <Icon className={`absolute left-4 ${label ? 'top-1/2': 'top-1/3'} transform -translate-y-1/4 text-gray-400 dark:text-gray-500`} size={18} /> }
+    {Icon && <Icon className={`absolute left-4 ${label ? 'top-1/3': 'top-1/3'} transform -translate-y-1/3 text-gray-400 dark:text-gray-500`} size={18} /> }
   <input
     type={type}
     value={value}

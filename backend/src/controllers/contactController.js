@@ -2,6 +2,7 @@
 const Contact = require('../models/contact');
 const User = require('../models/user');
 const { sendGenericEmail } = require('../services/emailService'); // Adjust path as needed
+const { paginateResults } = require('../utils/pagination');
 
 const createContactMessage = async (req, res) => {
     try {
@@ -26,7 +27,8 @@ const createContactMessage = async (req, res) => {
           names: [name],
           messages: [message],
           known: !!userExists,
-          userId: userExists ? userExists._id : null, // Set userId if userExists
+          userId: userExists ? userExists._id : null,
+          fullname: userExists ? userExists.fullname : null,
         });
       }
   
@@ -51,14 +53,53 @@ const createContactMessage = async (req, res) => {
     }
   };
   
-const getAllContacts = async (req, res) => {
-  try {
-    const contacts = await Contact.find();
-    res.status(200).json({ success: true, data: contacts });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-};
+  
+  const getAllContacts = async (req, res) => {
+    const { page = 1, limit = 10, sortBy, filterBy, query } = req.query;
+    
+    let queryOptions = {};
+    let sortOptions = {};
+  
+    try {
+      // Parse sorting options
+      if (sortBy) {
+        const [field, direction] = sortBy.split(':');
+        sortOptions[field] = direction === 'desc' ? -1 : 1;
+      }
+  
+      // Parse filtering options
+      if (filterBy) {
+        try {
+          const filter = JSON.parse(decodeURIComponent(filterBy));
+          Object.assign(queryOptions, filter);
+        } catch (error) {
+          return res.status(400).json({ message: 'Invalid filterBy parameter' });
+        }
+      }
+  
+      // Parse search query
+      if (query) {
+        queryOptions.$or = [
+          { name: { $regex: query, $options: 'i' } },
+          { email: { $regex: query, $options: 'i' } },
+          { phone: { $regex: query, $options: 'i' } },
+        ];
+      }
+  
+      // Fetch results with pagination and sorting
+      const results = await paginateResults(
+        Contact.find(queryOptions).sort(sortOptions),
+        parseInt(page),
+        parseInt(limit)
+      );
+  
+      res.status(200).json({ success: true, data: results });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Error fetching contacts', error: error.message });
+    }
+  };
+  
 
 const getContactByUserId = async (req, res) => {
   try {

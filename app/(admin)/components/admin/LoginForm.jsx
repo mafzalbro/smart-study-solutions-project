@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MdEmail } from "react-icons/md";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SubmitButton from "./SubmitButton";
 import TextInputField from "./TextInputField";
@@ -17,7 +17,7 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const [isRememberMe, setIsRememberMe] = useState(false);
   const router = useRouter();
-  
+
   const validateInput = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{5,}$/;
@@ -114,6 +114,8 @@ const LoginForm = () => {
         disabled={loading || username.trim() === "" || password.trim() === ""}
         processing={loading}
       />
+
+      <ToastContainer />
     </form>
   );
 };

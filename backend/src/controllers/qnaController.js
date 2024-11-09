@@ -323,38 +323,6 @@ const deleteAnswer = async (req, res) => {
     res.status(500).json({ message: 'Failed to delete answer' });
   }
 };
-
-// Function to get all questions by userSlug
-const getUserQuestions = async (req, res) => {
-    const { userSlug } = req.params;
-    try {
-      // Assuming User model has a field 'slug' for userSlug
-      const user = await User.findOne({ slug: userSlug }).populate('questions');
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-      return res.status(200).json(user.questions);
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Server Error' });
-    }
-  };
-  
-  // Function to get all answers by userSlug
-  const getUserAnswers = async (req, res) => {
-    const { userSlug } = req.params;
-    try {
-      // Assuming User model has a field 'slug' for userSlug
-      const user = await User.findOne({ slug: userSlug }).populate('answers');
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-      return res.status(200).json(user.answers);
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Server Error' });
-    }
-  };
   
 
 // Get question recommendations for the authenticated user
@@ -755,8 +723,6 @@ module.exports = {
   deleteQuestion,
   updateAnswer,
   deleteAnswer,
-  getUserQuestions,
-  getUserAnswers,
   getQuestionRecommendations,
   upvoteQuestion,
   downvoteQuestion,

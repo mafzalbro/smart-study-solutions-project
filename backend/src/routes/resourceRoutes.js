@@ -18,6 +18,7 @@ const { adminAuth } = require('../middlewares/adminAuth');
 // Define routes
 router.get('/', getAllResources); // GET /?page=1&limit=5&sortBy=title&filterBy={"status":"active"}&query=keyword
 // router.get('/recommend', auth, recommendResource);
+router.get('/admin', adminAuth, getAllResources);
 router.get('/recommend', recommendResource);
 router.get('/:slug', getResourceBySlug);
 router.post('/add', adminAuth, addResource);

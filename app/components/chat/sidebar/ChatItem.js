@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { FiMoreVertical, FiCheck } from 'react-icons/fi';
 import { MdMoreVert } from "react-icons/md";
 
-import { MdDriveFileRenameOutline, MdOutlineDeleteOutline } from 'react-icons/md';
+// import { MdDriveFileRenameOutline, MdOutlineDeleteOutline } from 'react-icons/md';
 
 export default function ChatItem({
   chat,
@@ -12,8 +12,8 @@ export default function ChatItem({
   setNewTitle,
   handleUpdate,
   openModal,
-  handleEdit,
-  pdfUrls
+  // handleEdit,
+  // pdfUrls
 }) {
   return (
     <div key={chat.slug} className="relative group">

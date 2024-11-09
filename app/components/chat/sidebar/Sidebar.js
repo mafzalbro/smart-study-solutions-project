@@ -7,7 +7,7 @@ import SidebarTabs from './SidebarTabs';
 import ChatList from './ChatList';
 import Modal from './Modal';
 import SidebarToggleButton from './SidebarToggleButton';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { fetcher } from '@/app/utils/fetcher';
 
 export default function Sidebar({ chatHistory, slug, pdfuri }) {
@@ -214,7 +214,7 @@ const fetchPDFs = async () => {
 
   return (
     <>
-      <div ref={sidebarRef} className={`text-sm md:text-base sidebar md:w-1/4 md:opacity-100 backdrop-blur-sm ${!isSidebarVisible ? 'w-0 p-0 overflow-hidden opacity-0 pointer-events-none md:pointer-events-auto' : 'pointer-events-auto p-4 overflow-visible fixed md:relative w-[60%] h-screen opacity-100'} bg-secondary bg-opacity-80 dark:bg-opacity-80 bg-blend-color-dodge md:bg-transparent text-primary dark:text-secondary dark:bg-neutral-800 md:p-4 flex flex-col gap-8 md:gap-6 transition-opacity ease-in-out duration-500 z-20 dark:shadow-2xl md:border-r dark:border-none`}>
+      <div ref={sidebarRef} className={`text-sm md:text-base sidebar md:w-1/4 md:opacity-100 backdrop-blur-sm ${!isSidebarVisible ? 'w-0 p-0 overflow-hidden md:overflow-visible opacity-0 pointer-events-none md:pointer-events-auto' : 'pointer-events-auto p-4 overflow-visible fixed md:relative w-[60%] h-screen opacity-100'} bg-secondary bg-opacity-80 dark:bg-opacity-80 bg-blend-color-dodge md:bg-transparent text-primary dark:text-secondary dark:bg-neutral-800 md:p-4 flex flex-col gap-8 md:gap-6 transition-opacity ease-in-out duration-500 z-20 dark:shadow-2xl md:border-r dark:border-none`}>
         <SidebarHeader />
         <NewChatButton className='hidden md:block'/>
         <SidebarTabs activeTab={activeTab} setActiveTab={setActiveTab} />
