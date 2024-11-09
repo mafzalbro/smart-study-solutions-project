@@ -84,7 +84,7 @@ app.use("/api/qna", qnaRoutes);
 app.use("/api/resources", resourceRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/contact", contactRoutes);
-app.use("/api/payments", paymentsRoutes);
+// app.use("/api/payments", paymentsRoutes);
 
 // Swagger UI setup
 app.use("/api/docs-setup", swaggerUi.serve, swaggerUi.setup(swaggerFile));
