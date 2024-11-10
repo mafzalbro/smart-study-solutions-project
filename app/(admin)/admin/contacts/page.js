@@ -79,12 +79,12 @@ export default function Contacts() {
             requestData={requestData}
             icon={<FiDownload className="text-blue-500 mr-2" />}
           />
-          <LinkButton
+          {/* <LinkButton
             link="/admin/contacts/new"
             text="Add New Contact"
             icon={<BiPlus />}
             className="!mb-6"
-          />
+          /> */}
         </div>
         <div className="flex items-center gap-2 w-full">
           <SearchInput onSearch={handleSearch} debounceDelay={1000} />

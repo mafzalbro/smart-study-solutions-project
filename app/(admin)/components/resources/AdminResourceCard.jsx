@@ -3,43 +3,34 @@ import Link from "next/link";
 const AdminResourceCard = ({ resource }) => {
   return (
     <tr className="border border-neutral-300 dark:border-neutral-600 bg-secondary dark:bg-neutral-900 text-sm">
-      {resource.profileImage && (
-        <td className="p-4 w-80">
+      <td className="p-4 w-80">
+        {resource.profileImage ? (
           <img
             src={resource.profileImage}
             // srcSet="/user/user.png"
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover rounded-md"
           />
-        </td>
-      )}
-      {resource.title && <td className="p-4">{resource.title}</td>}
+        ) : (
+          "N/A"
+        )}
+      </td>
+      <td className="p-4">{resource.title ? resource.title : "N/A"}</td>
       {/* {resource.description && <h2>{resource.description}</h2>} */}
-      {resource.rating && <td className="p-4">{resource.rating}</td>}
-      {resource.ratingCount && <td className="p-4">{resource.ratingCount}</td>}
-      {resource.likes && <td className="p-4">{resource.likes}</td>}
-      {resource.dislikes && <td className="p-4">{resource.dislikes}</td>}
-      {resource.semester && <td className="p-4">{resource.semester}</td>}
-      {resource.degree && <td className="p-4">{resource.degree}</td>}
-      {resource.type && <td className="p-4">{resource.type}</td>}
-      {resource.tags && <td className="p-4">{resource.tags.join(",")}</td>}
-      {resource.createdAt && (
-        <td className="p-4">{new Date(resource.createdAt).toLocaleString()}</td>
-      )}
-      {resource.updatedAt && (
-        <td className="p-4">{new Date(resource.updatedAt).toLocaleString()}</td>
-      )}
-      {resource.slug && (
-        <td className="p-4">
-          <Link
-            href={`/resources/${resource.slug}`}
-            className="hover:text-link"
-          >
-            Visit Live
-          </Link>
-        </td>
-      )}
-      {resource.pdfLink && (
-        <td className="p-4">
+      <td className="p-4">{resource.degree ? resource.degree : "N/A"}</td>
+      <td className="p-4">{resource.type ? resource.type : "N/A"}</td>
+      <td className="p-4">{resource.semester ? resource.semester : "N/A"}</td>
+      <td className="p-4">{resource.tags ? resource.tags.join(",") : "N/A"}</td>
+      <td className="p-4">{resource.slug ? resource.slug : "N/A"}</td>
+      <td className="p-4">{resource.rating ? resource.rating : "N/A"}</td>
+      <td className="p-4">
+        {resource.ratingCount ? resource.ratingCount : "N/A"}
+      </td>
+      <td className="p-4">{resource.likes ? resource.likes : "N/A"}</td>
+      <td className="p-4">{resource.dislikes ? resource.dislikes : "N/A"}</td>
+      <td className="p-4">{new Date(resource.createdAt).toLocaleString()}</td>
+      <td className="p-4">{new Date(resource.updatedAt).toLocaleString()}</td>
+      <td className="p-4">
+        {resource.pdfLink ? (
           <a
             href={resource.pdfLink[0]}
             className="hover:text-link"
@@ -47,9 +38,15 @@ const AdminResourceCard = ({ resource }) => {
           >
             Visit PDF
           </a>
-        </td>
-      )}
-
+        ) : (
+          "N/A"
+        )}
+      </td>
+      <td className="p-4">
+        <Link href={`/resources/${resource.slug}`} className="hover:text-link">
+          Visit Live
+        </Link>
+      </td>
       <td className="p-4">
         <Link
           href={`/admin/resources/${resource.slug}/edit`}
@@ -59,7 +56,7 @@ const AdminResourceCard = ({ resource }) => {
         </Link>
       </td>
       <td className="p-4">
-      <Link
+        <Link
           href={`/admin/resources/${resource.slug}/delete`}
           className="dark:hover:text-red-700 hover:text-red-900 text-red-700 dark:text-red-400"
         >

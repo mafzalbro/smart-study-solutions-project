@@ -19,7 +19,6 @@ const AddResourcePage = () => {
   const [author, setAuthor] = useState("");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
-  const [genre, setGenre] = useState("");
   const [slug, setSlug] = useState("");
   const [source, setSource] = useState("");
   const [semester, setSemester] = useState("");
@@ -28,6 +27,16 @@ const AddResourcePage = () => {
   const [status, setStatus] = useState(false);
   const [imageBase64, setImageBase64] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Update slug whenever the title changes (debounced)
+  const handleSlugGeneration = () => {
+    const slugifiedTitle = title
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-");
+    setSlug(slugifiedTitle);
+  };
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -49,22 +58,19 @@ const AddResourcePage = () => {
   };
 
   const handleValidation = () => {
-    // Validate required fields
-    if (!title || !author || !description || !semester || !degree || !slug || !type) {
+    if (!title || !description || !semester || !degree || !slug || !type) {
       toast.error("Please fill out all required fields.");
       return false;
     }
-
     return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate form fields before submitting
-    if (!handleValidation()) {
-      return;
-    }
+    if (!handleValidation()) return;
+
+    setIsLoading(true);
 
     try {
       const newResource = {
@@ -72,7 +78,6 @@ const AddResourcePage = () => {
         author,
         description,
         tags,
-        genre,
         source,
         semester,
         degree,
@@ -82,18 +87,18 @@ const AddResourcePage = () => {
         profileImage: imageBase64,
       };
 
-
-      console.log({newResource})
       await fetcher(
         `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/add`,
         "POST",
         newResource
       );
       toast.success("Resource added successfully!");
-      router.push('/admin/resources')
+      router.push("/admin/resources");
     } catch (error) {
       toast.error("Failed to add resource.");
       console.error("Failed to add resource", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -105,7 +110,10 @@ const AddResourcePage = () => {
 
   return (
     <>
-      <ClickButton onClick={() => router.push('/admin/resources')} text={"Go Back"} />
+      <ClickButton
+        onClick={() => router.push("/admin/resources")}
+        text={"Go Back"}
+      />
 
       <div className="my-10 px-4">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -113,38 +121,40 @@ const AddResourcePage = () => {
             name="title"
             type="text"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              handleSlugGeneration();
+              setTitle(e.target.value);
+            }}
             placeholder="Enter the title"
-            required
+            required={true}
           />
-
           <TextInputField
             name="author"
             type="text"
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
-            placeholder="Enter the author"
-            required
+            placeholder="Enter the author (optional)"
           />
-
+          <label
+            htmlFor="status"
+            className="block text-sm font-medium text-gray-900 dark:text-gray-100"
+          >
+            You can't change slug later so be carefull in setting up...
+          </label>
           <TextInputField
             name="slug"
             type="text"
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
             placeholder="Enter the slug"
-            required
+            required={true}
           />
-
           <TextAreaInputField
             name="description"
-            type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Enter description"
-            required
           />
-
           <TextInputField
             name="tags"
             type="text"
@@ -152,32 +162,14 @@ const AddResourcePage = () => {
             onChange={(e) => setTags(e.target.value)}
             placeholder="Enter tags (comma separated)"
           />
-
-          <TextInputField
-            name="genre"
-            type="text"
-            value={genre}
-            onChange={(e) => setGenre(e.target.value)}
-            placeholder="Enter genre"
-          />
-
           <TextInputField
             name="source"
             type="text"
             value={source}
             onChange={(e) => setSource(e.target.value)}
-            placeholder="Enter source e.g. Google Drive Link"
+            placeholder="Enter source e.g., Google Drive Link"
+            required={true}
           />
-
-          <TextInputField
-            name="status"
-            type="checkbox"
-            value={status}
-            onChange={(e) => setStatus(e.target.checked)}
-            placeholder="Enter status"
-            label='Publish or Not?'
-          />
-
           <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
             Semester:
           </label>
@@ -186,9 +178,9 @@ const AddResourcePage = () => {
             value={semester}
             onChange={(e) => setSemester(e.target.value)}
             className="w-full p-2 border rounded-lg bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-neutral-600"
-            required
+            required={true}
           >
-            <option value="" disabled className="text-opacity-60">
+            <option value="" disabled>
               Select Semester...
             </option>
             <option value="semester 1">1st Semester</option>
@@ -200,7 +192,6 @@ const AddResourcePage = () => {
             <option value="semester 7">7th Semester</option>
             <option value="semester 8">8th Semester</option>
           </select>
-
           <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
             Degree:
           </label>
@@ -211,14 +202,13 @@ const AddResourcePage = () => {
             className="w-full p-2 border rounded-lg bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-neutral-600"
             required
           >
-            <option value="" disabled className="text-opacity-60">
+            <option value="" disabled>
               Select Degree...
             </option>
             <option value="bsit">BSIT</option>
             <option value="bscs">BSCS</option>
             <option value="bsbio">BSBIO</option>
           </select>
-
           <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
             Type:
           </label>
@@ -229,14 +219,13 @@ const AddResourcePage = () => {
             className="w-full p-2 border rounded-lg bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-neutral-600"
             required
           >
-            <option value="" disabled className="text-opacity-60">
+            <option value="" disabled>
               Select Type...
             </option>
             <option value="notes">Notes</option>
             <option value="past papers">Past Papers</option>
             <option value="books">Books</option>
           </select>
-
           <FileUploadComponent
             profileImage={profileImage}
             setProfileImage={setProfileImage}
@@ -245,12 +234,31 @@ const AddResourcePage = () => {
             handleImageUpload={handleImageUpload}
             handleRemoveImage={handleRemoveImage}
           />
+          <div className="flex gap-2 my-4 border-t pt-4 dark:border-gray-500">
+            <label
+              htmlFor="status"
+              className="block text-sm font-medium text-gray-900 dark:text-gray-100"
+            >
+              Want to publish?
+            </label>
 
+            <input
+              type="checkbox"
+              id="status"
+              value={status}
+              onChange={() => setStatus((prev) => !prev)}
+            />
+          </div>
           <button
             type="submit"
-            className="inline-flex cursor-pointer items-center space-x-2 py-2 px-4 text-accent-900 bg-accent-100 hover:bg-accent-200 dark:bg-accent-300 dark:hover:bg-accent-400 rounded-lg text-center"
+            className={`inline-flex text-black cursor-pointer text-center items-center space-x-2 py-2 px-4 ${
+              isLoading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-accent-100 hover:bg-accent-200 dark:bg-accent-300 dark:hover:bg-accent-400"
+            } rounded-lg text-center`}
+            disabled={isLoading}
           >
-            Add Resource
+            {isLoading ? "Submitting..." : "Add Resource"}
           </button>
         </form>
       </div>

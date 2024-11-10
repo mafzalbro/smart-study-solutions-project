@@ -59,25 +59,26 @@ export default function Resources() {
   const categories = [
     "Image",
     "Title",
+    "Degree",
+    "Type",
+    "Semester",
+    "Tags",
+    "Slug",
     "Rating",
     "Rating Count",
     "Likes",
     "Dislikes",
-    "Semester",
-    "Degree",
-    "Type",
-    "Tags",
     "Created At",
     "Last Updated",
-    "Slug",
     "PDF Link",
+    "Live Link",
     "Edit",
-    "Delete",
+    "Delete"
   ];
 
   return (
     <div className="p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg shadow overflow-auto">
-      <div className="flex flex-col sm:flex-row items-center justify-between mb-6">
+      <div className="flex flex-col items-center justify-between mb-6">
         <div className="flex w-full items-center justify-between gap-4">
           <GeneralExportButton
             resource="resources"

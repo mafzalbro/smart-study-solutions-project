@@ -17,7 +17,7 @@ const TextInputField = React.memo(
   }) => (
     <div
       className={`${Icon ? "relative" : ""} m-0 p-0 ${
-        label ? "flex justify-center items-center" : ""
+        !label ? "flex justify-center items-center flex-col" : ""
       }`}
     >
       {Icon && (
@@ -28,7 +28,7 @@ const TextInputField = React.memo(
           size={18}
         />
       )}
-      {label && <label>{label}</label>}
+      {label && <label className="mb-4 inline-flex">{label}</label>}
       <input
         type={type}
         value={value}

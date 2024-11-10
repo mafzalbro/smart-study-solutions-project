@@ -14,6 +14,8 @@ import {
   AiOutlineTeam,
 } from "react-icons/ai";
 import { useAuth } from "../customHooks/AdminAuthProvider";
+import { BiCategoryAlt } from "react-icons/bi";
+import { TfiAnnouncement } from "react-icons/tfi";
 
 const linkItems = [
   { label: "Home", href: "/admin", icon: <AiOutlineHome />, key: "admin" },
@@ -34,6 +36,18 @@ const linkItems = [
     href: "/admin/forum",
     icon: <AiOutlineMessage />,
     key: "forum",
+  },
+  {
+    label: "Forum Categories",
+    href: "/admin/forum-categories",
+    icon: <BiCategoryAlt />,
+    key: "forum-categories",
+  },
+  {
+    label: "Announcements",
+    href: "/admin/announcements",
+    icon: <TfiAnnouncement />,
+    key: "announcements",
   },
   {
     label: "Users",
@@ -67,10 +81,7 @@ const linkItems = [
   },
 ];
 
-const restrictedItems = [
-  "/admin/create-admin",
-  "/admin/admins-list",
-];
+const restrictedItems = ["/admin/create-admin", "/admin/admins-list"];
 
 export default function Dashboard() {
   const { admin } = useAuth();

@@ -4,6 +4,11 @@ import React, { createContext, useState, useEffect, useContext } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { fetcher } from "@/app/(admin)/utils/fetcher";
 import Spinner from "@/app/components/Spinner";
+import {
+  AiOutlineLoading3Quarters,
+  AiOutlineLock,
+  AiOutlineCheckCircle,
+} from "react-icons/ai";
 
 export const AuthContext = createContext();
 
@@ -27,8 +32,7 @@ export const AdminAuthProvider = ({ children }) => {
           if (res.auth) {
             setIsAdminLoggedIn(true);
             setAdmin(res.admin);
-            // Fetch admin data separately
-          } else if (!res.auth) {
+          } else {
             router.push("/admin/login");
             setAdmin({ message: "Admin Not Loaded" });
             setIsAdminLoggedIn(false);
@@ -62,34 +66,42 @@ export const AdminAuthProvider = ({ children }) => {
     router.push("/admin/login");
     return (
       <div className="h-screen flex justify-center items-center gap-4 bg-primary text-secondary">
-        <Spinner loading={true} /> Checking Access...
+        <AiOutlineLoading3Quarters className="animate-spin-fast duration-200 text-3xl" />
+        <span>Checking Access...</span>
       </div>
     );
   }
 
-  if (!isAdminLoggedIn && !admin) {
+  if (token && !isAdminLoggedIn && !admin) {
     return (
       <div className="h-screen flex justify-center items-center gap-4 bg-primary text-secondary">
-        <Spinner loading={true} /> Loading Data...
+        <AiOutlineLoading3Quarters className="animate-spin-fast text-3xl" />
+        <span>Loading Data...</span>
       </div>
     );
   }
 
-  const restrictedPaths = [
-    "/admin/create-admin",
-    "/admin/admins-list",
-  ];
+  if (token && admin?.message === "Admin Not Loaded") {
+    return (
+      <div className="h-screen flex justify-center items-center gap-4 bg-primary text-secondary">
+        <AiOutlineLock className="text-4xl" />
+        <span>Admin Dashboard Loading Failed!</span>
+      </div>
+    );
+  }
+
+  const restrictedPaths = ["/admin/create-admin", "/admin/admins-list"];
 
   if (
     restrictedPaths.some(
       (pathname) => pathname === path && admin?.role === "admin"
     )
   ) {
-    console.log("WOW", path, restrictedPaths);
     router.push("/admin");
     return (
       <div className="h-screen flex justify-center items-center gap-4 bg-primary text-secondary">
-        Cannot Access
+        <AiOutlineLock className="text-4xl" />
+        <span>Access Restricted</span>
       </div>
     );
   }

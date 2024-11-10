@@ -192,7 +192,7 @@ const NavBarAdmin = () => {
                       "/admin/resources"
                     )}`}
                   >
-                    Resources
+                    Mange Resources
                     <HoverLine hide={pathname.includes("/admin/resources")} />
                   </Link>
                 </li>
@@ -204,7 +204,7 @@ const NavBarAdmin = () => {
                       "/admin/forum"
                     )}`}
                   >
-                    Forum
+                    Manage Forum
                     <HoverLine hide={pathname.includes("/admin/forum")} />
                   </Link>
                 </li>

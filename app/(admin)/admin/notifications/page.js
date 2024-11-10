@@ -102,6 +102,7 @@ export default function Notifications() {
     "Question ID",
     "Type",
     "Reason",
+    "Status",
     "Created At",
     "Sent At",
   ];
@@ -127,7 +128,7 @@ export default function Notifications() {
         <button
           onClick={handleMarkAllAsRead}
           disabled={markAsReadLoading}
-          className="bg-green-500 rounded-lg text-white py-2 px-4 disabled:bg-gray-400 px-6"
+          className="bg-green-500 rounded-lg text-white py-2 disabled:bg-gray-400 px-6"
         >
           {markAsReadLoading ? "Marking..." : "Mark All as Read"}
         </button>

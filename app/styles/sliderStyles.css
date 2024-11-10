@@ -48,5 +48,8 @@ html.dark .slick-dots li.slick-active button:before {
 
 html.dark .slick-slider img {
   border-radius: 15px;
-  filter: brightness(0.8); /* Optional: Adjust brightness for images in dark mode */
+  filter: brightness(
+    0.8
+  ); /* Optional: Adjust brightness for images in dark mode */
 }
+

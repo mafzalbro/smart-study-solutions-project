@@ -3,35 +3,19 @@ const Resource = require('../models/resource');
 const { recommendResources } = require('../services/resourceRecommendation');
 const { getNextSequenceValue } = require('../utils/autoIncrement');
 const { paginateResults } = require('../utils/pagination');
-
-// Get all resources with optional sorting, filtering, and searching
 const getAllResources = async (req, res) => {
   const { page = 1, limit = 5, sortBy, filterBy, query, showAll, showFullJSON } = req.query;
 
-  // console.log({ page, limit, sortBy, filterBy, query });
-
   let queryOptions = {};
-  let sortOptions = {};
-
+  let sortOptions = { createdAt: -1 };
+  
   try {
     // Parse sorting options
     if (sortBy) {
       const [field, direction] = sortBy.split(':');
-      sortOptions[field] = direction === 'desc' ? -1 : 1;
+      sortOptions = { [field]: direction === 'desc' ? -1 : 1 };
     }
 
-    // if(degree){
-    //   console.log("degree decodeURIComponent --", JSON.parse(decodeURIComponent(degree)))
-    //   const degObj = JSON.parse(decodeURIComponent(degree));
-    //   const degArray = Object.entries(degObj)
-    //   console.log(degArray)
-    //   const deg = degArray[0][0]
-    //   const semester = degArray[0][1]
-    //   Object.assign(queryOptions, {degree: deg});
-    //   Object.assign(queryOptions, {semester});
-    // }
-
-    
     // Parse filtering options
     if (filterBy) {
       try {
@@ -52,51 +36,43 @@ const getAllResources = async (req, res) => {
       ];
     }
 
-    console.log("queryOptions", queryOptions)
-
-    // console.log(await Resource.find())
-
-    if(showAll){
-      // Fetch results with pagination and sorting
-      const results = await paginateResults(
+    // Fetch results with pagination and sorting
+    let results;
+    if (showAll) {
+      results = await paginateResults(
         Resource.find(queryOptions).sort(sortOptions),
         null,
         null,
         showAll
       );
-      
-      res.status(200).json({ results });
-    } else if(showFullJSON){
-      // Fetch results with pagination and sorting
-      const results = await paginateResults(
+    } else if (showFullJSON) {
+      results = await paginateResults(
         Resource.find(queryOptions).sort(sortOptions),
         parseInt(page),
         parseInt(limit)
       );
-      
-      res.status(200).json({ results });
-    } 
-    else {
-      // Fetch results with pagination and sorting
-      const results = await paginateResults(
-        Resource.find(queryOptions, {title: 1, description: 1, slug: 1, semester: 1, degree: 1, type: 1, createdAt: 1, likes: 1, profileImage: 1}).sort(sortOptions),
+    } else {
+      results = await paginateResults(
+        Resource.find(queryOptions, { title: 1, description: 1, slug: 1, semester: 1, degree: 1, type: 1, createdAt: 1, likes: 1, profileImage: 1 }).sort(sortOptions),
         parseInt(page),
         parseInt(limit)
       );
-      
-      res.status(200).json({ results });
     }
+
+    res.status(200).json({ results });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Error fetching resources', error: error });
   }
 };
 
+
 // Recommend a resource for the authenticated user
 const recommendResource = async (req, res) => {
   try {
     const user = req.user;
-    const { resourceSlug, keyword } = req.query;  // Extract resourceSlug and keyword from query parameters
+    const { resourceSlug, keyword } = req.query;
+    
     
     const recommendedResources = await recommendResources(user, resourceSlug, keyword);
     res.status(200).json(recommendedResources);
@@ -160,7 +136,7 @@ const getResourceBySlug = async (req, res) => {
 
 // Add a new resource
 const addResource = async (req, res) => {
-  const { title, author, genre, description, status, slug, type, ai_approval, tags, source, semester, degree } = req.body;
+  const { title, author, genre, description, status, slug, type, ai_approval, tags, source, semester, degree, profileImage, pdfLink } = req.body;
 
   console.log(req.body)
 
@@ -171,7 +147,7 @@ const addResource = async (req, res) => {
     }
 
     const serialNumber = await getNextSequenceValue('resourceSerial', 'Resource');
-    const newResource = new Resource({ serialNumber, title, author, description, genre, status, slug, type, ai_approval, tags, source, semester, degree });
+    const newResource = new Resource({ serialNumber, title, author, description, genre, status, slug, type, ai_approval, tags, source, semester, degree, profileImage, pdfLink: pdfLink ? pdfLink : source });
     await newResource.save();
     res.status(201).json({ message: 'Resource added successfully', resource: newResource });
   } catch (error) {

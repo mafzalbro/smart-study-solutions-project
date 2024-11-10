@@ -1,98 +1,90 @@
-const Resource = require('../models/resource');
-const { calculateCosineSimilarity, convertToVector } = require('../utils/similarity');
+const Resource = require("../models/resource");
 
-const recommendResources = async (user, resourceSlug, keyword) => {
+const recommendResources = async (user) => {
   try {
-    const allResources = await Resource.find();
-    const allGenres = [...new Set(allResources.map(resource => resource.genre))];
-    const allTags = [...new Set(allResources.flatMap(resource => resource.tags))];
+    let recommendations;
 
-    if (user) {
-      const likedResources = user.likedResources ? await Resource.find({ _id: { $in: user.likedResources } }) : [];
+    // Step 1: If user is not provided, recommend 3 random resources
+    if (!user) {
+      recommendations = await Resource.aggregate([
+        { $match: { status: true } }, // Only active resources
+        { $sample: { size: 3 } }, // Randomly sample 3 resources
+        {
+          $project: {
+            title: 1,
+            degree: 1,
+            profileImage: 1,
+            slug: 1,
+            type: 1,
+            semester: 1,
+            description: 1,
+          },
+        },
+      ]);
+    } else {
+      // Step 2: Check if the user has interacted with resources
+      const userLikedResources = await Resource.find({ likedBy: user.id });
 
-      if (likedResources.length > 0) {
-        const likedVectors = likedResources.map(resource => convertToVector(resource, allGenres, allTags));
+      if (userLikedResources.length > 0) {
+        // Step 3: Use full-text search to find similar resources based on the user's previous likes
+        const similarResources = await Resource.aggregate([
+          {
+            $match: {
+              // Match based on shared degree, type, or semester of the liked resources
+              degree: { $in: userLikedResources.map((r) => r.degree) },
+              type: { $in: userLikedResources.map((r) => r.type) },
+              semester: { $in: userLikedResources.map((r) => r.semester) },
+              _id: { $nin: userLikedResources.map((r) => r._id) }, // Exclude already liked resources
+              status: true, // Ensure the resource is active
+            },
+          },
+          { $limit: 5 }, // Limit the number of recommendations
+          {
+            $project: {
+              title: 1,
+              degree: 1,
+              type: 1,
+              slug: 1,
+              profileImage: 1,
+              semester: 1,
+              description: 1,
+            },
+          },
+        ]);
 
-        const resourceScores = {};
-
-        allResources.forEach(resource => {
-          if (!user.likedResources.includes(resource._id.toString())) {
-            const resourceVector = convertToVector(resource, allGenres, allTags);
-
-            const similarityScore = likedVectors.reduce((acc, vec) => acc + calculateCosineSimilarity(vec, resourceVector), 0) / likedVectors.length;
-
-            resourceScores[resource._id] = similarityScore;
-          }
-        });
-
-        const sortedResourceIds = Object.keys(resourceScores).sort((a, b) => resourceScores[b] - resourceScores[a]);
-
-        const recommendedResources = await Resource.find({ _id: { $in: sortedResourceIds.slice(0, 3) } });
-
-        if (recommendedResources.length > 0) {
-          return recommendedResources;
-        }
-      }
-
-      if (user.favoriteGenre) {
-        const recommendedResources = await Resource.find({
-          $or: [
-            { genre: user.favoriteGenre },
-            { title: { $regex: user.favoriteGenre, $options: 'i' } }
-          ]
-        });
-
-        if (recommendedResources.length > 0) {
-          return recommendedResources;
-        }
-      }
-    }
-
-    if (resourceSlug) {
-
-      const targetResource = await Resource.findOne({ slug: resourceSlug });
-      if (targetResource) {
-        const targetVector = convertToVector(targetResource, allGenres, allTags);
-
-        const resourceScores = {};
-
-        allResources.forEach(resource => {
-          if (resource.slug !== resourceSlug) {
-            const resourceVector = convertToVector(resource, allGenres, allTags);
-
-            const similarityScore = calculateCosineSimilarity(targetVector, resourceVector);
-            resourceScores[resource._id] = similarityScore;
-          }
-        });
-
-        const sortedResourceIds = Object.keys(resourceScores).sort((a, b) => resourceScores[b] - resourceScores[a]);
-
-        const recommendedResources = await Resource.find({ _id: { $in: sortedResourceIds.slice(0, 3) } });
-
-        if (recommendedResources.length > 0) {
-          return recommendedResources;
-        }
-      }
-    }
-
-    if (keyword) {
-      const recommendedResources = await Resource.find({
-        $or: [
-          { genre: { $regex: keyword, $options: 'i' } },
-          { title: { $regex: keyword, $options: 'i' } },
-          { tags: { $regex: keyword, $options: 'i' } }
-        ]
-      });
-
-      if (recommendedResources.length > 0) {
-        return recommendedResources;
+        recommendations = similarResources;
+      } else {
+        // Step 4: If no interactions, recommend random or popular resources
+        recommendations = await Resource.aggregate([
+          { $match: { status: true } }, // Only active resources
+          { $sample: { size: 5 } }, // Randomly sample 5 resources
+          {
+            $project: {
+              title: 1,
+              degree: 1,
+              type: 1,
+              profileImage: 1,
+              slug: 1,
+              semester: 1,
+              description: 1,
+            },
+          },
+        ]);
       }
     }
 
-    return await Resource.aggregate([{ $sample: { size: 3 } }]);
+    // Step 5: If no results found, provide default resources or random resources
+    if (recommendations.length === 0) {
+      recommendations = await Resource.aggregate([
+        { $match: { status: true } },
+        { $sample: { size: 5 } },
+      ]);
+    }
+
+    return recommendations;
   } catch (error) {
-    console.error('Error recommending resources:', error);
-    throw error;
+    console.error("Error in recommendation process:", error);
+    return [];
   }
 };
 

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { fetcher } from "@/app/(admin)/utils/fetcher";
 import TextInputField from "@/app/(admin)/components/admin/TextInputField";
 import { toast } from "react-toastify";
+import { removeOlderCacheAfterMutation } from "@/app/utils/caching";
 
 const EditUserPage = ({ params: { slug } }) => {
   const router = useRouter();
@@ -26,6 +27,8 @@ const EditUserPage = ({ params: { slug } }) => {
         setFavoriteGenre(userData.favoriteGenre);
         setRole(userData.role);
         setFullName(userData.fullname);
+        
+        removeOlderCacheAfterMutation("/api/user");
       } catch (error) {
         console.error("Failed to fetch user data", error);
       } finally {

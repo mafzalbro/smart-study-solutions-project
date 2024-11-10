@@ -2,9 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { toast } from "react-toastify";
-import { loadStripe } from "@stripe/stripe-js";
 import Link from "next/link";
+import { loadStripe } from "@stripe/stripe-js";
 import { fetcher } from "@/app/utils/fetcher";
 
 // Initialize Stripe outside of the component to avoid reloading on every render
@@ -16,15 +15,9 @@ export default function SubscribePage() {
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
 
-  useEffect(() => {
-    // Check for subscription status based on URL query parameters
-    const type = searchParams.get("type");
-    if (type === "success") {
-      toast.success("Subscription successful!");
-    } else if (type === "cancel") {
-      toast.error("Subscription was cancelled.");
-    }
-  }, [searchParams]);
+  // Get the type from search params to determine success or cancellation
+  const type = searchParams.get("type");
+  const session_id = searchParams.get("session_id");
 
   const handleCheckout = async () => {
     setLoading(true);
@@ -44,28 +37,64 @@ export default function SubscribePage() {
 
           if (error) {
             console.error("Error redirecting to checkout:", error);
-            toast.error(error.message);
           }
         }
       } else {
         console.error("No session ID returned from backend.");
-        toast.error("Error creating checkout session.");
       }
     } catch (error) {
       console.error("Error creating checkout session:", error);
-      toast.error("Error initiating checkout.");
     } finally {
       setLoading(false);
     }
   };
 
+  if (type === "success" && session_id) {
+    return (
+      <div className="container mx-auto px-4 py-8 my-32">
+        <div className="bg-green-500 text-white p-6 rounded-lg shadow-lg text-center">
+          <h2 className="text-xl font-semibold">Subscription Successful!</h2>
+          <p>Your subscription is now active. Thank you for joining!</p>
+          <div className="mt-10 text-center">
+            <Link
+              href="/"
+              className="bg-gray-950 text-white py-3 mt-2 px-4 rounded-full hover:bg-gray-600 transition duration-300"
+            >
+              Continue
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (type === "cancel") {
+    return (
+      <div className="container mx-auto px-4 py-8 my-32">
+        <div className="bg-red-500 text-white p-6 rounded-lg shadow-lg text-center">
+          <h2 className="text-xl font-semibold">Subscription Cancelled</h2>
+          <p>Your subscription attempt was cancelled. Please try again.</p>
+          <button
+            onClick={handleCheckout}
+            disabled={loading}
+            className={`py-3 px-4 my-10 text-lg rounded-lg ${
+              loading ? "bg-neutral-500" : "bg-accent-700 hover:bg-accent-800"
+            }`}
+          >
+            {loading ? "Processing..." : "Try Again! Subscribe"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // If type is not in search params, show the pricing cards
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-center mb-8">
         Join Our Membership
       </h1>
 
-      {/* Card Section */}
       <div className="flex justify-center gap-8">
         {/* Free Version */}
         <div className="bg-secondary dark:bg-neutral-800 shadow-lg rounded-lg p-6 w-72">
@@ -75,8 +104,12 @@ export default function SubscribePage() {
           <p className="text-neutral-700 dark:text-neutral-100 mb-2">
             Limited access to AI chat (20 chats/day)
           </p>
-          <p className="text-neutral-700 dark:text-neutral-100 mb-2">Access 2 documents per day</p>
-          <p className="text-neutral-700 dark:text-neutral-100 mb-4">Limited access to the Q&A forum</p>
+          <p className="text-neutral-700 dark:text-neutral-100 mb-2">
+            Access 2 documents per day
+          </p>
+          <p className="text-neutral-700 dark:text-neutral-100 mb-4">
+            Limited access to the Q&A forum
+          </p>
           <div className="mt-10 text-center">
             <Link
               href="/"

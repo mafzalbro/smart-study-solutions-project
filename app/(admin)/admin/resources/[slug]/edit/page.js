@@ -9,6 +9,7 @@ import FileUploadComponent from "@/app/(admin)/components/admin/FileUploadCompon
 import { fetcher } from "@/app/(admin)/utils/fetcher";
 import imageCompression from "browser-image-compression";
 import { toast } from "react-toastify";
+import { removeOlderCacheAfterMutation } from "@/app/utils/caching";
 
 const EditResourcePage = ({ params: { slug } }) => {
   const router = useRouter();
@@ -82,6 +83,7 @@ const EditResourcePage = ({ params: { slug } }) => {
         "PUT",
         updatedResource
       );
+      removeOlderCacheAfterMutation("/api/resouces");
       toast.success("Resource updated successfully!");
       router.back();
     } catch (error) {

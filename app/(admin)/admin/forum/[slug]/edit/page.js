@@ -8,6 +8,7 @@ import { fetcher } from "@/app/(admin)/utils/fetcher";
 import { toast } from "react-toastify";
 import CategorySelect from "@/app/(admin)/components/forum/CategorySelect"; // Adjust path based on your file structure
 import Link from "next/link";
+import { removeOlderCacheAfterMutation } from "@/app/utils/caching";
 
 const AdminQuestionDetailPage = ({ params: { slug } }) => {
   const router = useRouter();
@@ -26,7 +27,7 @@ const AdminQuestionDetailPage = ({ params: { slug } }) => {
           `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/qna/question/${slug}`
         );
 
-        console.log({data})
+        removeOlderCacheAfterMutation("/api/qna/question");
 
         // Set the form fields with the fetched data
         setQuestion(data.question);

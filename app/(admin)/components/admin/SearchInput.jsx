@@ -24,7 +24,7 @@ export default function SearchInput({ onSearch, debounceDelay = 1000 }) {
         searchCenter
         noMargin
         type="text"
-        placeholder="Search questions..."
+        placeholder="Search here..."
         value={inputValue}
         onChange={handleChange}
         className="flex-grow bg-transparent outline-none text-neutral-700 dark:text-neutral-200 placeholder-neutral-500 dark:placeholder-neutral-400 !mb-0"

@@ -63,7 +63,9 @@ const loginUser = async (req, res) => {
     if(!password){
       return res.status(400).json({ message: 'Please set password to login!'})
     }
-    
+    if(!user.password){
+      return res.status(400).json({ message: 'Please register new account or login with google!'})
+    }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Incorrect username or password' });
 

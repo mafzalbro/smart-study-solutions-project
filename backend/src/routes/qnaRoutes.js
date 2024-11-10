@@ -9,8 +9,6 @@ const {
   deleteQuestion,
   updateAnswer,
   deleteAnswer,
-  getUserQuestions,
-  getUserAnswers,
   getQuestionRecommendations,
   upvoteQuestion,
   downvoteQuestion,
@@ -23,7 +21,6 @@ const {
   getCategoryBySlug,
   updateCategoryBySlug,
   deleteCategoryBySlug,
-  createGenre,
 } = require("../controllers/qnaController");
 const { auth } = require("../middlewares/auth");
 const { adminAuth } = require("../middlewares/adminAuth");
@@ -71,7 +68,5 @@ router.get("/categories", getAllCategories);
 router.get("/category/:slug", getCategoryBySlug);
 router.put("/category/:slug", adminAuth, updateCategoryBySlug);
 router.delete("/category/:slug", adminAuth, deleteCategoryBySlug);
-
-router.post("/genre", createGenre);
 
 module.exports = router;

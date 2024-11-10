@@ -5,6 +5,7 @@ import ClickButton from "@/app/components/ClickButton";
 import Link from "next/link";
 import { fetcher } from "@/app/(admin)/utils/fetcher";
 import { toast } from "react-toastify";
+import { removeOlderCacheAfterMutation } from "@/app/utils/caching";
 
 const DeleteUserPage = ({ params: { slug } }) => {
   const router = useRouter();
@@ -16,11 +17,12 @@ const DeleteUserPage = ({ params: { slug } }) => {
         `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/user/${slug}`,
         "DELETE"
       );
-      toast.success("Resource deleted successfully!");
+      removeOlderCacheAfterMutation("/api/user");
+      toast.success("User deleted successfully!");
       router.push('/admin/users');
     } catch (error) {
-      toast.error("Failed to deleted resource.");
-      console.error("Failed to deleted resource", error);
+      toast.error("Failed to delete user.");
+      console.error("Failed to delete user", error);
     }
   };
   

@@ -5,9 +5,7 @@ import { fetcher } from "@/app/(admin)/utils/fetcher";
 import Pagination from "@/app/(admin)/components/admin/Pagination";
 import SearchInput from "@/app/(admin)/components/admin/SearchInput";
 import GeneralExportButton from "@/app/(admin)/components/admin/GeneralExportButton";
-import LinkButton from "@/app/components/LinkButton";
 import Skeleton from "react-loading-skeleton";
-import { BiPlus } from "react-icons/bi";
 import { FiDownload } from "react-icons/fi";
 import Link from "next/link";
 
@@ -29,9 +27,7 @@ export default function Users() {
     );
 
     setUsers((prevUsers) =>
-      currentPage === 1
-        ? data.data
-        : [...prevUsers, ...data.data]
+      currentPage === 1 ? data.data : [...prevUsers, ...data.data]
     );
     setTotalResults(data.totalResults);
     setLoading(false);
@@ -63,6 +59,8 @@ export default function Users() {
     "Name",
     "User Name",
     "Email",
+    "Member",
+    "Membership Ends",
     "Role",
     "Favorite Genre",
     "Created At",
@@ -80,12 +78,12 @@ export default function Users() {
             requestData={requestData}
             icon={<FiDownload className="text-blue-500 mr-2" />}
           />
-          <LinkButton
+          {/* <LinkButton
             link="/admin/users/new"
             text="Add New User"
             icon={<BiPlus />}
             className="!mb-6"
-          />
+          /> */}
         </div>
         <div className="flex items-center gap-2 w-full">
           <SearchInput onSearch={handleSearch} debounceDelay={1000} />
@@ -129,6 +127,12 @@ export default function Users() {
                 <td className="p-4">{user.fullname}</td>
                 <td className="p-4">{user.username}</td>
                 <td className="p-4">{user.email}</td>
+                <td className="p-4">{user.isMember}</td>
+                <td className="p-4">
+                  {user.subscriptionEndDate
+                    ? new Date(user.subscriptionEndDate).toLocaleString()
+                    : "N/A"}
+                </td>
                 <td className="p-4">{user.role}</td>
                 <td className="p-4">{user.favoriteGenre}</td>
                 <td className="p-4">
