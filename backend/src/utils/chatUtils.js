@@ -4,12 +4,12 @@ require("dotenv").config();
 const generateChatResponse = async function* (message, context, apiKey) {
   try {
     let api_key;
-    if (!apiKey) {
+    if (apiKey) {
       api_key = apiKey;
     } else {
       api_key = process.env.GEMINI_API_KEY
     }
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const genAI = new GoogleGenerativeAI(api_key);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // Ensure context is an array

@@ -15,7 +15,7 @@ const Announcements = () => {
 
   // Slider settings
   const settings = {
-    // dots: true,
+    dots: true,
     // fade: true,
     autoplay: true,
     autoplaySpeed: 2000,
