@@ -10,12 +10,14 @@ const Announcement = ({ data, index }) => {
   return (
     <>
       {data && (
-        <div className="relative flex flex-col md:flex-row h-[80vh] w-full overflow-hidden mb-4">
+        <div className="relative flex flex-col md:flex-row min-h-[80vh] md:h-[80vh] w-full overflow-hidden mb-4">
           {/* Full Background Image Section */}
           <div
-            className="absolute inset-0 bg-cover bg-center opacity-40 blur-md"
+            className="absolute inset-0 bg-cover bg-center opacity-10 blur-md"
             style={{
-              backgroundImage: `url(${data.image ? data.image : "/resources/header.png"})`,
+              backgroundImage: `url(${
+                data.image ? data.image : "/resources/header.png"
+              })`,
               zIndex: -1, // Place the full background image behind the content
             }}
           ></div>
@@ -36,11 +38,17 @@ const Announcement = ({ data, index }) => {
           {/* Content Section */}
           <div
             className={`relative flex flex-col justify-center  p-10 md:w-1/2 h-full z-10 ${
-              imageOnLeft ? "order-2 md:order-2 text-right items-end" : "order-1 md:order-1 text-left items-start"
+              imageOnLeft
+                ? "order-2 md:order-2 text-right items-end"
+                : "order-1 md:order-1 text-left items-start"
             }`}
           >
             {data.title && (
-              <StylishTitle tagName="h2" colored={data.title}  className="text-3xl sm:text-4xl font-extrabold mb-4" />
+              <StylishTitle
+                tagName="h2"
+                colored={data.title}
+                className="text-3xl sm:text-4xl font-extrabold mb-4"
+              />
             )}
             {data.description && (
               <p className="mb-6 leading-relaxed my-5">{data.description}</p>

@@ -193,8 +193,8 @@ const NavBar = () => {
       >
         <div className="container mx-auto flex justify-between items-center">
           <Link href="/">
-            <h2 className="text-2xl font-bold cursor-pointer">
-              <StylishSpan>Smarter Study</StylishSpan> Hub
+            <h2 className="text-base md:text-2xl font-bold cursor-pointer">
+              <StylishSpan>Smart Study</StylishSpan> Solutions
             </h2>
           </Link>
           <div className="flex items-center">

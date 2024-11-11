@@ -106,7 +106,7 @@ export default function Sidebar() {
       label: "Update Profile",
       href: "/admin/update-admin-profile",
       icon: <AiOutlineEdit />,
-      key: "update-profile",
+      key: "update-admin-profile",
     },
     {
       label: "Admins List",

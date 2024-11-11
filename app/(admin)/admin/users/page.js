@@ -127,7 +127,7 @@ export default function Users() {
                 <td className="p-4">{user.fullname}</td>
                 <td className="p-4">{user.username}</td>
                 <td className="p-4">{user.email}</td>
-                <td className="p-4">{user.isMember}</td>
+                <td className="p-4">{user.isMember ? "Yes": "No"}</td>
                 <td className="p-4">
                   {user.subscriptionEndDate
                     ? new Date(user.subscriptionEndDate).toLocaleString()

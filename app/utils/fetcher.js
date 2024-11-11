@@ -57,7 +57,7 @@ export const fetcher = async (
 
   if (response.status === 401) {
     localStorage.removeItem("token");
-    localStorage.removeItem("admin_token");
+    // localStorage.removeItem("admin_token");
   }
   // Handle unauthorized access
   if (

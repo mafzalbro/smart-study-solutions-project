@@ -270,7 +270,7 @@ const getAdminsList = async (req, res) => {
 
     const admins = await Admin.find(
       searchQuery,
-      "username email profileImage createdAt"
+      "username email profileImage role createdAt"
     )
       .skip((parseInt(page) - 1) * parseInt(limit))
       .limit(parseInt(limit));

@@ -12,7 +12,7 @@ const AnnouncementSkeleton = () => {
   const imageOnLeft = counter % 2 === 0;
 
   return (
-    <div className="relative flex flex-col md:flex-row h-[80vh] w-full overflow-hidden mb-4">
+    <div className="relative flex flex-col md:flex-row min-h-[80vh] w-full overflow-hidden mb-4">
       {/* Full Background Image Section Skeleton */}
       <div
         className="absolute inset-0 bg-gray-300 animate-pulse opacity-40 blur-md"

@@ -9,7 +9,7 @@ const AnnouncementHardCoded = () => {
 
   return (
     <>
-      <div className="relative flex flex-col md:flex-row h-[80vh] w-full overflow-hidden mb-4">
+      <div className="relative flex flex-col md:flex-row min-h-[80vh] md:h-[80vh] w-full overflow-hidden mb-4">
         {/* Content Section */}
         <div className="md:mx-4 md:w-1/2 text-center md:text-left flex items-center mx-8">
           <div>
@@ -30,7 +30,7 @@ const AnnouncementHardCoded = () => {
 
         {/* Full Background Image Section */}
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-40 blur-md"
+          className="absolute inset-0 bg-cover bg-center opacity-10 blur-md"
           style={{
             backgroundImage: `url(${data.image})`,
             zIndex: -1, // Place the full background image behind the content

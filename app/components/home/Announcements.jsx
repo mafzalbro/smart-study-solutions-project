@@ -51,13 +51,17 @@ const Announcements = () => {
   }
 
   return (
-    <div className="h-[80vh]">
-      <Slider {...settings}>
+    <div className="min-h-[80vh] md:h-[80vh]">
+      {announcements.length !== 0 ? (
+        <Slider {...settings}>
+          <AnnouncementHardCoded />
+          {announcements.map((announcement, index) => (
+            <Announcement key={index} data={announcement} index={index} />
+          ))}
+        </Slider>
+      ) : (
         <AnnouncementHardCoded />
-        {announcements.map((announcement, index) => (
-          <Announcement key={index} data={announcement} index={index} />
-        ))}
-      </Slider>
+      )}
     </div>
   );
 };

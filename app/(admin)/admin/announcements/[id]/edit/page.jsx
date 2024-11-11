@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { fetcher } from "@/app/utils/fetcher"; // Helper for fetching data
 import imageCompression from "browser-image-compression";
 import { toast } from "react-toastify"; // Toasts for success/error messages
 import { removeOlderCacheAfterMutation } from "@/app/utils/caching";
 import TextInputField from "@/app/components/TextInputField";
 import TextAreaField from "@/app/components/TextAreaField";
 import FileUploadComponent from "@/app/(admin)/components/admin/FileUploadComponent";
+import { fetcher } from "@/app/(admin)/utils/fetcher";
 
 // Edit Announcement Page
 const EditAnnouncementPage = ({ params: { id } }) => {

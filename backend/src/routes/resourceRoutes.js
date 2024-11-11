@@ -10,13 +10,14 @@ const {
   likeResource,
   dislikeResource,
   rateResource,
+  getAllResourcesForUser
 } = require('../controllers/resourceController');
 
 const { auth } = require('../middlewares/auth');
 const { adminAuth } = require('../middlewares/adminAuth');
 
 // Define routes
-router.get('/', getAllResources); // GET /?page=1&limit=5&sortBy=title&filterBy={"status":"active"}&query=keyword
+router.get('/', getAllResourcesForUser); // GET /?page=1&limit=5&sortBy=title&filterBy={"status":"active"}&query=keyword
 // router.get('/recommend', auth, recommendResource);
 router.get('/admin', adminAuth, getAllResources);
 router.get('/recommend', recommendResource);

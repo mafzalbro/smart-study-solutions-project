@@ -1,19 +1,28 @@
-const jwt = require('jsonwebtoken');
-const Resource = require('../models/resource');
-const { recommendResources } = require('../services/resourceRecommendation');
-const { getNextSequenceValue } = require('../utils/autoIncrement');
-const { paginateResults } = require('../utils/pagination');
+const jwt = require("jsonwebtoken");
+const Resource = require("../models/resource");
+const { recommendResources } = require("../services/resourceRecommendation");
+const { getNextSequenceValue } = require("../utils/autoIncrement");
+const { paginateResults } = require("../utils/pagination");
+
 const getAllResources = async (req, res) => {
-  const { page = 1, limit = 5, sortBy, filterBy, query, showAll, showFullJSON } = req.query;
+  const {
+    page = 1,
+    limit = 5,
+    sortBy,
+    filterBy,
+    query,
+    showAll,
+    showFullJSON,
+  } = req.query;
 
   let queryOptions = {};
   let sortOptions = { createdAt: -1 };
-  
+
   try {
     // Parse sorting options
     if (sortBy) {
-      const [field, direction] = sortBy.split(':');
-      sortOptions = { [field]: direction === 'desc' ? -1 : 1 };
+      const [field, direction] = sortBy.split(":");
+      sortOptions = { [field]: direction === "desc" ? -1 : 1 };
     }
 
     // Parse filtering options
@@ -22,17 +31,16 @@ const getAllResources = async (req, res) => {
         const filter = JSON.parse(decodeURIComponent(filterBy));
         Object.assign(queryOptions, filter);
       } catch (error) {
-        return res.status(400).json({ message: 'Invalid filterBy parameter' });
+        return res.status(400).json({ message: "Invalid filterBy parameter" });
       }
     }
 
     // Parse search query
     if (query) {
       queryOptions.$or = [
-        { title: { $regex: query, $options: 'i' } },
-        { author: { $regex: query, $options: 'i' } },
-        { genre: { $regex: query, $options: 'i' } },
-        { description: { $regex: query, $options: 'i' } }
+        { title: { $regex: query, $options: "i" } },
+        { author: { $regex: query, $options: "i" } },
+        { description: { $regex: query, $options: "i" } },
       ];
     }
 
@@ -53,7 +61,17 @@ const getAllResources = async (req, res) => {
       );
     } else {
       results = await paginateResults(
-        Resource.find(queryOptions, { title: 1, description: 1, slug: 1, semester: 1, degree: 1, type: 1, createdAt: 1, likes: 1, profileImage: 1 }).sort(sortOptions),
+        Resource.find(queryOptions, {
+          title: 1,
+          description: 1,
+          slug: 1,
+          semester: 1,
+          degree: 1,
+          type: 1,
+          createdAt: 1,
+          likes: 1,
+          profileImage: 1,
+        }).sort(sortOptions),
         parseInt(page),
         parseInt(limit)
       );
@@ -62,97 +80,221 @@ const getAllResources = async (req, res) => {
     res.status(200).json({ results });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Error fetching resources', error: error });
+    return res
+      .status(500)
+      .json({ message: "Error fetching resources", error: error });
   }
 };
 
+const getAllResourcesForUser = async (req, res) => {
+  const {
+    page = 1,
+    limit = 5,
+    sortBy,
+    filterBy,
+    query,
+    showAll,
+    showFullJSON,
+  } = req.query;
+
+  let queryOptions = { status: true };
+  let sortOptions = { createdAt: -1 };
+
+  try {
+    // Parse sorting options
+    if (sortBy) {
+      const [field, direction] = sortBy.split(":");
+      sortOptions = { [field]: direction === "desc" ? -1 : 1 };
+    }
+
+    // Parse filtering options
+    if (filterBy) {
+      try {
+        const filter = JSON.parse(decodeURIComponent(filterBy));
+        Object.assign(queryOptions, filter);
+      } catch (error) {
+        return res.status(400).json({ message: "Invalid filterBy parameter" });
+      }
+    }
+
+    // Parse search query
+    if (query) {
+      queryOptions.$or = [
+        { title: { $regex: query, $options: "i" } },
+        { author: { $regex: query, $options: "i" } },
+        { description: { $regex: query, $options: "i" } },
+      ];
+    }
+
+    // Fetch results with pagination and sorting
+    let results;
+    if (showAll) {
+      results = await paginateResults(
+        Resource.find(queryOptions).sort(sortOptions),
+        null,
+        null,
+        showAll
+      );
+    } else if (showFullJSON) {
+      results = await paginateResults(
+        Resource.find(queryOptions).sort(sortOptions),
+        parseInt(page),
+        parseInt(limit)
+      );
+    } else {
+      results = await paginateResults(
+        Resource.find(queryOptions, {
+          title: 1,
+          description: 1,
+          slug: 1,
+          semester: 1,
+          degree: 1,
+          type: 1,
+          createdAt: 1,
+          likes: 1,
+          profileImage: 1,
+        }).sort(sortOptions),
+        parseInt(page),
+        parseInt(limit)
+      );
+    }
+
+    res.status(200).json({ results });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Error fetching resources", error: error });
+  }
+};
 
 // Recommend a resource for the authenticated user
 const recommendResource = async (req, res) => {
   try {
     const user = req.user;
     const { resourceSlug, keyword } = req.query;
-    
-    
-    const recommendedResources = await recommendResources(user, resourceSlug, keyword);
+
+    const recommendedResources = await recommendResources(
+      user,
+      resourceSlug,
+      keyword
+    );
     res.status(200).json(recommendedResources);
   } catch (error) {
-    console.error('Error recommending resources:', error);
-    res.status(500).json({ message: 'Error recommending resources' });
+    console.error("Error recommending resources:", error);
+    res.status(500).json({ message: "Error recommending resources" });
   }
 };
-
- 
 
 // Get a resource by slug
 const getResourceBySlug = async (req, res) => {
   const { slug } = req.params;
 
-
   let userId;
   const token = req?.headers?.authorization;
-  
-  if(token){
-    const trimToken = token.replace('Bearer ', '').trim()
+
+  if (token) {
+    const trimToken = token.replace("Bearer ", "").trim();
     jwt.verify(trimToken, process.env.JWT_SECRET, (err, user) => {
       if (err) {
-        return res.status(403).json({ message: 'Invalid token' });
+        return res.status(403).json({ message: "Invalid token" });
       }
-      req.user = user
-      userId = req?.user?.id
-    })
+      req.user = user;
+      userId = req?.user?.id;
+    });
   }
-  
+
   try {
     const resource = await Resource.findOne({ slug });
     if (!resource) {
-      return res.status(404).json({ message: 'Resource not found' });
+      return res.status(404).json({ message: "Resource not found" });
     }
 
-    if(userId){
+    if (userId) {
       // Determine if the user has liked, disliked, or rated the resource
       const hasLiked = resource.likedBy.includes(userId);
       const hasDisliked = resource.dislikedBy.includes(userId);
-      const hasRated = resource.ratings.some(r => r.userId.toString() === userId.toString()); 
-      const userRating = resource?.ratings.find(r => r.userId.toString() === userId.toString());
-      const ratingNumber = userRating ? userRating?.rating : null
+      const hasRated = resource.ratings.some(
+        (r) => r.userId.toString() === userId.toString()
+      );
+      const userRating = resource?.ratings.find(
+        (r) => r.userId.toString() === userId.toString()
+      );
+      const ratingNumber = userRating ? userRating?.rating : null;
 
       res.status(200).json({
         ...resource._doc,
         hasLiked,
         hasDisliked,
         hasRated,
-        ratingNumber
+        ratingNumber,
       });
     } else {
       res.status(200).json(resource);
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error fetching resource by slug' });
+    res.status(500).json({ message: "Error fetching resource by slug" });
   }
 };
 
-
 // Add a new resource
 const addResource = async (req, res) => {
-  const { title, author, genre, description, status, slug, type, ai_approval, tags, source, semester, degree, profileImage, pdfLink } = req.body;
+  const {
+    title,
+    author,
+    genre,
+    description,
+    status,
+    slug,
+    type,
+    ai_approval,
+    tags,
+    source,
+    semester,
+    degree,
+    profileImage,
+    pdfLink,
+  } = req.body;
 
-  console.log(req.body)
+  console.log(req.body);
 
   try {
     const existingResource = await Resource.findOne({ slug });
     if (existingResource) {
-      return res.status(400).json({ message: 'Resource with the same slug already exists' });
+      return res
+        .status(400)
+        .json({ message: "Resource with the same slug already exists" });
     }
 
-    const serialNumber = await getNextSequenceValue('resourceSerial', 'Resource');
-    const newResource = new Resource({ serialNumber, title, author, description, genre, status, slug, type, ai_approval, tags, source, semester, degree, profileImage, pdfLink: pdfLink ? pdfLink : source });
+    const serialNumber = await getNextSequenceValue(
+      "resourceSerial",
+      "Resource"
+    );
+    const newResource = new Resource({
+      serialNumber,
+      title,
+      author,
+      description,
+      genre,
+      status,
+      slug,
+      type,
+      ai_approval,
+      tags,
+      source,
+      semester,
+      degree,
+      profileImage,
+      pdfLink: pdfLink ? pdfLink : source,
+    });
     await newResource.save();
-    res.status(201).json({ message: 'Resource added successfully', resource: newResource });
+    res
+      .status(201)
+      .json({ message: "Resource added successfully", resource: newResource });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error adding resource' });
+    res.status(500).json({ message: "Error adding resource" });
   }
 };
 
@@ -160,26 +302,56 @@ const addResource = async (req, res) => {
 const updateResourceBySlug = async (req, res) => {
   const { slug } = req.params;
 
-  const { title, author, genre, description, status, type, ai_approval, tags, rating, ratingCount, likes, dislikes, source } = req.body;
-
-
+  const {
+    title,
+    author,
+    genre,
+    description,
+    status,
+    type,
+    ai_approval,
+    tags,
+    rating,
+    ratingCount,
+    likes,
+    dislikes,
+    source,
+  } = req.body;
 
   try {
     const existingResource = await Resource.findOne({ slug });
     if (!existingResource) {
-      return res.status(404).json({ message: 'Resource not found' });
+      return res.status(404).json({ message: "Resource not found" });
     }
 
-    const updatedResource = await Resource.findOneAndUpdate({ slug }, { title, author, description, genre, status, type, ai_approval, tags, rating, ratingCount, likes, dislikes, source }, { new: true });
+    const updatedResource = await Resource.findOneAndUpdate(
+      { slug },
+      {
+        title,
+        author,
+        description,
+        genre,
+        status,
+        type,
+        ai_approval,
+        tags,
+        rating,
+        ratingCount,
+        likes,
+        dislikes,
+        source,
+      },
+      { new: true }
+    );
     if (!updatedResource) {
-      return res.status(404).json({ message: 'Resource not found' });
+      return res.status(404).json({ message: "Resource not found" });
     }
     res.status(200).json(updatedResource);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error updating resource' });
+    res.status(500).json({ message: "Error updating resource" });
   }
-}; 
+};
 
 // Delete a resource by slug
 const deleteResourceBySlug = async (req, res) => {
@@ -187,16 +359,14 @@ const deleteResourceBySlug = async (req, res) => {
   try {
     const deletedResource = await Resource.findOneAndDelete({ slug });
     if (!deletedResource) {
-      return res.status(404).json({ message: 'Resource not found' });
+      return res.status(404).json({ message: "Resource not found" });
     }
-    res.status(200).json({ message: 'Resource deleted successfully' });
+    res.status(200).json({ message: "Resource deleted successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error deleting resource' });
+    res.status(500).json({ message: "Error deleting resource" });
   }
 };
-
-
 
 // Like a resource by slug
 const likeResource = async (req, res) => {
@@ -206,22 +376,26 @@ const likeResource = async (req, res) => {
   try {
     const resource = await Resource.findOne({ slug });
     if (!resource) {
-      return res.status(404).json({ message: 'Resource not found' });
+      return res.status(404).json({ message: "Resource not found" });
     }
 
-    const userRating = resource.ratings.find(r => r.userId.toString() === userId.toString());
-    const ratingNumber = userRating ? userRating?.rating : null
+    const userRating = resource.ratings.find(
+      (r) => r.userId.toString() === userId.toString()
+    );
+    const ratingNumber = userRating ? userRating?.rating : null;
 
     // Check if the user has already liked the resource
     if (resource.likedBy.includes(userId)) {
       return res.status(400).json({
-        message: 'You have already liked this resource',
+        message: "You have already liked this resource",
         likes: resource.likes,
         dislikes: resource.dislikes,
         hasLiked: true,
         hasDisliked: resource.dislikedBy.includes(userId),
-        hasRated: resource.ratings.some(r => r.userId.toString() === userId.toString()),
-        ratingNumber
+        hasRated: resource.ratings.some(
+          (r) => r.userId.toString() === userId.toString()
+        ),
+        ratingNumber,
       });
     }
 
@@ -237,20 +411,21 @@ const likeResource = async (req, res) => {
     await resource.save();
 
     res.status(200).json({
-      message: 'Resource liked successfully',
+      message: "Resource liked successfully",
       likes: resource.likes,
       dislikes: resource.dislikes,
       hasLiked: true,
       hasDisliked: false,
-      hasRated: resource.ratings.some(r => r.userId.toString() === userId.toString()),
-      ratingNumber
+      hasRated: resource.ratings.some(
+        (r) => r.userId.toString() === userId.toString()
+      ),
+      ratingNumber,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error liking resource' });
+    res.status(500).json({ message: "Error liking resource" });
   }
 };
-
 
 // Dislike a resource by slug
 const dislikeResource = async (req, res) => {
@@ -260,23 +435,26 @@ const dislikeResource = async (req, res) => {
   try {
     const resource = await Resource.findOne({ slug });
     if (!resource) {
-      return res.status(404).json({ message: 'Resource not found' });
+      return res.status(404).json({ message: "Resource not found" });
     }
 
-    const userRating = resource.ratings.find(r => r.userId.toString() === userId.toString());
-    const ratingNumber = userRating ? userRating?.rating : null
+    const userRating = resource.ratings.find(
+      (r) => r.userId.toString() === userId.toString()
+    );
+    const ratingNumber = userRating ? userRating?.rating : null;
 
     // Check if the user has already disliked the resource
     if (resource.dislikedBy.includes(userId)) {
       return res.status(400).json({
-        message: 'You have already disliked this resource',
+        message: "You have already disliked this resource",
         likes: resource.likes,
         dislikes: resource.dislikes,
         hasLiked: resource.likedBy.includes(userId),
         hasDisliked: true,
-        hasRated: resource.ratings.some(r => r.userId.toString() === userId.toString()),
-        ratingNumber
-
+        hasRated: resource.ratings.some(
+          (r) => r.userId.toString() === userId.toString()
+        ),
+        ratingNumber,
       });
     }
 
@@ -292,17 +470,19 @@ const dislikeResource = async (req, res) => {
     await resource.save();
 
     res.status(200).json({
-      message: 'Resource disliked successfully',
+      message: "Resource disliked successfully",
       likes: resource.likes,
       dislikes: resource.dislikes,
       hasLiked: false,
       hasDisliked: true,
-      hasRated: resource.ratings.some(r => r.userId.toString() === userId.toString()),
-      ratingNumber
+      hasRated: resource.ratings.some(
+        (r) => r.userId.toString() === userId.toString()
+      ),
+      ratingNumber,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error disliking resource' });
+    res.status(500).json({ message: "Error disliking resource" });
   }
 };
 
@@ -313,47 +493,56 @@ const rateResource = async (req, res) => {
 
   try {
     if (!rating) {
-      return res.status(400).json({ message: 'Rating key in request body is required' });
+      return res
+        .status(400)
+        .json({ message: "Rating key in request body is required" });
     }
 
     if (!slug) {
-      return res.status(400).json({ message: 'Please provide slug of the resource' });
+      return res
+        .status(400)
+        .json({ message: "Please provide slug of the resource" });
     }
 
     if (!userId) {
-      return res.status(400).json({ message: 'User id not found' });
+      return res.status(400).json({ message: "User id not found" });
     }
 
     const resource = await Resource.findOne({ slug });
     if (!resource) {
-      return res.status(404).json({ message: 'Resource not found' });
+      return res.status(404).json({ message: "Resource not found" });
     }
 
     // Find if the user has already rated the resource
-    const existingRating = resource.ratings.find(r => r.userId.toString() === userId.toString());
+    const existingRating = resource.ratings.find(
+      (r) => r.userId.toString() === userId.toString()
+    );
 
     if (existingRating) {
       return res.status(400).json({
-        message: 'You have already rated this resource',
+        message: "You have already rated this resource",
         hasLiked: resource.likedBy.includes(userId),
         hasDisliked: resource.dislikedBy.includes(userId),
         hasRated: true,
-        ratingNumber: existingRating?.rating
+        ratingNumber: existingRating?.rating,
       });
     }
 
     // Add the new rating
     resource.ratings.push({ userId, rating });
-    resource.rating = ((resource.rating * resource.ratingCount) + rating) / (resource.ratingCount + 1);
+    resource.rating =
+      (resource.rating * resource.ratingCount + rating) /
+      (resource.ratingCount + 1);
     resource.ratingCount += 1;
 
-    
-    const userRating = resource?.ratings.find(r => r.userId.toString() === userId.toString());
-    const ratingNumber =userRating ? userRating?.rating : null
+    const userRating = resource?.ratings.find(
+      (r) => r.userId.toString() === userId.toString()
+    );
+    const ratingNumber = userRating ? userRating?.rating : null;
 
     await resource.save();
     res.status(200).json({
-      message: 'Resource rated successfully',
+      message: "Resource rated successfully",
       // resource,
       hasLiked: resource.likedBy.includes(userId),
       hasDisliked: resource.dislikedBy.includes(userId),
@@ -361,11 +550,10 @@ const rateResource = async (req, res) => {
       ratingNumber,
       rating: resource.rating,
       ratingCount: resource.ratingCount,
-
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error rating resource' });
+    res.status(500).json({ message: "Error rating resource" });
   }
 };
 
@@ -375,6 +563,7 @@ module.exports = {
   addResource,
   updateResourceBySlug,
   deleteResourceBySlug,
+  getAllResourcesForUser,
   getAllResources,
   likeResource,
   dislikeResource,
