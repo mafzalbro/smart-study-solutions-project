@@ -20,7 +20,7 @@ export default function ChatHistory({ chatHistory, pdfUrls, loading }) {
   if(chatHistory)
   return (
     // <div className="md:chat-message md:flex-grow overflow-y-auto p-4 mt-8 md:mt-0 dark:bg-neutral-800 dark:text-secondary">
-    <div className="p-4 chat-message flex-grow overflow-y-auto mb-8 md:mt-0 dark:bg-neutral-800 dark:text-secondary chat-scroll">
+    <div className="p-4 chat-message flex-grow overflow-y-auto mb-10 md:mb-0 md:mt-0 dark:bg-neutral-800 dark:text-secondary chat-scroll">
       {loading ? (
         <div className="flex flex-col items-center">
           <Skeleton className="w-screen h-screen" />

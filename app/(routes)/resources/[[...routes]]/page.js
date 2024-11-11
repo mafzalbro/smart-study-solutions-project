@@ -82,8 +82,8 @@ export default function ResourcesPage({ params }) {
 
       const filterParams = { ...filterBy };
 
-    //Adding api endpoint query params from url
-    
+      //Adding api endpoint query params from url
+
       if (routes.length > 0) {
         if (routes[0] === "type") {
           filterParams.type = routes[1].split("-").join(" ");
@@ -106,7 +106,7 @@ export default function ResourcesPage({ params }) {
       if (Object.keys(filterParams).length > 0) {
         queryParams.append("filterBy", JSON.stringify(filterParams));
       }
-       
+
       if (q && routes[1] && debouncedSearchTerm == "") {
         router.push(`/resources/${routes[0]}/${routes[1]}`);
       } else if (q && debouncedSearchTerm === "") {
@@ -231,7 +231,7 @@ export default function ResourcesPage({ params }) {
                     .split("-")
                     .join(" ")
                     .toUpperCase()
-                : "For Punjab University"
+                : ""
             }
             className="text-center"
           />

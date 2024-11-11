@@ -51,7 +51,7 @@ const PdfModal = ({ fileUrl, onClose }) => {
         onFullscreen={handleFullscreenToggle}
         isFullscreen={isFullscreen}
       />
-      {console.log({isLoggedIn})}
+      {/* {console.log({isLoggedIn})} */}
       {isLoggedIn && isMember ?
       <button
         onClick={handleAskAI}
