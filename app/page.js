@@ -9,7 +9,7 @@ import ContactUs from "./components/ContactUs";
 import "react-toastify/dist/ReactToastify.css";
 import Announcements from "./components/home/Announcements";
 import MainHeading from "./components/MainHeading.jsx";
-import StylishTitle from "./components/StylishTitle";
+// import StylishTitle from "./components/StylishTitle";
 // import StylishSpan from "./components/StylishSpan";
 import RecommendationsForYou from "./components/home/Recommendations";
 
@@ -45,7 +45,7 @@ const LandingPage = () => {
             <ContactUs />
           </div>
           <div
-            className="w-full md:w-1/2 h-[70vh] bg-cover bg-center"
+            className="w-full hidden md:block md:w-1/2 h-[70vh] bg-cover bg-center"
             style={{
               backgroundImage: "url('/home/contact.png')",
             }}

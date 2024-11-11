@@ -159,20 +159,29 @@ const getChatTitles = async (req, res) => {
       (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
     );
 
-    // Extracting titles with slugs and excluding PDF URLs
+    // Extracting titles based on pdfUrls or pdfText
     const titles = filteredChatOptions
-      .filter((option) => option.pdfUrls.length === 0)
-      .map((option) => ({
-        slug: option.slug,
-        title: option.title,
-        createdAt: option.createdAt,
-        updatedAt: option.updatedAt,
-      }));
+      .filter((option) => option.pdfUrls.length === 0) // Include chats with pdfText
+      .filter((option) => !option.pdfText)
+      .map((option) => {
+        const isPdf = option.pdfUrls.length > 0 || option.pdfText; // Check if it's a PDF title
+        return {
+          slug: option.slug,
+          title: option.title,
+          createdAt: option.createdAt,
+          updatedAt: option.updatedAt,
+          pdfUrls: isPdf ? option.pdfUrls : null, // Include pdfUrls only if it's a PDF
+          pdfText: isPdf ? option.pdfText : null, // Include pdfText only if it's a PDF
+        };
+      });
 
-    // Count total chats
+    // Count total chats and PDFs
     const totalChats = filteredChatOptions.filter(
-      (option) => option.pdfUrls.length === 0
-    ).length;
+      (option) => option.pdfUrls.length === 0 && !option.pdfText
+    ).length; // Chats without PDF or pdfText
+    const totalPDFs = filteredChatOptions.filter(
+      (option) => option.pdfUrls.length > 0 || option.pdfText
+    ).length; // Chats with PDF or pdfText
 
     // Pagination
     const results = paginateResultsForArray(
@@ -184,6 +193,7 @@ const getChatTitles = async (req, res) => {
     res.status(200).json({
       ...results,
       totalChats,
+      totalPDFs,
     });
   } catch (error) {
     console.error("Error fetching chat titles:", error);
@@ -227,20 +237,21 @@ const getPdfTitles = async (req, res) => {
       (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
     );
 
-    // Extracting titles with slugs and PDF URLs
+    // Extracting titles with slugs, PDF URLs, and PDF text
     const titles = filteredChatOptions
-      .filter((option) => option.pdfUrls.length > 0)
+      .filter((option) => option.pdfUrls.length > 0 || option.pdfText) // Include chats with pdfUrls or pdfText
       .map((option) => ({
         slug: option.slug,
         title: option.title,
         createdAt: option.createdAt,
         updatedAt: option.updatedAt,
         pdfUrls: option.pdfUrls,
+        pdfText: option.pdfText,
       }));
 
     // Count total PDFs
     const totalPDFs = filteredChatOptions.filter(
-      (option) => option.pdfUrls.length > 0
+      (option) => option.pdfUrls.length > 0 || option.pdfText
     ).length;
 
     // Pagination
@@ -263,7 +274,7 @@ const getPdfTitles = async (req, res) => {
 const chatWithPdfBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
-    const { pdfUrl, message, title } = req.body;
+    const { pdfUrl, pdfText, message, title } = req.body;
     const userId = req?.user?.id;
 
     if (!userId) {
@@ -282,59 +293,65 @@ const chatWithPdfBySlug = async (req, res) => {
     if (slug) {
       chatOption = user.chatOptions.find((option) => option.slug === slug);
       if (!chatOption) {
-        return res.status(404).send("<p>chat not found.</p>");
+        return res.status(404).send("<p>Chat not found.</p>");
       }
     } else {
       chatOption = user.chatOptions[0];
     }
 
     const apiKey = user.apiKey;
-    // if (!apiKey) {
-    //   return res.send('<p>Please <a href="/chat/test-api" style="color: lightblue;" target="_blank">Enter API Key</a></p>');
-    // }
 
+    // Set chatOption title
     chatOption.title = title;
 
     if (pdfUrl) {
+      // Add unique PDF URL to the list
       chatOption.pdfUrls = pdfUrl.includes("http")
         ? Array.from(new Set([...chatOption.pdfUrls, pdfUrl]))
         : Array.from(new Set([...chatOption.pdfUrls]));
     }
 
-    let pdfText = "";
-    if (pdfUrl) {
-      chatOption.pdfText = "";
-      pdfText = await extractTextFromPdf(pdfUrl);
+    let finalPdfText = pdfText;
+    // Handle PDF text extraction if URL is provided
+    if (pdfText) {
       chatOption.pdfText = pdfText;
-    } else if (chatOption.pdfText) {
-      pdfText = chatOption.pdfText;
+    }
+    if (pdfUrl) {
+      chatOption.pdfText = ""; // Clear previous text if a new URL is provided
+      finalPdfText = await extractTextFromPdf(pdfUrl); // Extract text from PDF
+      chatOption.pdfText = finalPdfText; // Save extracted text
+    } else if (!finalPdfText && chatOption.pdfText) {
+      // If no pdfText in request body and chatOption has saved text
+      finalPdfText = chatOption.pdfText;
     }
 
     const context = JSON.parse(JSON.stringify(chatOption.chatHistory)) || [];
     let initialMessage;
 
-    if (context.length > 0 && pdfText) {
-      context[0].user_query += ` ___-------- (PDF Document Text: ${pdfText}) -----------`;
-    } else if (pdfText) {
-      initialMessage = `${message} -------- (PDF Document Text: ${pdfText}) -----------`;
+    // If there's a context and pdfText, add it to the context
+    if (context.length > 0 && finalPdfText) {
+      context[0].user_query += ` ___-------- (PDF Document Text: ${finalPdfText}) -----------`;
+    } else if (finalPdfText) {
+      // If no context, initialize with the PDF text
+      initialMessage = `${message} -------- (PDF Document Text: ${finalPdfText}) -----------`;
     }
 
+    // Generate chat response
     let responseStream;
     if (initialMessage) {
       responseStream = generateChatResponse(
         initialMessage,
         context,
         apiKey,
-        pdfText,
+        finalPdfText,
         chatOption.googleCacheMetaData
       );
     } else {
-      // responseStream = generateChatResponse(message, context, apiKey, pdfUrl, pdfText);
       responseStream = generateChatResponse(
         message,
         context,
         apiKey,
-        pdfText,
+        finalPdfText,
         chatOption.googleCacheMetaData
       );
     }
@@ -348,12 +365,13 @@ const chatWithPdfBySlug = async (req, res) => {
       res.write(chunkText);
     }
 
+    // Save chat history after the response is sent
     chatOption.chatHistory.push({
       user_query: message,
       model_response: fullResponse,
     });
 
-    // Attempt to save with retry logic if needed
+    // Attempt to save with retry logic
     let saveAttempt = 0;
     while (saveAttempt < 3) {
       try {
@@ -361,7 +379,7 @@ const chatWithPdfBySlug = async (req, res) => {
         break; // Exit loop on success
       } catch (error) {
         if (error.name === "VersionError") {
-          // Re-fetch user and retry
+          // Re-fetch user and retry if there's a version conflict
           user = await User.findById(userId);
           chatOption =
             user.chatOptions.find((option) => option.slug === slug) ||
@@ -501,12 +519,10 @@ const setupAPIKey = async (req, res) => {
         .status(200)
         .json({ message: message.split("\n")[0].trim(), valid: true });
     } else {
-      return res
-        .status(404)
-        .json({
-          message: "try test again or add correct api key",
-          valid: false,
-        });
+      return res.status(404).json({
+        message: "try test again or add correct api key",
+        valid: false,
+      });
     }
   } catch (error) {
     console.log("Error saving API Key", error);

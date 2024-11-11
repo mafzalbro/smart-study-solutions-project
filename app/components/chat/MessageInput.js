@@ -9,8 +9,9 @@ import useAlert from "@/app/customHooks/useAlert";
 import TextInputField from "@/app/components/chat/TextInputField";
 import { IoSendSharp } from "react-icons/io5";
 import { TbFileTypePdf } from "react-icons/tb";
-import TextAreaFieldChat from "./TextAreaField";
+import TextAreaFieldChat from "./TextAreaFieldChat";
 import UploadPdfModal from "./UploadPdfModal";
+import { useAuth } from "@/app/customHooks/AuthContext";
 
 const messages = [
   "Waiting for response...",
@@ -35,6 +36,7 @@ export default function MessageInput({
   const [message, setMessage] = useState("");
   const [reply, setReply] = useState("");
   const [pdfUrl, setPdfUrl] = useState("");
+  const [pdfText, setPdfText] = useState("");
   const [showPdfInput, setShowPdfInput] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -42,6 +44,8 @@ export default function MessageInput({
   const [error, setError] = useAlert(null); // State to manage errors
   const inputRef = useRef(null);
   const endOfChatRef = useRef(null);
+
+  const { user } = useAuth();
 
   // fetchChat()
 
@@ -110,7 +114,7 @@ export default function MessageInput({
             "Content-Type": "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-          body: JSON.stringify({ pdfUrl, message, title: message }),
+          body: JSON.stringify({ pdfUrl, pdfText, message, title: message }),
         }
       );
 
@@ -142,6 +146,7 @@ export default function MessageInput({
       setPdfUrl("");
       setShowPdfInput(false);
       setIsSending(false);
+      setPdfText("");
       if (inputRef && inputRef.current) {
         inputRef.current.focus();
       }
@@ -152,9 +157,9 @@ export default function MessageInput({
   };
 
   const handlePdfButtonClick = () => {
-    if (chatHistory.length === 0) {
+    if (chatHistory.length === 0 || user?.isMember) {
       setShowPdfInput(!showPdfInput);
-    } else {
+    } else if (!user?.isMember) {
       setShowModal(true);
     }
   };
@@ -190,48 +195,72 @@ export default function MessageInput({
           // Add logic to create a new chat here
         }}
       />
-      {error && <div className="text-red-500 m-4">{error}</div>}
-      <div className="fixed md:relative bottom-0 left-0 right-0 bg-secondary dark:bg-neutral-800 p-1 flex items-center justify-between space-x-2">
-        <button
-          onClick={handlePdfButtonClick}
-          className="p-4 bg-accent-100 dark:bg-neutral-700 rounded-lg dark:text-secondary dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-accent-600"
-        >
-          {/* Add PDF */}
-          <TbFileTypePdf size={21} />
-        </button>
 
-        {showPdfInput && (
-          <UploadPdfModal onClose={() => setShowPdfInput((prev) => !prev)} />
-        )}
-        {/* {showPdfInput && <PdfInput pdfUrl={pdfUrl} setPdfUrl={setPdfUrl} />} */}
-        <TextAreaFieldChat
-          ref={inputRef}
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Type a message"
-          disabled={isSending}
-          noMargin
-          padding="p-3"
-          className="chat-input-class"
-        />
-        <div className="flex space-x-2 pb-2">
+      <div className="flex flex-col">
+        <div>
+          {pdfText && (
+            <div
+              style={{ textShadow: "1px 2px 4px #eee" }}
+              className="fixed bottom-[70px] md:bottom-24 left-2 md:right-4 md:left-auto text-sm text-neutral-700 dark:text-neutral-300 text-center"
+            >
+              PDF:
+              <span className="text-primary dark:text-secondary mx-1 font-semibold">
+                {pdfText.split(" ").length}
+              </span>
+              words
+            </div>
+          )}
+          {error && <div className="text-red-500 m-4">{error}</div>}
+        </div>
+        <div className="fixed md:relative bottom-0 left-0 right-0 bg-secondary dark:bg-neutral-800 p-1 flex items-center justify-between space-x-2">
           <button
-            onClick={sendMessage}
-            disabled={message.trim() === "" || isSending}
-            className={`p-4 bg-accent-500 rounded-lg text-white hover:bg-accent-400 focus:outline-none focus:ring-2 focus:ring-accent-600 ${
-              message.trim() === "" || isSending
-                ? "opacity-50 cursor-not-allowed"
-                : ""
-            }`}
+            onClick={handlePdfButtonClick}
+            className="p-4 bg-accent-100 dark:bg-neutral-700 rounded-lg dark:text-secondary dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-accent-600"
           >
-            {isSending ? (
-              <PuffLoader color="#ffffff" size={4} />
-            ) : (
-              <IoSendSharp size={21} />
-            )}
+            {/* Add PDF */}
+            <TbFileTypePdf size={21} />
           </button>
+
+          {showPdfInput && (
+            <UploadPdfModal
+              onClose={() => setShowPdfInput((prev) => !prev)}
+              pdfUrl={pdfUrl}
+              setPdfUrl={setPdfUrl}
+              pdfText={pdfText}
+              setPdfText={setPdfText}
+            />
+          )}
+
+          {/* {showPdfInput && <PdfInput pdfUrl={pdfUrl} setPdfUrl={setPdfUrl} />} */}
+          <TextAreaFieldChat
+            ref={inputRef}
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Type a message"
+            disabled={isSending}
+            noMargin
+            padding="p-3"
+            className="chat-input-class"
+          />
+          <div className="flex space-x-2 pb-2">
+            <button
+              onClick={sendMessage}
+              disabled={message.trim() === "" || isSending}
+              className={`p-4 bg-accent-500 rounded-lg text-white hover:bg-accent-400 focus:outline-none focus:ring-2 focus:ring-accent-600 ${
+                message.trim() === "" || isSending
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
+            >
+              {isSending ? (
+                <PuffLoader color="#ffffff" size={4} />
+              ) : (
+                <IoSendSharp size={21} />
+              )}
+            </button>
+          </div>
         </div>
       </div>
       <div ref={endOfChatRef}></div>
