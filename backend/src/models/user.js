@@ -55,15 +55,19 @@ const userSchema = new Schema(
       type: String,
       default: null,
     },
-    isMember: {
-      type: Boolean,
-      default: false,
-    },
-    subscriptionEndDate: {
-      type: Date,
-      default: null,
-    },
-    emailVerified: {
+      isMember: {
+        type: Boolean,
+        default: false,
+      },
+      subscriptionEndDate: {
+        type: Date,
+        default: null,
+      },
+      subscriptionStartDate: {
+        type: Date,
+        default: null,
+      },
+      emailVerified: {
       type: Boolean,
       default: false,
     },

@@ -1,19 +1,29 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
-require('dotenv').config();
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+require("dotenv").config();
 
 const generateChatResponse = async function* (message, context, apiKey) {
   try {
+    let api_key;
+    if (!apiKey) {
+      api_key = apiKey;
+    } else {
+      api_key = process.env.GEMINI_API_KEY
+    }
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // Ensure context is an array
-    const history = Array.isArray(context) ? context.map(convo => ([
-      { role: 'user', parts: [{ text: convo.user_query }] },
-      { role: 'model', parts: [{ text: convo.model_response }] }
-    ])).flat() : [];
+    const history = Array.isArray(context)
+      ? context
+          .map((convo) => [
+            { role: "user", parts: [{ text: convo.user_query }] },
+            { role: "model", parts: [{ text: convo.model_response }] },
+          ])
+          .flat()
+      : [];
 
     // Add the latest message to the history
-    history.push({ role: 'user', parts: [{ text: message }] });
+    history.push({ role: "user", parts: [{ text: message }] });
 
     // console.log("chatHistories", history.length);
 
@@ -28,7 +38,7 @@ const generateChatResponse = async function* (message, context, apiKey) {
       yield chunk.text();
     }
   } catch (error) {
-    return error
+    return error;
     // console.error('Error generating chat response:', error);
     // throw new Error('An error occurred while processing your request.');
   }

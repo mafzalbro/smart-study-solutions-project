@@ -60,6 +60,7 @@ export default function Users() {
     "User Name",
     "Email",
     "Member",
+    "Membership Starts",
     "Membership Ends",
     "Role",
     "Favorite Genre",
@@ -127,12 +128,42 @@ export default function Users() {
                 <td className="p-4">{user.fullname}</td>
                 <td className="p-4">{user.username}</td>
                 <td className="p-4">{user.email}</td>
-                <td className="p-4">{user.isMember ? "Yes": "No"}</td>
+                <td className="p-4">{user.isMember ? "Yes" : "No"}</td>
                 <td className="p-4">
-                  {user.subscriptionEndDate
-                    ? new Date(user.subscriptionEndDate).toLocaleString()
+                  {user.subscriptionStartDate &&
+                  !isNaN(new Date(user.subscriptionStartDate).getTime())
+                    ? new Date(user.subscriptionStartDate).toLocaleString(
+                        "en-US",
+                        {
+                          weekday: "short", // e.g., "Mon"
+                          year: "numeric", // e.g., "2024"
+                          month: "short", // e.g., "Nov"
+                          day: "numeric", // e.g., "11"
+                          hour: "numeric",
+                          minute: "numeric",
+                          second: "numeric",
+                        }
+                      )
                     : "N/A"}
                 </td>
+                <td className="p-4">
+                  {user.subscriptionEndDate &&
+                  !isNaN(new Date(user.subscriptionEndDate).getTime())
+                    ? new Date(user.subscriptionEndDate).toLocaleString(
+                        "en-US",
+                        {
+                          weekday: "short", // e.g., "Mon"
+                          year: "numeric", // e.g., "2024"
+                          month: "short", // e.g., "Nov"
+                          day: "numeric", // e.g., "11"
+                          hour: "numeric",
+                          minute: "numeric",
+                          second: "numeric",
+                        }
+                      )
+                    : "N/A"}
+                </td>
+
                 <td className="p-4">{user.role}</td>
                 <td className="p-4">{user.favoriteGenre}</td>
                 <td className="p-4">

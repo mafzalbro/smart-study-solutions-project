@@ -39,19 +39,13 @@ exports.createCheckoutSession = async (req, res) => {
 
 exports.stripeWebhook = async (req, res) => {
   console.log("Webhook received:", req.body); // Log request body
-  // existing code ...
 
   const sig = req.headers["stripe-signature"];
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(
-      req.rawBody,
-      sig,
-      endpointSecret
-    );
+    event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
   } catch (err) {
     console.error("Webhook signature verification failed:", err);
     return res.status(400).send(`Webhook error: ${err.message}`);
@@ -63,10 +57,13 @@ exports.stripeWebhook = async (req, res) => {
         const session = event.data.object;
         const userId = session.metadata.userId;
 
-        // Update the user's subscription status in the database
+        // Update user's subscription status in the database
         await User.findByIdAndUpdate(userId, {
           isMember: true,
-          subscriptionStartDate: new Date(),
+          subscriptionStartDate: new Date(), // Set the current date for the subscription start
+          subscriptionEndDate: new Date(
+            session.subscription.current_period_end * 1000
+          ), // Set the subscription end date from Stripe's period end timestamp
         });
         console.log("User subscription successful:", userId);
         break;
@@ -74,13 +71,16 @@ exports.stripeWebhook = async (req, res) => {
       case "customer.subscription.deleted":
         const deletedUser = await User.findByIdAndUpdate(
           event.data.object.metadata.userId,
-          { isMember: false, subscriptionEndDate: new Date() },
+          {
+            isMember: false,
+            subscriptionEndDate: new Date(), // Set the current date when subscription is deleted
+          },
           { new: true }
         );
         console.log("User subscription cancelled:", deletedUser);
         break;
 
-      // Add more cases for other Stripe events if needed
+      // You can add more event types here as necessary
       default:
         console.log(`Unhandled event type: ${event.type}`);
     }

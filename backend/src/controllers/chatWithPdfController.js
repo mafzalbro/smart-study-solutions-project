@@ -247,10 +247,10 @@ const chatWithPdfBySlug = async (req, res) => {
       chatOption = user.chatOptions[0];
     }
 
-    const apiKey = user.apiKey;
-    if (!apiKey) {
-      return res.send('<p>Please <a href="/chat/test-api" style="color: lightblue;" target="_blank">Enter API Key</a></p>');
-    }
+    // const apiKey = user.apiKey;
+    // if (!apiKey) {
+    //   return res.send('<p>Please <a href="/chat/test-api" style="color: lightblue;" target="_blank">Enter API Key</a></p>');
+    // }
 
     chatOption.title = title;
 
