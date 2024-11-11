@@ -95,20 +95,18 @@ export default function SubscribePage() {
         Join Our Membership
       </h1>
 
-      <div className="flex justify-center gap-8">
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
         {/* Free Version */}
         <div className="bg-secondary dark:bg-neutral-800 shadow-lg rounded-lg p-6 w-72">
-          <h2 className="text-xl font-semibold text-center mb-4">
-            Free Version
-          </h2>
+          <h2 className="text-xl font-semibold mb-4">Free Version</h2>
           <p className="text-neutral-700 dark:text-neutral-100 mb-2">
-            Limited access to AI chat (20 chats/day)
+            - Limited access to AI chat (10 queries/day)
           </p>
           <p className="text-neutral-700 dark:text-neutral-100 mb-2">
-            Access 2 documents per day
+            - Access 2 documents per day
           </p>
           <p className="text-neutral-700 dark:text-neutral-100 mb-4">
-            Limited access to the Q&A forum
+            - Limited access to the Q&A forum
           </p>
           <div className="mt-10 text-center">
             <Link
@@ -122,12 +120,12 @@ export default function SubscribePage() {
 
         {/* Paid Version */}
         <div className="bg-accent-600 text-white shadow-lg rounded-lg p-6 w-72">
-          <h2 className="text-xl font-semibold text-center mb-4">
-            Paid Version
-          </h2>
-          <p className="mb-2">Unlimited access to AI chat</p>
-          <p className="mb-2">Unlimited PDF downloads</p>
-          <p className="mb-4">Access to the Q&A forum with teacher's answers</p>
+          <h2 className="text-xl font-semibold mb-4">Paid Version</h2>
+          <p className="mb-2">- Unlimited access to AI chat</p>
+          <p className="mb-2">- Unlimited PDF downloads</p>
+          <p className="mb-4">
+            - Access to the Q&A forum with teacher's answers
+          </p>
           <button
             onClick={handleCheckout}
             disabled={loading}

@@ -37,23 +37,29 @@ exports.createCheckoutSession = async (req, res) => {
   }
 };
 
-
 exports.stripeWebhook = async (req, res) => {
-  const sig = req.headers['stripe-signature'];
+  console.log("Webhook received:", req.body); // Log request body
+  // existing code ...
+
+  const sig = req.headers["stripe-signature"];
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-  
+
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+    event = stripe.webhooks.constructEvent(
+      req.rawBody,
+      sig,
+      endpointSecret
+    );
   } catch (err) {
-    console.error('Webhook signature verification failed:', err);
+    console.error("Webhook signature verification failed:", err);
     return res.status(400).send(`Webhook error: ${err.message}`);
   }
 
   try {
     switch (event.type) {
-      case 'checkout.session.completed':
+      case "checkout.session.completed":
         const session = event.data.object;
         const userId = session.metadata.userId;
 
@@ -62,16 +68,16 @@ exports.stripeWebhook = async (req, res) => {
           isMember: true,
           subscriptionStartDate: new Date(),
         });
-        console.log('User subscription successful:', userId);
+        console.log("User subscription successful:", userId);
         break;
-      
-      case 'customer.subscription.deleted':
+
+      case "customer.subscription.deleted":
         const deletedUser = await User.findByIdAndUpdate(
           event.data.object.metadata.userId,
           { isMember: false, subscriptionEndDate: new Date() },
           { new: true }
         );
-        console.log('User subscription cancelled:', deletedUser);
+        console.log("User subscription cancelled:", deletedUser);
         break;
 
       // Add more cases for other Stripe events if needed
@@ -79,14 +85,12 @@ exports.stripeWebhook = async (req, res) => {
         console.log(`Unhandled event type: ${event.type}`);
     }
 
-    res.status(200).send('Event received');
+    res.status(200).send("Event received");
   } catch (error) {
-    console.error('Error handling Stripe webhook:', error);
+    console.error("Error handling Stripe webhook:", error);
     res.status(400).send(`Webhook error: ${error.message}`);
   }
 };
-
-
 
 exports.createJazzCashPayment = async (req, res) => {
   const { amount, description, paymentMethod, customerMobile } = req.body;

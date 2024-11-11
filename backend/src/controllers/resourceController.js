@@ -286,7 +286,7 @@ const addResource = async (req, res) => {
       semester,
       degree,
       profileImage,
-      pdfLink: pdfLink ? pdfLink : source,
+      pdfLink: pdfLink ? [pdfLink] : [source],
     });
     await newResource.save();
     res
@@ -294,7 +294,11 @@ const addResource = async (req, res) => {
       .json({ message: "Resource added successfully", resource: newResource });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error adding resource" });
+    res
+      .status(500)
+      .json({
+        message: "Error adding resource" + (error ? error : ""),
+      });
   }
 };
 

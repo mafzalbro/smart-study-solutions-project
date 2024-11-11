@@ -13,7 +13,7 @@ const Announcement = ({ data, index }) => {
         <div className="relative flex flex-col md:flex-row min-h-[80vh] md:h-[80vh] w-full overflow-hidden mb-4">
           {/* Full Background Image Section */}
           <div
-            className="absolute inset-0 bg-cover bg-center opacity-10 blur-md"
+            className="absolute inset-0 bg-cover bg-center opacity-30 blur-md"
             style={{
               backgroundImage: `url(${
                 data.image ? data.image : "/resources/header.png"
@@ -45,6 +45,7 @@ const Announcement = ({ data, index }) => {
           >
             {data.title && (
               <StylishTitle
+                noSpaces={true}
                 tagName="h2"
                 colored={data.title}
                 className="text-3xl sm:text-4xl font-extrabold mb-4"

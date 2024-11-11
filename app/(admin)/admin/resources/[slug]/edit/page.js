@@ -16,12 +16,12 @@ const EditResourcePage = ({ params: { slug } }) => {
   const fileInputRef = useRef(null);
 
   // Separate state variables for each resource property
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [tags, setTags] = useState('');
-  const [semester, setSemester] = useState('');
-  const [degree, setDegree] = useState('');
-  const [type, setType] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [tags, setTags] = useState("");
+  const [semester, setSemester] = useState("");
+  const [degree, setDegree] = useState("");
+  const [type, setType] = useState("");
   const [imageBase64, setImageBase64] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
 
@@ -40,6 +40,10 @@ const EditResourcePage = ({ params: { slug } }) => {
         setType(data.type);
         setProfileImage(data.profileImage); // Set the profile image URL
       } catch (error) {
+        if (error === "Resource Not Found") {
+          router.push("/admin/resources");
+          toast.error("Resource Does not exists...");
+        }
         console.error("Failed to fetch resource", error);
       }
     };
@@ -68,14 +72,14 @@ const EditResourcePage = ({ params: { slug } }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const updatedResource = { 
-        title, 
-        description, 
-        tags, 
-        semester, 
-        degree, 
-        type, 
-        profileImage: imageBase64 
+      const updatedResource = {
+        title,
+        description,
+        tags,
+        semester,
+        degree,
+        type,
+        profileImage: imageBase64,
       };
 
       await fetcher(
@@ -87,7 +91,9 @@ const EditResourcePage = ({ params: { slug } }) => {
       toast.success("Resource updated successfully!");
       router.back();
     } catch (error) {
-      toast.error("Failed to update resource.");
+      toast.error(
+        "Failed to update resource." + (error ? JSON.stringify(error) : "")
+      );
       console.error("Failed to update resource", error);
     }
   };
@@ -181,7 +187,10 @@ const EditResourcePage = ({ params: { slug } }) => {
             handleRemoveImage={handleRemoveImage}
           />
 
-          <button type="submit" className={`inline-flex cursor-pointer items-center space-x-2 py-2 px-4 text-accent-900 bg-accent-100 hover:bg-accent-200 dark:bg-accent-300 dark:hover:bg-accent-400 rounded-lg text-center`}>
+          <button
+            type="submit"
+            className={`inline-flex cursor-pointer items-center space-x-2 py-2 px-4 text-accent-900 bg-accent-100 hover:bg-accent-200 dark:bg-accent-300 dark:hover:bg-accent-400 rounded-lg text-center`}
+          >
             Save Changes
           </button>
         </form>

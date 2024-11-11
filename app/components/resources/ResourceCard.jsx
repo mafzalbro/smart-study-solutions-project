@@ -13,7 +13,7 @@ const ResourceCard = ({ resource, noImg }) => {
           // srcSet="/user/user.png"
           alt={resource.title}
           className="w-full h-60 object-cover rounded-2xl mb-4 min-h-60"
-          // mix-blend-multiply 
+          // mix-blend-multiply
         />
       )}
       <Link href={`/resources/${resource.slug}`}>
@@ -21,12 +21,14 @@ const ResourceCard = ({ resource, noImg }) => {
           <h2 className="text-3xl hover:text-link">{resource.title}</h2>
         )}
       </Link>
-      {(resource.likes || resource.semester) && (
+      {resource.likes || resource.semester ? (
         <div className="mt-4 flex text-sm gap-2 flex-wrap capitalize">
-          {resource.likes && (
+          {resource.likes ? (
             <p className="text-neutral-600 dark:text-neutral-300 bg-neutral-200 dark:bg-neutral-800 px-4 py-2 rounded-full">
               {resource.likes} Likes
             </p>
+          ) : (
+            ""
           )}
           {resource.semester && (
             <p className="text-neutral-600 dark:text-neutral-300 bg-neutral-200 dark:bg-neutral-800 px-4 py-2 rounded-full">
@@ -47,7 +49,7 @@ const ResourceCard = ({ resource, noImg }) => {
               <BiSolidRightTopArrowCircle size={20} className="ml-2" />
             </Link>
           )}
-          {resource.type && (
+          {resource.type ? (
             <Link
               className="text-neutral-600 dark:text-neutral-300 bg-neutral-200 dark:bg-neutral-800 px-4 py-2 rounded-full hover:text-link dark:hover:text-link cursor-pointer flex justify-center items-center"
               href={`/resources/${resource.degree
@@ -62,8 +64,12 @@ const ResourceCard = ({ resource, noImg }) => {
               {resource.type}
               <BiSolidRightTopArrowCircle size={20} className="ml-2" />
             </Link>
+          ) : (
+            ""
           )}
         </div>
+      ) : (
+        ""
       )}
       {/* {resource.description && <p className="mt-4 text-neutral-600 dark:text-neutral-300">{resource.description}</p>} */}
     </div>

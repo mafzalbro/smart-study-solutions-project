@@ -15,7 +15,7 @@ const AnnouncementSkeleton = () => {
     <div className="relative flex flex-col md:flex-row min-h-[80vh] w-full overflow-hidden mb-4">
       {/* Full Background Image Section Skeleton */}
       <div
-        className="absolute inset-0 bg-gray-300 animate-pulse opacity-40 blur-md"
+        className="absolute inset-0 animate-pulse opacity-40 blur-md"
         style={{
           zIndex: -1, // Place the full background image behind the content
         }}

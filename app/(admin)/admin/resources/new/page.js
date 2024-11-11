@@ -9,6 +9,7 @@ import FileUploadComponent from "@/app/(admin)/components/admin/FileUploadCompon
 import { fetcher } from "@/app/(admin)/utils/fetcher";
 import imageCompression from "browser-image-compression";
 import { toast } from "react-toastify";
+import { removeOlderCacheAfterMutation } from "@/app/utils/caching";
 
 const AddResourcePage = () => {
   const router = useRouter();
@@ -92,10 +93,13 @@ const AddResourcePage = () => {
         "POST",
         newResource
       );
+      removeOlderCacheAfterMutation("/api/resources")
       toast.success("Resource added successfully!");
       router.push("/admin/resources");
     } catch (error) {
-      toast.error("Failed to add resource.");
+      toast.error(
+        "Failed to add resource." + (error ? JSON.stringify(error) : "")
+      );
       console.error("Failed to add resource", error);
     } finally {
       setIsLoading(false);

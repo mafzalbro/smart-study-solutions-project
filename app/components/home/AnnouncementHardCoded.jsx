@@ -30,7 +30,7 @@ const AnnouncementHardCoded = () => {
 
         {/* Full Background Image Section */}
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-10 blur-md"
+          className="absolute inset-0 bg-cover bg-center  opacity-30 dark:opacity-20 blur-md"
           style={{
             backgroundImage: `url(${data.image})`,
             zIndex: -1, // Place the full background image behind the content

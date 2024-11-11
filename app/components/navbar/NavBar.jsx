@@ -282,7 +282,7 @@ const NavBar = () => {
               )}
             </ul>
             {isLoggedIn ? (
-              <div ref={dropdownRef} className="relative ml-4">
+              <div ref={dropdownRef} className="relative ml-4 text-xs sm:text-base">
                 <div
                   className="cursor-pointer w-10 h-10 rounded-full overflow-hidden border-2 border-white dark:border-neutral-800"
                   onClick={handleProfileClick}
@@ -320,7 +320,7 @@ const NavBar = () => {
               </div>
             ) : (
               <Link href="/login" passHref>
-                <button className="ml-4 py-2 px-4 bg-link text-white rounded-lg shadow-md hover:bg-link-hover dark:bg-link-hover dark:hover:bg-link">
+                <button className="ml-4 py-2 px-4 bg-link text-white rounded-lg shadow-md hover:bg-link-hover dark:bg-link-hover dark:hover:bg-link text-xs sm:text-base">
                   Log In
                 </button>
               </Link>
