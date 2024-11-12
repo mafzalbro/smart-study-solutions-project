@@ -3,7 +3,71 @@ const { extractTextFromPdf } = require("../utils/pdfUtils");
 const { generateChatResponse } = require("../utils/chatUtils");
 const { paginateResultsForArray } = require("../utils/pagination");
 const { getAIMessage } = require("../utils/getAIMessage");
-const moment = require("moment");
+const NodeCache = require("node-cache");
+const { fetchVideosFromPrompt } = require("../services/youtubeSearch");
+const cache = new NodeCache({ stdTTL: 300 }); // Cache TTL of 5 minutes
+
+const getSearch = async (req, res) => {
+  const { query } = req.query;
+
+  console.log({ query });
+
+  // Validate the query
+  if (!query || typeof query !== "string" || query.trim().length === 0) {
+    return res
+      .status(400)
+      .json({ message: "Invalid query. A non-empty string is required." });
+  }
+
+  // Check cache first
+  const cachedResult = cache.get(query);
+  if (cachedResult) {
+    return res.status(200).json({
+      message: "Results retrieved from cache",
+      query,
+      data: cachedResult,
+      cached: true,
+    });
+  }
+
+  try {
+    // Fetch data from YouTube API via the helper
+    const startTime = Date.now();
+    const data = await fetchVideosFromPrompt(query);
+    const responseTime = Date.now() - startTime;
+
+    // Cache the result
+    cache.set(query, data);
+
+    res.status(200).json({
+      message: "Results fetched successfully",
+      query,
+      responseTime: `${responseTime}ms`,
+      data,
+      cached: false,
+    });
+  } catch (error) {
+    console.error("Error fetching YouTube videos:", error.message);
+
+    // Retry logic (one retry if the first attempt fails)
+    try {
+      const retryData = await fetchVideosFromPrompt(query);
+      res.status(200).json({
+        message: "Results fetched successfully (after retry)",
+        query,
+        data: retryData,
+        cached: false,
+        retry: true,
+      });
+    } catch (retryError) {
+      console.error("Retry failed:", retryError.message);
+      res.status(500).json({
+        message: "Failed to fetch videos after retry",
+        error: retryError.message,
+      });
+    }
+  }
+};
 
 const createChatOption = async (req, res) => {
   const { title, pdfUrl } = req.body;
@@ -572,18 +636,19 @@ const fetchAPIKey = async (req, res) => {
 // Controller function to fetch today's information for a user
 const getTodaysUserInfo = async (req, res) => {
   try {
-    // Get the user ID from the request (assuming it's passed via req.params or req.user)
-    const userId = req.params.userId || req.user._id; // Adjust based on your auth middleware setup
+    const userId = req.user.id;
 
     // Get today's start and end date
-    const startOfDay = moment().startOf("day").toDate();
-    const endOfDay = moment().endOf("day").toDate();
+    // const startOfDay = moment().startOf("day").toDate();
+    // const endOfDay = moment().endOf("day").toDate();
 
     // Query the user document to fetch today's data
     const user = await User.findOne({
       _id: userId,
-      createdAt: { $gte: startOfDay, $lt: endOfDay }, // or any other field you need
-    }).lean().select("chatOptionsUsed queriesUsed lastResetDate isMember"); // Using lean() for performance since we don't need Mongoose documents
+      // createdAt: { $gte: startOfDay, $lt: endOfDay }, // or any other field you need
+    })
+      // .lean()
+      .select("chatOptionsUsed queriesUsed lastResetDate isMember"); // Using lean() for performance since we don't need Mongoose documents
 
     // If the user is found, send back the info, else return a 404
     if (!user) {
@@ -607,6 +672,7 @@ const getTodaysUserInfo = async (req, res) => {
 };
 
 module.exports = {
+  getSearch,
   createChatOption,
   updateChatOption,
   removeChatOption,

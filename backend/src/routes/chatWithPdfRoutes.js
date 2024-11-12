@@ -12,13 +12,18 @@ const {
   setupAPIKey,
   fetchAPIKey,
   getTodaysUserInfo,
+  getSearch,
 } = require("../controllers/chatWithPdfController");
 const { auth } = require("../middlewares/auth");
+
+
+router.get("/search-vidoes", auth, getSearch);
 
 // Get all chats
 router.get("/", auth, getAllChatOptions);
 
 router.get("/info", auth, getTodaysUserInfo);
+
 
 // Create a new chat option
 router.post("/create", auth, createChatOption);

@@ -16,7 +16,7 @@ const changeExpirationTime = (
 // Get cached data and check expiration
 export const getCachedData = async (key) => {
   changeExpirationTime(key);
-  
+
   // console.log({CACHE_EXPIRATION, key})
 
   const cache = await caches.open(CACHE_NAME);
@@ -79,17 +79,17 @@ export const clearExpiredCache = async () => {
 
 // Clear all user cache history
 export const removeUserCacheHistory = async () => {
-
   // const token = localStorage.getItem('token')
 
-    const cache = await caches.open(CACHE_NAME);
-    const keys = await cache.keys();
-    try {
-      keys.forEach(async (request) => {
-        await cache.delete(request); // Remove matching cached request
-      });
-    } catch (e) {
-      // If parsing fails, skip and continue
-      console.error(`Error clearing history`, e);
-    }
+  const cache = await caches.open(CACHE_NAME);
+  const keys = await cache.keys();
+  try {
+    keys.forEach(async (request) => {
+      await cache.delete(request); // Remove matching cached request
+    });
+  } catch (e) {
+    // If parsing fails, skip and continue
+    console.error(`Error clearing history`, e);
+  }
 };
+removeUserCacheHistory();

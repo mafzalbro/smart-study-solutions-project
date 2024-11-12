@@ -29,6 +29,7 @@ const resourceRoutes = require("./src/routes/resourceRoutes");
 const userRoutes = require("./src/routes/userRoutes");
 const contactRoutes = require("./src/routes/contactRoutes");
 const paymentsRoutes = require("./src/routes/paymentsRoutes");
+const whatsappRoutes = require("./src/routes/whatsappRoutes");
 
 // Database Connection
 connect(); // Connect to MongoDB
@@ -94,6 +95,7 @@ app.use("/api/resources", resourceRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/payments", paymentsRoutes);
+app.use("/api/whatsapp", whatsappRoutes);
 
 // Swagger UI setup
 app.use("/api/docs-setup", swaggerUi.serve, swaggerUi.setup(swaggerFile));

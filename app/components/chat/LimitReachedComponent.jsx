@@ -11,36 +11,38 @@ const LimitReachedComponent = ({
   const [timeLeft, setTimeLeft] = useState(null);
 
   useEffect(() => {
-    if (userChatInfo.lastResetDate) {
-      const interval = setInterval(() => {
-        const currentTime = new Date();
-        const lastReset = new Date(userChatInfo.lastResetDate);
-        const twoHours = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
-        const timeElapsed = currentTime - lastReset;
+    if (userChatInfo) {
+      if (userChatInfo?.lastResetDate) {
+        const interval = setInterval(() => {
+          const currentTime = new Date();
+          const lastReset = new Date(userChatInfo.lastResetDate);
+          const twoHours = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+          const timeElapsed = currentTime - lastReset;
 
-        if (timeElapsed < twoHours) {
-          const remainingTime = twoHours - timeElapsed;
-          const minutesLeft = Math.floor(remainingTime / 60000);
-          const secondsLeft = Math.floor((remainingTime % 60000) / 1000);
-          setTimeLeft(`${minutesLeft}m ${secondsLeft}s`);
-        } else {
-          setTimeLeft("Time Out Ended");
+          if (timeElapsed < twoHours) {
+            const remainingTime = twoHours - timeElapsed;
+            const minutesLeft = Math.floor(remainingTime / 60000);
+            const secondsLeft = Math.floor((remainingTime % 60000) / 1000);
+            setTimeLeft(`${minutesLeft}m ${secondsLeft}s`);
+          } else {
+            setTimeLeft("Time Out Ended");
+          }
+        }, 1000);
+
+        if (timeLeft == "Time Out Ended") {
+          fetchChatInfo ? fetchChatInfo() : null;
         }
-      }, 1000);
 
-      if (timeLeft == "Time Out Ended") {
-        fetchChatInfo ? fetchChatInfo() : null;
+        return () => clearInterval(interval);
       }
-
-      return () => clearInterval(interval);
     }
-  }, [userChatInfo.lastResetDate, setUserChatInfo]);
+  }, [userChatInfo?.lastResetDate, setUserChatInfo]);
 
-  if (userChatInfo.isMember) {
+  if (userChatInfo?.isMember) {
     return null; // Don't render anything for members
   }
 
-  if (userChatInfo.queriesUsed === undefined) {
+  if (userChatInfo?.queriesUsed === undefined) {
     return (
       <div className="p-2 text-center text-sm sm:text-md animate-pulse text-gray-500 dark:text-gray-400">
         Loading...
