@@ -1,26 +1,26 @@
-const NodeCache = require('node-cache');
+const NodeCache = require("node-cache");
 
 // Initialize cache with a 1-minute expiration (60 seconds)
 const cache = new NodeCache({ stdTTL: 15, checkperiod: 30 });
 
 // Cache middleware
 const cacheMiddleware = (req, res, next) => {
-
   const key = req.originalUrl || req.url; // Use URL as the key
-  const slugs = ["/check-auth", "/api/admin"]
+  const slugs = ["/check-auth", "/api/admin", "/chat/info"];
 
   // Only cache GET requests
-  if (req.method !== 'GET'
-  // ){
-     || slugs.some((slug) => key.includes(slug))) {
+  if (
+    req.method !== "GET" ||
+    // ){
+    slugs.some((slug) => key.includes(slug))
+  ) {
     return next();
   }
-
 
   // Check if data is in cache
   const cachedData = cache.get(key);
   if (cachedData) {
-    console.log('Serving from cache:', key);
+    console.log("Serving from cache:", key);
     return res.json(cachedData); // Send cached response
   }
 

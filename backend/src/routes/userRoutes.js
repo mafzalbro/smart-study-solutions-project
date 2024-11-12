@@ -7,6 +7,7 @@ const {
   getUser,
   updateUserBySlug,
   deleteUserBySlug,
+  deleteCurrentUser,
   updateUserById,
   getLikedResources,
   getAllAnswersByUser,
@@ -20,7 +21,11 @@ const { adminAuth } = require("../middlewares/adminAuth");
 
 // Route to get all users
 
-router.get("/", getAllUsers);
+// router.get("/", getAllUsers);
+
+// Route to delete current user
+router.delete("/", auth, deleteCurrentUser);
+
 // Liked Resources
 router.get("/liked-resources", auth, getLikedResources);
 
@@ -35,6 +40,7 @@ router.get("/admin", adminAuth, getAllUsers);
 // Route to get a user
 router.get("/get/one", auth, getUser);
 
+
 // Route to get a user by ID
 // router.get('/:id', auth, getUserById);
 router.get("/:slug", getUserBySlug);
@@ -42,11 +48,10 @@ router.get("/:slug", getUserBySlug);
 // Route to update a user by ID
 router.put("/:id", auth, updateUserById);
 
-router.put("/:slug", adminAuth, updateUserBySlug);
+router.put("/update", adminAuth, updateUserBySlug);
 
-// Route to delete a user by ID
+// Route to delete a user by Slug
 router.delete("/:slug", adminAuth, deleteUserBySlug);
-
 
 
 module.exports = router;

@@ -62,48 +62,53 @@ export const AdminAuthProvider = ({ children }) => {
     }, [router, path]);
   }
 
-  if (!isAdminLoggedIn && !admin && !token) {
-    router.push("/admin/login");
-    return (
-      <div className="h-screen flex justify-center items-center gap-4 bg-primary text-secondary">
-        <AiOutlineLoading3Quarters className="animate-spin-fast duration-200 text-3xl" />
-        <span>Checking Access...</span>
-      </div>
-    );
-  }
+  if (path !== "/admin/login") {
+    if (!token) {
+      router.push("/admin/login");
+    }
 
-  if (token && !isAdminLoggedIn && !admin) {
-    return (
-      <div className="h-screen flex justify-center items-center gap-4 bg-primary text-secondary">
-        <AiOutlineLoading3Quarters className="animate-spin-fast text-3xl" />
-        <span>Loading Data...</span>
-      </div>
-    );
-  }
+    if (!isAdminLoggedIn && !admin && !token) {
+      return (
+        <div className="h-screen flex justify-center items-center gap-4 bg-primary text-secondary">
+          <AiOutlineLoading3Quarters className="animate-spin-fast duration-200 text-3xl" />
+          <span>Checking Access...</span>
+        </div>
+      );
+    }
 
-  if (token && admin?.message === "Admin Not Loaded") {
-    return (
-      <div className="h-screen flex justify-center items-center gap-4 bg-primary text-secondary">
-        <AiOutlineLock className="text-4xl" />
-        <span>Admin Dashboard Loading Failed!</span>
-      </div>
-    );
-  }
+    if (token && !isAdminLoggedIn && !admin) {
+      return (
+        <div className="h-screen flex justify-center items-center gap-4 bg-primary text-secondary">
+          <AiOutlineLoading3Quarters className="animate-spin-fast text-3xl" />
+          <span>Loading Data...</span>
+        </div>
+      );
+    }
 
-  const restrictedPaths = ["/admin/create-admin", "/admin/admins-list"];
+    if (token && admin?.message === "Admin Not Loaded") {
+      return (
+        <div className="h-screen flex justify-center items-center gap-4 bg-primary text-secondary">
+          <AiOutlineLock className="text-4xl" />
+          <span>Admin Dashboard Loading Failed!</span>
+        </div>
+      );
+    }
 
-  if (
-    restrictedPaths.some(
-      (pathname) => pathname === path && admin?.role === "admin"
-    )
-  ) {
-    router.push("/admin");
-    return (
-      <div className="h-screen flex justify-center items-center gap-4 bg-primary text-secondary">
-        <AiOutlineLock className="text-4xl" />
-        <span>Access Restricted</span>
-      </div>
-    );
+    const restrictedPaths = ["/admin/create-admin", "/admin/admins-list"];
+
+    if (
+      restrictedPaths.some(
+        (pathname) => pathname === path && admin?.role === "admin"
+      )
+    ) {
+      router.push("/admin");
+      return (
+        <div className="h-screen flex justify-center items-center gap-4 bg-primary text-secondary">
+          <AiOutlineLock className="text-4xl" />
+          <span>Access Restricted</span>
+        </div>
+      );
+    }
   }
 
   return (

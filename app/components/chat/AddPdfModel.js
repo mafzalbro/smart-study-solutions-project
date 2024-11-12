@@ -4,7 +4,7 @@ import NewChatButton from "./NewChatButton";
 import Link from "next/link";
 import { BiSolidHappyHeartEyes } from "react-icons/bi";
 
-const AddPdfModel = ({ isOpen, onClose, onCreateNewChat }) => {
+const AddPdfModel = ({ isOpen, onClose, onCreateNewChat, userChatInfo }) => {
   if (!isOpen) return null;
 
   return (
@@ -31,6 +31,7 @@ const AddPdfModel = ({ isOpen, onClose, onCreateNewChat }) => {
           >
             <FaTimes className="mr-2" /> Cancel
           </button>
+          {/* {userChatInfo?.chatOptionsUsed !==2 && <NewChatButton />} */}
           <NewChatButton />
         </div>
       </div>

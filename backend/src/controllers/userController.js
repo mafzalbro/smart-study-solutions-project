@@ -1,7 +1,10 @@
 // controllers/userController.js
 const User = require("../models/user");
 const Resource = require("../models/resource");
-const { paginateResults, paginateResultsForArray } = require("../utils/pagination");
+const {
+  paginateResults,
+  paginateResultsForArray,
+} = require("../utils/pagination");
 const Question = require("../models/qna");
 
 // const bcrypt = require('bcrypt');
@@ -193,6 +196,25 @@ const deleteUserBySlug = async (req, res) => {
     res.status(500).json({ message: "Error deleting user" });
   }
 };
+
+// Delete a user by Slug
+const deleteCurrentUser = async (req, res) => {
+  const { id } = req.user;
+  try {
+    const deletedUser = await User.findByIdAndDelete(id);
+
+    console.log({ deletedUser });
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error deleting user" });
+  }
+};
+
 // Controller to get all liked resources by a user
 const getLikedResources = async (req, res) => {
   const { page = 1, limit = 5 } = req.query;
@@ -239,12 +261,12 @@ const getAllAnswersByUser = async (req, res) => {
     // Fetch all questions where the user has answered
     const questionsWithAnswers = await Question.find({
       "answers.answeredBy": req.user.id,
-    })
-      // .populate({
-      //   path: "answers.answeredBy",
-      //   select: "username profileImage", // Populate the user info for the answer
-      // })
-      // .exec();
+    });
+    // .populate({
+    //   path: "answers.answeredBy",
+    //   select: "username profileImage", // Populate the user info for the answer
+    // })
+    // .exec();
 
     // Flatten the array of answers to just return answers by the user
     const answersByUser = questionsWithAnswers.reduce((answers, question) => {
@@ -297,8 +319,10 @@ const getAllQuestionsByUser = async (req, res) => {
     }
 
     // Fetch all questions where the user is the one who asked
-    const questionsQuery = Question.find({ askedBy: req.user.id }).select('question slug createdAt')
-    
+    const questionsQuery = Question.find({ askedBy: req.user.id }).select(
+      "question slug createdAt"
+    );
+
     // .populate(
     //   "askedBy",
     //   "username profileImage"
@@ -335,6 +359,7 @@ module.exports = {
   updateUserById,
   updateUserBySlug,
   deleteUserBySlug,
+  deleteCurrentUser,
   getLikedResources,
   getAllAnswersByUser,
   getAllQuestionsByUser,

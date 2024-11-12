@@ -69,7 +69,7 @@ export default function Admins() {
 
   return (
     <div className="p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg shadow overflow-auto">
-      <div className="flex flex-col sm:flex-row items-center justify-between mb-6">
+      <div className="flex flex-col items-center justify-between mb-6">
         <div className="flex items-center justify-between w-full gap-4">
           <GeneralExportButton
             resource="admins"

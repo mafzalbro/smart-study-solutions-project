@@ -61,4 +61,30 @@ adminSchema.post("save", async function (doc) {
   }
 });
 
+// Custom static method to create login notifications
+adminSchema.statics.createLoginNotification = async function (
+  adminId,
+  ipAddress,
+  location = null
+) {
+  try {
+    const admin = await this.findById(adminId);
+    if (!admin) {
+      throw new Error("Admin not found");
+    }
+
+    const locationInfo = location ? ` from location: ${location}` : "";
+    const message = `Admin "${admin.username}" logged in with IP: ${ipAddress}${locationInfo}.`;
+
+    await NotificationService.createNotification(
+      admin._id,
+      message,
+      "admin_login"
+    );
+    console.log("Login notification created successfully");
+  } catch (error) {
+    console.error("Failed to create login notification:", error);
+  }
+};
+
 module.exports = mongoose.model("Admin", adminSchema);

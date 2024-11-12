@@ -21,6 +21,8 @@ const auth = async (req, res, next) => {
       return res.status(401).json({ message: "Unauthorized, user not found" });
     }
 
+    user.resetDailyLimitsIfNeeded();
+
     // Attach user data to request object
     req.user = user;
 

@@ -5,16 +5,15 @@ import { useAuth } from "../../customHooks/AdminAuthProvider";
 import { useEffect } from "react";
 
 const AdminWrapper = ({ children }) => {
-  // const { admin } = useAuth();
+  const { token } = useAuth();
   const path = usePathname();
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem("admin_token");
     if (token) {
-      router.push("/admin");
+      router.push(path.includes("/admin") ? path : "/admin");
     } else {
-      router.push("/admin/login");
+      router.replace("/admin/login");
     }
   }, [router]);
 

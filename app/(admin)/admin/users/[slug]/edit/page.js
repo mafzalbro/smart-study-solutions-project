@@ -43,7 +43,7 @@ const EditUserPage = ({ params: { slug } }) => {
     e.preventDefault();
     try {
       const updatedUser = { username, fullname, email, favoriteGenre, role };
-      await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/user/${slug}`, "PUT", updatedUser);
+      await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/user/update`, "PUT", updatedUser);
       toast.success("User updated successfully!");
       router.push("/admin/users");
     } catch (error) {

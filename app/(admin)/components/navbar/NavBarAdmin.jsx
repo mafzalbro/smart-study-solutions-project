@@ -111,9 +111,11 @@ const NavBarAdmin = () => {
   if (admin === null) {
     return (
       <nav
-        className={`sticky top-0 translate-y-0 z-50 bg-opacity-80 dark:bg-opacity-80 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-3 px-4 md:p-4 shadow-lg text-primary dark:text-secondary ${
-          scrollDirection === "down" ? "translate-y-[-100%]" : "translate-y-0"
-        }`}
+        className={`sticky top-0 translate-y-0 z-50 bg-opacity-80 dark:bg-opacity-80 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-3 px-4 md:p-4 text-primary dark:text-secondary
+          ${lastScrollTop < 100 ? "" : "shadow-lg"}
+          ${
+            scrollDirection === "down" ? "translate-y-[-100%]" : "translate-y-0"
+          }`}
       >
         <div className="container mx-auto flex justify-between items-center">
           <Skeleton width={100} height={30} />
@@ -146,9 +148,11 @@ const NavBarAdmin = () => {
 
   return (
     <nav
-      className={`sticky top-0 z-50 bg-opacity-80 dark:bg-opacity-50 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-2 px-4 md:p-4 shadow-lg text-primary dark:text-secondary ${
-        scrollDirection === "down" ? "translate-y-[-100%]" : "translate-y-0"
-      }`}
+      className={`sticky top-0 z-50 bg-opacity-80 dark:bg-opacity-50 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-2 px-4 md:p-4 text-primary dark:text-secondary 
+          ${lastScrollTop < 100 ? "" : "shadow-lg"}
+        ${
+          scrollDirection === "down" ? "translate-y-[-100%]" : "translate-y-0"
+        }`}
     >
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/">

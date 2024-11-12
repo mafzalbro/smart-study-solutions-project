@@ -3,6 +3,7 @@ const { extractTextFromPdf } = require("../utils/pdfUtils");
 const { generateChatResponse } = require("../utils/chatUtils");
 const { paginateResultsForArray } = require("../utils/pagination");
 const { getAIMessage } = require("../utils/getAIMessage");
+const moment = require("moment");
 
 const createChatOption = async (req, res) => {
   const { title, pdfUrl } = req.body;
@@ -15,6 +16,17 @@ const createChatOption = async (req, res) => {
         .status(404)
         .json({ message: "User not found. Please log in to continue." });
     }
+
+    // Reset daily limits if necessary
+    await user.resetDailyLimitsIfNeeded();
+
+    if (!user.canCreateChatOption()) {
+      return res
+        .status(403)
+        .json({ message: "Daily chat option limit reached." });
+    }
+
+    user.chatOptionsUsed += 1; // Increment chat option usage
 
     // Check if there is an existing empty chat
     let existingEmptyChatOption = user.chatOptions.find(
@@ -288,6 +300,15 @@ const chatWithPdfBySlug = async (req, res) => {
         .send("<p>User not found. You must be logged in.</p>");
     }
 
+    // Reset daily limits if necessary
+    await user.resetDailyLimitsIfNeeded();
+
+    // Check if the user can create a new query or chat option
+    if (!user.canCreateQuery()) {
+      return res.status(403).json({ message: "Daily query limit reached." });
+    }
+
+    user.queriesUsed += 1; // Increment query usage
     let chatOption;
 
     if (slug) {
@@ -548,6 +569,43 @@ const fetchAPIKey = async (req, res) => {
   }
 };
 
+// Controller function to fetch today's information for a user
+const getTodaysUserInfo = async (req, res) => {
+  try {
+    // Get the user ID from the request (assuming it's passed via req.params or req.user)
+    const userId = req.params.userId || req.user._id; // Adjust based on your auth middleware setup
+
+    // Get today's start and end date
+    const startOfDay = moment().startOf("day").toDate();
+    const endOfDay = moment().endOf("day").toDate();
+
+    // Query the user document to fetch today's data
+    const user = await User.findOne({
+      _id: userId,
+      createdAt: { $gte: startOfDay, $lt: endOfDay }, // or any other field you need
+    }).lean().select("chatOptionsUsed queriesUsed lastResetDate isMember"); // Using lean() for performance since we don't need Mongoose documents
+
+    // If the user is found, send back the info, else return a 404
+    if (!user) {
+      return res.status(404).json({
+        message: "User's information for today not found",
+      });
+    }
+
+    // Send the user's info back in the response
+    res.status(200).json({
+      message: "User's information for today fetched successfully",
+      data: user,
+    });
+  } catch (error) {
+    console.error("Error fetching today's user info:", error);
+    res.status(500).json({
+      message: "Server error while fetching user's information for today",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createChatOption,
   updateChatOption,
@@ -559,4 +617,5 @@ module.exports = {
   getPdfTitles,
   setupAPIKey,
   fetchAPIKey,
+  getTodaysUserInfo,
 };

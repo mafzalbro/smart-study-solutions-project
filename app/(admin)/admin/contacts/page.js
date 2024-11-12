@@ -71,8 +71,7 @@ export default function Contacts() {
 
   return (
     <div className="p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg shadow overflow-auto">
-      <div className="flex flex-col sm:flex-row items-center justify-between mb-6">
-        <div className="flex items-center justify-between w-full gap-4">
+        <div className="flex items-center justify-between w-full my-4 gap-4">
           <GeneralExportButton
             resource="contacts"
             count={exportCount}
@@ -85,11 +84,8 @@ export default function Contacts() {
             icon={<BiPlus />}
             className="!mb-6"
           /> */}
-        </div>
-        <div className="flex items-center gap-2 w-full">
           <SearchInput onSearch={handleSearch} debounceDelay={1000} />
         </div>
-      </div>
 
       <table className="w-full border border-neutral-300 dark:border-neutral-600 rounded-lg overflow-hidden shadow">
         <thead>

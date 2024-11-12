@@ -55,19 +55,19 @@ const userSchema = new Schema(
       type: String,
       default: null,
     },
-      isMember: {
-        type: Boolean,
-        default: false,
-      },
-      subscriptionEndDate: {
-        type: Date,
-        default: null,
-      },
-      subscriptionStartDate: {
-        type: Date,
-        default: null,
-      },
-      emailVerified: {
+    isMember: {
+      type: Boolean,
+      default: false,
+    },
+    subscriptionEndDate: {
+      type: Date,
+      default: null,
+    },
+    subscriptionStartDate: {
+      type: Date,
+      default: null,
+    },
+    emailVerified: {
       type: Boolean,
       default: false,
     },
@@ -89,6 +89,18 @@ const userSchema = new Schema(
         return [{ title: "Default Chat", chatHistory: [] }];
       },
     },
+    queriesUsed: {
+      type: Number,
+      default: 0,
+    },
+    chatOptionsUsed: {
+      type: Number,
+      default: 0,
+    },
+    lastResetDate: {
+      type: Date,
+      default: Date.now,
+    },
     resetTokenExpiry: {
       type: Date,
       default: null,
@@ -101,11 +113,24 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-// Middleware to update updatedAt in chatOptions when user document is updated
-userSchema.pre("findOneAndUpdate", function (next) {
-  const update = this.getUpdate();
-  if (update && update.$set && update.$set["chatOptions"]) {
-    update.$set["chatOptions.$.updatedAt"] = new Date();
+userSchema.pre("save", function (next) {
+  // Check if chatOptions has been modified
+  if (!this.isNew) {
+    if (this.isModified("chatOptions")) {
+      // Get the path of the modified chatOption
+      const modifiedPaths = this.modifiedPaths();
+
+      // Find the modified option within chatOptions
+      const modifiedOption = modifiedPaths.find((path) =>
+        path.startsWith("chatOptions.")
+      );
+
+      // If a specific chatOption is modified, update only its updatedAt field
+      if (modifiedOption) {
+        const index = parseInt(modifiedOption.match(/\d+/)[0]); // Extract the index from modifiedOption path
+        this.chatOptions[index].updatedAt = new Date();
+      }
+    }
   }
   next();
 });
@@ -126,5 +151,47 @@ userSchema.post("save", async function (doc) {
     }
   }
 });
+
+// userSchema.methods.resetDailyLimitsIfNeeded = function () {
+//   const currentDate = new Date();
+//   const lastResetDate = new Date(this.lastResetDate);
+
+//   // Check if it's a new day (ignoring time part)
+//   if (currentDate.toDateString() !== lastResetDate.toDateString()) {
+//     this.queriesUsed = 0;
+//     this.chatOptionsUsed = 0;
+//     this.lastResetDate = currentDate;
+//     return this.save(); // Save the updated user document
+//   }
+
+//   return Promise.resolve();
+// };
+
+userSchema.methods.resetDailyLimitsIfNeeded = function () {
+  const currentDate = new Date();
+  const lastResetDate = new Date(this.lastResetDate);
+
+  // Calculate the time difference in milliseconds
+  const timeDifference = currentDate - lastResetDate;
+
+  // Check if it's been more than 10 minutes since the last reset
+  if (this.isMember || timeDifference >= 120 * 60 * 1000) {
+    // 10 minutes in milliseconds
+    this.queriesUsed = 0;
+    this.chatOptionsUsed = 0;
+    this.lastResetDate = currentDate;
+    return this.save(); // Save the updated user document
+  }
+
+  return Promise.resolve(); // No reset needed
+};
+
+userSchema.methods.canCreateQuery = function () {
+  return this.queriesUsed < 10; // Limit: 10 queries per day
+};
+
+userSchema.methods.canCreateChatOption = function () {
+  return this.chatOptionsUsed < 2; // Limit: 2 chat options per day
+};
 
 module.exports = mongoose.model("User", userSchema);

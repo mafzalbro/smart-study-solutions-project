@@ -148,11 +148,12 @@ const NavBar = () => {
         chatScroll?.removeEventListener("scroll", handleScroll);
       };
     }, [lastScrollTop]);
+    
 
     if (user === null) {
       return (
         <nav
-          className={`sticky top-0 translate-y-0 z-50 bg-opacity-80 dark:bg-opacity-80 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-3 px-4 md:p-4 shadow-lg text-primary dark:text-secondary ${
+          className={`sticky top-0 translate-y-0 z-50 bg-opacity-80 dark:bg-opacity-80 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-3 px-4 md:p-4 text-primary dark:text-secondary ${
             scrollDirection === "down" ? "translate-y-[-100%]" : "translate-y-0"
           }`}
         >
@@ -187,7 +188,7 @@ const NavBar = () => {
 
     return (
       <nav
-        className={`sticky top-0 z-50 bg-opacity-80 dark:bg-opacity-50 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-2 px-4 md:p-4 shadow-lg text-primary dark:text-secondary ${
+        className={`sticky top-0 z-50 bg-opacity-80 dark:bg-opacity-50 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-2 px-4 md:p-4 text-primary dark:text-secondary ${lastScrollTop < 100 ? "": "shadow-lg"} ${
           scrollDirection === "down" ? "translate-y-[-100%]" : "translate-y-0"
         }`}
       >

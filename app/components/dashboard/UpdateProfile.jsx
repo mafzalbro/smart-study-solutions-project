@@ -99,8 +99,6 @@ const UpdateProfile = () => {
         profileImage: imageBase64,
       };
 
-      console.log({ user });
-
       const response = await fetcher(
         `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/user/${user._id}`,
         "PUT",

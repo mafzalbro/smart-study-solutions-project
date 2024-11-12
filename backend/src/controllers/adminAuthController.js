@@ -1,5 +1,6 @@
 const Admin = require("../models/admin");
 const bcrypt = require("bcrypt");
+const geoip = require("geoip-lite");
 const jwt = require("jsonwebtoken");
 const { sendPasswordResetEmail } = require("../services/emailService"); // Adjust path as needed
 
@@ -88,6 +89,16 @@ const loginAdmin = async (req, res) => {
     const token = jwt.sign({ id: admin._id, role: admin.role }, JWT_SECRET, {
       expiresIn: remember ? JWT_EXPIRATION_EXTENDED : JWT_EXPIRATION,
     });
+
+    // const ipAddress = req.ip;
+    const ipAddress =
+      req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+
+    const geo = geoip.lookup(ipAddress); // Assuming IP geolocation
+    const location = geo ? `${geo.city}, ${geo.country}` : null;
+
+    // Trigger login notification
+    await Admin.createLoginNotification(admin._id, ipAddress, location);
 
     res.status(200).json({ message: "Logged in successfully", token });
   } catch (error) {

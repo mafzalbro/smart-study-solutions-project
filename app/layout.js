@@ -26,9 +26,13 @@ console.log(
 );
 
 const RootLayout = ({ children }) => {
+  // stacked // position="bottom-center" // draggable // newestOnTop //
+  // pauseOnHover // autoClose // containerId={font.className}
+  // theme="dark" // />
   return (
     <html lang="en">
       <body className={`${font.className} text-primary dark:text-secondary`}>
+        <ToastContainer theme="dark" />
         {/* <SkeletonTheme color="#eeeeee20" highlightColor="#44444420" baseColor='#eeeeee20'> */}
         <SkeletonTheme
           color="#eeeeee0"
@@ -40,16 +44,6 @@ const RootLayout = ({ children }) => {
               {/* <AppStateProvider> */}
               <ProgressBar>
                 <NavBar />
-                <ToastContainer
-                  stacked
-                  position="bottom-center"
-                  draggable
-                  newestOnTop
-                  pauseOnHover
-                  autoClose
-                  containerId={font.className}
-                  theme="dark"
-                />
                 {children}
               </ProgressBar>
               {/* </AppStateProvider> */}

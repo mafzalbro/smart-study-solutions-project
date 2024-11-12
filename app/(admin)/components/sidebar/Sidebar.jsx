@@ -122,7 +122,7 @@ export default function Sidebar() {
     return (
       admin && (
         <div
-          className={`top-14 z-50 shadow-2xl md:sticky sm:top-0 md:top-0 md:h-screen md:flex-col md:gap-4 flex flex-row gap-2 md:p-4 md:w-1/4 overflow-x-auto overflow-y-hidden whitespace-nowrap scrollbar-hide rounded-lg bg-neutral-200 dark:bg-neutral-800 md:bg-transparent md:dark:bg-transparent my-8 w-[90vw] mx-auto md:mx-0 md:my-0 pl-2 py-2`}
+          className={`top-14 z-30 shadow-lg md:sticky sm:top-0 md:top-0 md:h-screen md:flex-col md:gap-4 flex flex-row gap-2 md:p-4 md:w-1/4 overflow-x-auto overflow-y-hidden whitespace-nowrap scrollbar-hide rounded-lg bg-neutral-200 dark:bg-neutral-800 md:bg-transparent md:dark:bg-transparent my-8 w-[90vw] mx-auto md:mx-0 md:my-0 pl-2 py-2`}
         >
           {loading ? (
             <div className="flex md:flex-col gap-4">

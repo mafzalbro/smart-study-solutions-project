@@ -32,6 +32,8 @@ export default function MessageInput({
   chatHistory,
   addPdfURL,
   fetchChat,
+  userChatInfo,
+  fetchChatInfo,
 }) {
   const [message, setMessage] = useState("");
   const [reply, setReply] = useState("");
@@ -147,6 +149,7 @@ export default function MessageInput({
       setShowPdfInput(false);
       setIsSending(false);
       setPdfText("");
+      fetchChatInfo();
       if (inputRef && inputRef.current) {
         inputRef.current.focus();
       }
@@ -194,6 +197,7 @@ export default function MessageInput({
           setShowModal(false);
           // Add logic to create a new chat here
         }}
+        userChatInfo={userChatInfo}
       />
 
       <div className="flex flex-col">
@@ -215,7 +219,7 @@ export default function MessageInput({
         <div className="fixed md:relative bottom-0 left-0 right-0 bg-secondary dark:bg-neutral-800 p-1 flex items-center justify-between space-x-2">
           <button
             onClick={handlePdfButtonClick}
-            className="p-4 bg-accent-100 dark:bg-neutral-700 rounded-lg dark:text-secondary dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-accent-600"
+            className="p-4 rounded-lg dark:text-secondary dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-accent-600"
           >
             {/* Add PDF */}
             <TbFileTypePdf size={21} />
@@ -248,7 +252,7 @@ export default function MessageInput({
             <button
               onClick={sendMessage}
               disabled={message.trim() === "" || isSending}
-              className={`p-4 bg-accent-500 rounded-lg text-white hover:bg-accent-400 focus:outline-none focus:ring-2 focus:ring-accent-600 ${
+              className={`p-3 sm:p-4 focus:outline-none focus:ring-2 focus:ring-accent-600 ${
                 message.trim() === "" || isSending
                   ? "opacity-50 cursor-not-allowed"
                   : ""
