@@ -21,7 +21,7 @@ const AnnouncementHardCoded = () => {
 
             <div className="text-base w-5/6 md:mx-0 inline-block my-5">
               Here you'll find all the solutions about your study problems!
-              <span className="mt-8 block">
+              <span className="mt-4 md:mt-8 block">
                 <GetStartedButtons />
               </span>
             </div>
@@ -30,7 +30,7 @@ const AnnouncementHardCoded = () => {
 
         {/* Full Background Image Section */}
         <div
-          className="absolute inset-0 bg-cover bg-center  opacity-30 dark:opacity-20 blur-md"
+          className="absolute inset-0 bg-cover bg-center opacity-30 dark:opacity-20 blur-md"
           style={{
             backgroundImage: `url(${data.image})`,
             zIndex: -1, // Place the full background image behind the content
@@ -42,7 +42,7 @@ const AnnouncementHardCoded = () => {
           <img
             src={data.image}
             alt="Announcement"
-            className="w-full h-full object-cover rounded-xl"
+            className="w-full md:h-full md:object-cover rounded-xl"
           />
         </div>
       </div>

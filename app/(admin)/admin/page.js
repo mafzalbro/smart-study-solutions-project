@@ -87,7 +87,7 @@ export default function Dashboard() {
   const { admin } = useAuth();
   return (
     admin && (
-      <div className="flex flex-col gap-10 mt-10">
+      <div className="flex flex-col gap-10">
         {/* Dashboard Links Section */}
         <StylishTitle
           className="text-white text-center"
@@ -95,7 +95,7 @@ export default function Dashboard() {
           tagName="h2"
           colored={"Quick Links"}
         />
-        <div className="w-full mt-12 md:mt-0 flex flex-wrap gap-6 justify-center">
+        <div className="w-full md:mt-0 flex flex-wrap gap-6 justify-center">
           {linkItems.map((item) => {
             if (
               restrictedItems.includes(item.href) &&

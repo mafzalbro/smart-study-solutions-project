@@ -1,6 +1,5 @@
 const Admin = require("../models/admin");
 const bcrypt = require("bcrypt");
-const geoip = require("geoip-lite");
 const jwt = require("jsonwebtoken");
 const { sendPasswordResetEmail } = require("../services/emailService"); // Adjust path as needed
 
@@ -94,11 +93,8 @@ const loginAdmin = async (req, res) => {
     const ipAddress =
       req.headers["x-forwarded-for"] || req.connection.remoteAddress;
 
-    const geo = geoip.lookup(ipAddress); // Assuming IP geolocation
-    const location = geo ? `${geo.city}, ${geo.country}` : null;
-
     // Trigger login notification
-    await Admin.createLoginNotification(admin._id, ipAddress, location);
+    await Admin.createLoginNotification(admin._id, ipAddress);
 
     res.status(200).json({ message: "Logged in successfully", token });
   } catch (error) {

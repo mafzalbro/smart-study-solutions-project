@@ -20,11 +20,11 @@ const GetStartedButtons = () => {
   return (
     <>
       {!isLoggedIn ? (
-        <LinkButton link="/login" text="Get Started" ariaLabel="Get started with our platform" icon={<FaUserGraduate className="text-lg" />} />
+        <LinkButton link="/login" text="Get Started" ariaLabel="Get started with our platform" icon={<FaUserGraduate className="text-xs sm:text-lg" />} />
       ) : (
         <>
-          <LinkButton link="/chat" text="AI Chat" ariaLabel="Start AI Chat" icon={<FaCommentDots className="text-lg" />} />
-          <LinkButton link="/forum/submit" text="Ask Questions" ariaLabel="Submit a question" icon={<FaQuestionCircle className="text-lg" />} />
+          <LinkButton link="/chat" text="AI Chat" ariaLabel="Start AI Chat" icon={<FaCommentDots className="text-xs sm:text-lg" /> } />
+          <LinkButton link="/forum/submit" text="Ask Questions" ariaLabel="Submit a question" icon={<FaQuestionCircle className="text-xs sm:text-lg" />} />
         </>
       )}
     </>

@@ -14,7 +14,7 @@ const StylishTitle = ({
   return (
     <Tag
       className={`font-semibold text-${fontSize} ${
-        !noSpaces && "mt-16 my-10 md:my-12"
+        !noSpaces && "mt-16 my-6 md:my-12"
       } leading-tight ${className}`}
     >
       {colored && <StylishSpan>{colored}</StylishSpan>} {addBr && <br />}{" "}

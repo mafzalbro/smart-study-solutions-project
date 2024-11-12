@@ -65,7 +65,6 @@ adminSchema.post("save", async function (doc) {
 adminSchema.statics.createLoginNotification = async function (
   adminId,
   ipAddress,
-  location = null
 ) {
   try {
     const admin = await this.findById(adminId);
@@ -73,8 +72,7 @@ adminSchema.statics.createLoginNotification = async function (
       throw new Error("Admin not found");
     }
 
-    const locationInfo = location ? ` from location: ${location}` : "";
-    const message = `Admin "${admin.username}" logged in with IP: ${ipAddress}${locationInfo}.`;
+    const message = `Admin "${admin.username}" logged in with IP: ${ipAddress}`;
 
     await NotificationService.createNotification(
       admin._id,
