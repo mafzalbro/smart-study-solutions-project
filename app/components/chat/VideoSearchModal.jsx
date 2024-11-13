@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { searchVideo } from "@/app/utils/searchVideos";
+import { AiOutlineRollback } from "react-icons/ai";
 
 const VideoSearchModal = ({ query, isOpen, onClose }) => {
   const [videos, setVideos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState(null); // Track selected video
 
   useEffect(() => {
     if (isOpen && query) {
@@ -45,16 +47,34 @@ const VideoSearchModal = ({ query, isOpen, onClose }) => {
               ></div>
             ))}
           </div>
+        ) : selectedVideo ? (
+          // Render iframe for selected video
+          <>
+            <button
+              onClick={() => setSelectedVideo(null)}
+              className="my-4 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-400"
+            >
+              <AiOutlineRollback /> Back to Video List
+            </button>
+            <div className="relative w-full h-0 pb-[56.25%] mb-6">
+              <iframe
+                className="absolute top-0 left-0 w-full h-full rounded-md"
+                src={`https://www.youtube.com/embed/${selectedVideo}`}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </>
         ) : (
           <ul>
             {videos?.length > 0 ? (
               videos.map((video) => (
                 <li key={video.id} className="mb-6">
-                  <a
-                    href={`https://www.youtube.com/watch?v=${video.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex flex-col md:flex-row items-start p-3 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-md transition-colors duration-200"
+                  <div
+                    onClick={() => setSelectedVideo(video.id)}
+                    className="cursor-pointer flex flex-col md:flex-row items-start p-3 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-md transition-colors duration-200"
                   >
                     <img
                       src={video.thumbnail.thumbnails[0].url}
@@ -72,7 +92,7 @@ const VideoSearchModal = ({ query, isOpen, onClose }) => {
                         Duration: {video.length.simpleText}
                       </p>
                     </div>
-                  </a>
+                  </div>
                 </li>
               ))
             ) : (
