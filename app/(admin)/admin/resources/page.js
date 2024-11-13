@@ -59,6 +59,7 @@ export default function Resources() {
   const categories = [
     "Image",
     "Title",
+    "Status",
     "Degree",
     "Type",
     "Semester",

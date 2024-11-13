@@ -22,6 +22,7 @@ const EditResourcePage = ({ params: { slug } }) => {
   const [semester, setSemester] = useState("");
   const [degree, setDegree] = useState("");
   const [type, setType] = useState("");
+  const [status, setStatus] = useState(false);
   const [imageBase64, setImageBase64] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
 
@@ -37,6 +38,7 @@ const EditResourcePage = ({ params: { slug } }) => {
         setTags(data.tags);
         setSemester(data.semester);
         setDegree(data.degree);
+        setStatus(data.status);
         setType(data.type);
         setProfileImage(data.profileImage); // Set the profile image URL
       } catch (error) {
@@ -79,6 +81,7 @@ const EditResourcePage = ({ params: { slug } }) => {
         semester,
         degree,
         type,
+        status,
         profileImage: imageBase64,
       };
 
@@ -186,6 +189,22 @@ const EditResourcePage = ({ params: { slug } }) => {
             handleImageUpload={handleImageUpload}
             handleRemoveImage={handleRemoveImage}
           />
+
+          <div className="flex gap-2 my-4 border-t pt-4 dark:border-gray-500">
+            <label
+              htmlFor="status"
+              className="block text-sm font-medium text-gray-900 dark:text-gray-100"
+            >
+              change status publish?
+            </label>
+
+            <input
+              type="checkbox"
+              id="status"
+              checked={status}
+              onChange={() => setStatus((prev) => !prev)}
+            />
+          </div>
 
           <button
             type="submit"
