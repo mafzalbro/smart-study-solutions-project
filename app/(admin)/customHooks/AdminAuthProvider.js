@@ -40,6 +40,7 @@ export const AdminAuthProvider = ({ children }) => {
           }
         } catch (error) {
           setAdmin({ message: "Admin Not Loaded" });
+          localStorage.removeItem("admin_token");
           console.error("Error checking auth:", error);
         }
       };

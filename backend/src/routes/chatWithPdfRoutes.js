@@ -17,7 +17,7 @@ const {
 const { auth } = require("../middlewares/auth");
 
 
-router.get("/search-vidoes", auth, getSearch);
+router.get("/search-videos/youtube/get", auth, getSearch);
 
 // Get all chats
 router.get("/", auth, getAllChatOptions);

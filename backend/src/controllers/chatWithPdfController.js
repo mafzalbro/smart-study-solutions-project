@@ -4,7 +4,7 @@ const { generateChatResponse } = require("../utils/chatUtils");
 const { paginateResultsForArray } = require("../utils/pagination");
 const { getAIMessage } = require("../utils/getAIMessage");
 const NodeCache = require("node-cache");
-const { fetchVideosFromPrompt } = require("../services/youtubeSearch");
+const fetchVideosFromPrompt = require("../services/youtubeSearch");
 const cache = new NodeCache({ stdTTL: 300 }); // Cache TTL of 5 minutes
 
 const getSearch = async (req, res) => {
@@ -35,6 +35,7 @@ const getSearch = async (req, res) => {
     const startTime = Date.now();
     const data = await fetchVideosFromPrompt(query);
     const responseTime = Date.now() - startTime;
+
 
     // Cache the result
     cache.set(query, data);

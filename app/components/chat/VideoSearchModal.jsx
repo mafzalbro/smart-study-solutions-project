@@ -13,21 +13,28 @@ const VideoSearchModal = ({ query, isOpen, onClose }) => {
 
   const fetchVideos = async () => {
     setIsLoading(true);
-    const videoResults = await searchVideo(query);
-    setVideos(videoResults);
-    setIsLoading(false);
+    try {
+      const videoResults = await searchVideo(query);
+      setVideos(videoResults);
+    } catch (error) {
+      console.error("Error fetching videos:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     isOpen && (
-      <div className="fixed top-0 right-0 z-50 h-full w-3/4 md:w-1/2 bg-white dark:bg-neutral-900 p-4 shadow-lg overflow-y-auto">
+      <div className="fixed top-0 right-0 z-50 h-full w-full md:w-3/4 lg:w-1/2 bg-white dark:bg-neutral-900 p-6 shadow-lg overflow-y-auto transition-all duration-300 ease-in-out">
         <button
           onClick={onClose}
-          className="text-gray-500 dark:text-gray-300 float-right"
+          className="text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-400 float-right mb-4"
         >
           Close
         </button>
-        <h2 className="text-xl font-semibold mb-4">Related Videos</h2>
+        <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-6">
+          Related Videos
+        </h2>
 
         {isLoading ? (
           <div className="space-y-4">
@@ -40,23 +47,39 @@ const VideoSearchModal = ({ query, isOpen, onClose }) => {
           </div>
         ) : (
           <ul>
-            {console.log({ videos })}
-            {videos?.length > 0 &&
-              videos?.map((video) => (
-                <li key={video.id} className="mb-4">
+            {videos?.length > 0 ? (
+              videos.map((video) => (
+                <li key={video.id} className="mb-6">
                   <a
-                  // href={`https://www.youtube.com/watch?v=${video.id}`}
-                  // target="_blank"
-                  // rel="noopener noreferrer"
-                  // className="block p-2 border rounded hover:bg-gray-100 dark:hover:bg-neutral-800"
+                    href={`https://www.youtube.com/watch?v=${video.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-col md:flex-row items-start p-3 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-md transition-colors duration-200"
                   >
-                    <p className="font-semibold">{video.snippet.title}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {video.snippet.description}
-                    </p>
+                    <img
+                      src={video.thumbnail.thumbnails[0].url}
+                      alt={video.title}
+                      className="w-full md:w-32 h-20 rounded-md mb-3 md:mb-0 md:mr-4"
+                    />
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-800 dark:text-gray-100 leading-tight">
+                        {video.title}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        {video.channelTitle}
+                      </p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                        Duration: {video.length.simpleText}
+                      </p>
+                    </div>
                   </a>
                 </li>
-              ))}
+              ))
+            ) : (
+              <p className="text-gray-500 dark:text-gray-400 text-center mt-6">
+                No videos found.
+              </p>
+            )}
           </ul>
         )}
       </div>

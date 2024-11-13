@@ -17,6 +17,7 @@
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
+    "compromise": "^14.14.2",
     "connect-mongo": "^5.1.0",
     "cors": "^2.8.5",
     "cosine-similarity": "^1.0.1",
@@ -43,7 +44,8 @@
     "swagger-ui-express": "^5.0.1",
     "tesseract.js": "^5.1.0",
     "uuid": "^10.0.0",
-    "whatsapp-web.js": "^1.24.0"
+    "whatsapp-web.js": "^1.24.0",
+    "youtube-search-api": "^1.2.2"
   },
   "devDependencies": {
     "next": "^14.2.5",

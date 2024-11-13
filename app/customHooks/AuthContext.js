@@ -42,6 +42,7 @@ export const AuthProvider = ({ children }) => {
             }
           } catch (error) {
             setUser({ message: "User Not Loaded" });
+            localStorage.removeItem("token");
             console.error("Error checking auth:", error);
             // setIsLoggedIn(false);
             // localStorage.removeItem('token');

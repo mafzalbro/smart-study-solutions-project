@@ -3,13 +3,15 @@ import { fetcher } from "./fetcher";
 export const searchVideo = async (query) => {
   try {
     const response = await fetcher(
-      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/search-videos?query=${query}`
+      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/search-videos/youtube/get?query=${query}`
     );
+    const isSuccessMessage = [
+      "Results fetched successfully",
+      "Results retrieved from cache",
+      "Results fetched successfully (after retry)",
+    ].some((msg) => response.message.includes(msg));
 
-    console.log(response);
-
-    if (response.message.includes("Results fetched successfully")) {
-      // alert("Message sent and stored!");
+    if (isSuccessMessage) {
       return response.data;
     } else {
       // alert("Failed to send message.");

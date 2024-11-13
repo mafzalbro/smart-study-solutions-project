@@ -12,6 +12,9 @@ export const deleteUser = async () => {
     if (response) {
       removeUserCacheHistory();
       toast.success("Profile deleted successfully");
+      if(window !== undefined){
+        window.localStorage.removeItem("token")
+      }
     } else {
       toast.error(
         `Error deleting profile: ${response.message || "Unknown error"}`
