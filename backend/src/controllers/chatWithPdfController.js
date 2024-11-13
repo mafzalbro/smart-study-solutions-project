@@ -36,7 +36,6 @@ const getSearch = async (req, res) => {
     const data = await fetchVideosFromPrompt(query);
     const responseTime = Date.now() - startTime;
 
-
     // Cache the result
     cache.set(query, data);
 

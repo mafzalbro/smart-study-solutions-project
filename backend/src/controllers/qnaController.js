@@ -74,7 +74,7 @@ const getAllQuestions = async (req, res) => {
   const { page = 1, limit = 10, sortBy, filterBy, query } = req.query;
 
   let queryOptions = {};
-  let sortOptions = { createdAt: -1 }; // Default sorting by newest first
+  let sortOptions = { updatedAt: -1 }; // Default sorting by newest first
 
   try {
     // Parse sorting options

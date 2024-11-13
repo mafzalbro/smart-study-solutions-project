@@ -3,6 +3,7 @@ const Resource = require("../models/resource");
 const { recommendResources } = require("../services/resourceRecommendation");
 const { getNextSequenceValue } = require("../utils/autoIncrement");
 const { paginateResults } = require("../utils/pagination");
+const { fetchPdfAsBuffer } = require("../utils/fetchPdfAsBuffer");
 
 const getAllResources = async (req, res) => {
   const {
@@ -16,7 +17,7 @@ const getAllResources = async (req, res) => {
   } = req.query;
 
   let queryOptions = {};
-  let sortOptions = { createdAt: -1 };
+  let sortOptions = { updatedAt: -1 };
 
   try {
     // Parse sorting options
@@ -98,7 +99,7 @@ const getAllResourcesForUser = async (req, res) => {
   } = req.query;
 
   let queryOptions = { status: true };
-  let sortOptions = { createdAt: -1 };
+  let sortOptions = { updatedAt: -1 };
 
   try {
     // Parse sorting options
@@ -186,7 +187,38 @@ const recommendResource = async (req, res) => {
   }
 };
 
-// Get a resource by slug
+// Serve PDF via a route based on the resource slug
+const getGDrivePDFLink = async (req, res) => {
+  const { slug } = req.params; // Get the slug from the URL parameter
+  try {
+    const resource = await Resource.findOne({ slug });
+
+    if (!resource || !resource.pdfLink || resource.pdfLink.length === 0) {
+      return res.status(404).json({ message: "Resource or PDF not found" });
+    }
+
+    // Assume the first PDF link is the one you want to serve
+    const pdfLink = resource.pdfLink[0];
+
+    // Fetch the PDF as a buffer
+    const pdfBuffer = await fetchPdfAsBuffer(pdfLink);
+
+    if (!pdfBuffer) {
+      return res.status(500).json({ message: "Failed to fetch PDF" });
+    }
+
+    // Set response headers to send the PDF as a file
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", 'inline; filename="resource.pdf"'); // Display the PDF in the browser
+
+    // Send the PDF buffer as the response
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.error("Error fetching resource by slug:", error);
+    res.status(500).json({ message: "Error fetching resource" });
+  }
+};
+
 const getResourceBySlug = async (req, res) => {
   const { slug } = req.params;
 
@@ -211,7 +243,6 @@ const getResourceBySlug = async (req, res) => {
     }
 
     if (userId) {
-      // Determine if the user has liked, disliked, or rated the resource
       const hasLiked = resource.likedBy.includes(userId);
       const hasDisliked = resource.dislikedBy.includes(userId);
       const hasRated = resource.ratings.some(
@@ -222,15 +253,20 @@ const getResourceBySlug = async (req, res) => {
       );
       const ratingNumber = userRating ? userRating?.rating : null;
 
+      console.log([`${process.env.BACKEND_ORIGIN}/api/resources/pdf/${slug}`]);
+
       res.status(200).json({
         ...resource._doc,
         hasLiked,
         hasDisliked,
         hasRated,
         ratingNumber,
+        pdfLink: [`${process.env.BACKEND_ORIGIN}/api/resources/pdf/${slug}`],
       });
     } else {
-      res.status(200).json(resource);
+      res.status(200).json({
+        ...resource._doc,
+      });
     }
   } catch (error) {
     console.error(error);
@@ -239,6 +275,7 @@ const getResourceBySlug = async (req, res) => {
 };
 
 // Add a new resource
+// Use viewable link instead of download link in addResource
 const addResource = async (req, res) => {
   const {
     title,
@@ -257,8 +294,6 @@ const addResource = async (req, res) => {
     pdfLink,
   } = req.body;
 
-  console.log(req.body);
-
   try {
     const existingResource = await Resource.findOne({ slug });
     if (existingResource) {
@@ -271,6 +306,7 @@ const addResource = async (req, res) => {
       "resourceSerial",
       "Resource"
     );
+
     const newResource = new Resource({
       serialNumber,
       title,
@@ -286,7 +322,11 @@ const addResource = async (req, res) => {
       semester,
       degree,
       profileImage,
-      pdfLink: pdfLink ? [pdfLink] : [source],
+      pdfLink: pdfLink
+        ? Array.isArray(pdfLink)
+          ? [pdfLink]
+          : pdfLink
+        : [source],
     });
     await newResource.save();
     res
@@ -296,16 +336,13 @@ const addResource = async (req, res) => {
     console.error(error);
     res
       .status(500)
-      .json({
-        message: "Error adding resource" + (error ? error : ""),
-      });
+      .json({ message: "Error adding resource" + (error ? error : "") });
   }
 };
 
 // Update a resource by slug
 const updateResourceBySlug = async (req, res) => {
   const { slug } = req.params;
-
   const {
     title,
     author,
@@ -344,6 +381,11 @@ const updateResourceBySlug = async (req, res) => {
         likes,
         dislikes,
         source,
+        pdfLink: pdfLink
+          ? Array.isArray(pdfLink)
+            ? [pdfLink]
+            : pdfLink
+          : [source],
       },
       { new: true }
     );
@@ -566,6 +608,7 @@ module.exports = {
   getResourceBySlug,
   addResource,
   updateResourceBySlug,
+  getGDrivePDFLink,
   deleteResourceBySlug,
   getAllResourcesForUser,
   getAllResources,

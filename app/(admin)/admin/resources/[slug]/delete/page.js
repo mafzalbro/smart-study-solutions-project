@@ -13,10 +13,12 @@ const DeleteResourcePage = ({ params: { slug } }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await fetcher(
+      const data = await fetcher(
         `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/${slug}`,
         "DELETE"
       );
+      console.log({ data });
+
       removeOlderCacheAfterMutation("/api/resources");
       toast.success("Resource deleted successfully!");
       router.push("/admin/resources");
@@ -34,7 +36,9 @@ const DeleteResourcePage = ({ params: { slug } }) => {
       />
 
       <div className="my-10 px-4">
-        <h2 className="text-xl my-4">Are you sure to Delete?</h2>
+        <h2 className="text-xl my-4">
+          Are you sure to Delete ({slug?.split(" ").toUpperCase()}) ?
+        </h2>
         <form onSubmit={handleSubmit} className="flex gap-4">
           <button
             type="submit"

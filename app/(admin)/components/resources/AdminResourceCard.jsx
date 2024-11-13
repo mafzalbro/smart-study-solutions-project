@@ -16,7 +16,7 @@ const AdminResourceCard = ({ resource }) => {
       </td>
       <td className="p-4">{resource.title ? resource.title : "N/A"}</td>
       {/* {resource.description && <h2>{resource.description}</h2>} */}
-      <td className="p-4">{resource.status ? "Yes" : "No"}</td>
+      <td className="p-4">{resource.status ? "Published" : "Not Published"}</td>
       <td className="p-4">{resource.degree ? resource.degree : "N/A"}</td>
       <td className="p-4">{resource.type ? resource.type : "N/A"}</td>
       <td className="p-4">{resource.semester ? resource.semester : "N/A"}</td>

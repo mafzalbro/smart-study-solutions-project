@@ -5,6 +5,7 @@ import { fetcher } from "@/app/utils/fetcher";
 import LinkButton from "../LinkButton";
 import { AiOutlineArrowRight } from "react-icons/ai"; // Replaced FaForward with AiOutlineArrowRight
 import Skeleton from "react-loading-skeleton";
+import { BiArrowToRight } from "react-icons/bi";
 
 const RecommendationsForYou = () => {
   const [recommendations, setRecommendations] = useState([]);
@@ -39,7 +40,7 @@ const RecommendationsForYou = () => {
           {[...Array(4)].map((_, index) => (
             <div
               key={index}
-              className="bg-white rounded-xl shadow-xl overflow-hidden transition-all duration-300 transform hover:scale-105"
+              className="rounded-xl shadow-xl overflow-hidden transition-all duration-300 transform hover:scale-105"
             >
               <Skeleton height={192} />
               <div className="p-4">
@@ -101,6 +102,12 @@ const RecommendationsForYou = () => {
           ))}
         </div>
       )}
+      <LinkButton
+        text={"See All"}
+        icon={<BiArrowToRight />}
+        iconPosition="right"
+        link={"/resources"}
+      />
     </div>
   );
 };

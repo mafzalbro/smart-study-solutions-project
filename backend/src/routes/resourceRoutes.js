@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const {
   recommendResource,
@@ -10,23 +10,25 @@ const {
   likeResource,
   dislikeResource,
   rateResource,
-  getAllResourcesForUser
-} = require('../controllers/resourceController');
+  getAllResourcesForUser,
+  getGDrivePDFLink,
+} = require("../controllers/resourceController");
 
-const { auth } = require('../middlewares/auth');
-const { adminAuth } = require('../middlewares/adminAuth');
+const { auth } = require("../middlewares/auth");
+const { adminAuth } = require("../middlewares/adminAuth");
 
 // Define routes
-router.get('/', getAllResourcesForUser); // GET /?page=1&limit=5&sortBy=title&filterBy={"status":"active"}&query=keyword
+router.get("/", getAllResourcesForUser); // GET /?page=1&limit=5&sortBy=title&filterBy={"status":"active"}&query=keyword
 // router.get('/recommend', auth, recommendResource);
-router.get('/admin', adminAuth, getAllResources);
-router.get('/recommend', recommendResource);
-router.get('/:slug', getResourceBySlug);
-router.post('/add', adminAuth, addResource);
-router.put('/:slug', adminAuth, updateResourceBySlug);
-router.delete('/:slug', adminAuth, deleteResourceBySlug);
-router.post('/:slug/like', auth, likeResource);
-router.post('/:slug/dislike', auth, dislikeResource);
-router.post('/:slug/rate', auth, rateResource);
+router.get("/admin", adminAuth, getAllResources);
+router.get("/recommend", recommendResource);
+router.get("/:slug", getResourceBySlug);
+router.get("/pdf/:slug", getGDrivePDFLink);
+router.post("/add", adminAuth, addResource);
+router.put("/:slug", adminAuth, updateResourceBySlug);
+router.delete("/:slug", adminAuth, deleteResourceBySlug);
+router.post("/:slug/like", auth, likeResource);
+router.post("/:slug/dislike", auth, dislikeResource);
+router.post("/:slug/rate", auth, rateResource);
 
 module.exports = router;

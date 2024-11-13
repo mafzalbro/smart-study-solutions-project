@@ -25,13 +25,13 @@ export const fetcher = async (
   const cacheKey = `${url}-${JSON.stringify(body)}-${method}`;
 
   // For GET method, retrieve cached data
-  if (method === "GET") {
-    const cachedData = await getCachedData(cacheKey);
-    if (cachedData) {
-      console.log("Serving From Cache: ", cachedData);
-      return cachedData.data; // Return cached data if available
-    }
-  }
+  // if (method === "GET") {
+  //   const cachedData = await getCachedData(cacheKey);
+  //   if (cachedData) {
+  //     console.log("Serving From Cache: ", cachedData);
+  //     return cachedData.data; // Return cached data if available
+  //   }
+  // }
 
   const options = {
     method,

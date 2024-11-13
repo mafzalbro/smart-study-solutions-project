@@ -272,7 +272,7 @@ const NavBar = () => {
                   </Link>
                 </li>
               )}
-              {pathname.includes("/forum") && (
+              {(pathname.includes("/forum") && isLoggedIn) && (
                 <li>
                   <Link href="/forum/submit" passHref>
                     <button className="my-4 md:my-0 py-2 px-4 bg-link text-white rounded-lg shadow-md hover:bg-link-hover dark:bg-link-hover dark:hover:bg-link">

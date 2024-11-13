@@ -297,7 +297,7 @@ export default function ResourcePage({ params }) {
           )}
           <p className="mb-4 text-lg">{resource.description}</p>
           <div className="my-6 flex flex-col md:flex-row gap-4">
-            {!user.username ? (
+            {(!!user && !user?.username) ? (
               <LinkButton
                 text="Please login to view PDF..."
                 icon={<AiOutlineLogin />}
@@ -307,7 +307,7 @@ export default function ResourcePage({ params }) {
             ) : (
               ""
             )}
-            {resource.pdfLink[0] && user.username && (
+            {resource.pdfLink[0] && !!user && user.username && (
               <>
                 <button
                   onClick={() => setShowPdfModal(true)}
