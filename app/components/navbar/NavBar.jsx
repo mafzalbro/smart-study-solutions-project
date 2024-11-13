@@ -148,7 +148,6 @@ const NavBar = () => {
         chatScroll?.removeEventListener("scroll", handleScroll);
       };
     }, [lastScrollTop]);
-    
 
     if (user === null) {
       return (
@@ -188,7 +187,9 @@ const NavBar = () => {
 
     return (
       <nav
-        className={`sticky top-0 z-50 bg-opacity-80 dark:bg-opacity-50 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-2 px-4 md:p-4 text-primary dark:text-secondary ${lastScrollTop < 100 ? "": "shadow-lg"} ${
+        className={`sticky top-0 z-50 bg-opacity-80 dark:bg-opacity-50 transition-transform backdrop-blur-sm bg-secondary dark:bg-neutral-800 p-2 px-4 md:p-4 text-primary dark:text-secondary ${
+          lastScrollTop < 100 ? "" : "shadow-lg"
+        } ${
           scrollDirection === "down" ? "translate-y-[-100%]" : "translate-y-0"
         }`}
       >
@@ -272,7 +273,7 @@ const NavBar = () => {
                   </Link>
                 </li>
               )}
-              {(pathname.includes("/forum") && isLoggedIn) && (
+              {pathname.includes("/forum") && isLoggedIn && (
                 <li>
                   <Link href="/forum/submit" passHref>
                     <button className="my-4 md:my-0 py-2 px-4 bg-link text-white rounded-lg shadow-md hover:bg-link-hover dark:bg-link-hover dark:hover:bg-link">
@@ -283,7 +284,10 @@ const NavBar = () => {
               )}
             </ul>
             {isLoggedIn ? (
-              <div ref={dropdownRef} className="relative ml-4 text-xs sm:text-base">
+              <div
+                ref={dropdownRef}
+                className="relative ml-4 text-sm sm:text-base"
+              >
                 <div
                   className="cursor-pointer w-10 h-10 rounded-full overflow-hidden border-2 border-white dark:border-neutral-800"
                   onClick={handleProfileClick}

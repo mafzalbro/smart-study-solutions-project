@@ -12,6 +12,8 @@ const {
   rateResource,
   getAllResourcesForUser,
   getGDrivePDFLink,
+  downloadPDFResource,
+  viewPDFResource,
 } = require("../controllers/resourceController");
 
 const { auth } = require("../middlewares/auth");
@@ -23,7 +25,9 @@ router.get("/", getAllResourcesForUser); // GET /?page=1&limit=5&sortBy=title&fi
 router.get("/admin", adminAuth, getAllResources);
 router.get("/recommend", recommendResource);
 router.get("/:slug", getResourceBySlug);
-router.get("/pdf/:slug", getGDrivePDFLink);
+router.get("/pdf/:slug", auth, getGDrivePDFLink);
+router.get("/download-pdf/:slug", auth, downloadPDFResource);
+router.get("/view-pdf/:slug", auth, viewPDFResource);
 router.post("/add", adminAuth, addResource);
 router.put("/:slug", adminAuth, updateResourceBySlug);
 router.delete("/:slug", adminAuth, deleteResourceBySlug);

@@ -11,7 +11,13 @@ import { useRouter } from "next/navigation";
 import { fetcher } from "@/app/utils/fetcher";
 import LimitReachedComponent from "../LimitReachedComponent";
 
-export default function Sidebar({ chatHistory, slug, pdfuri, userChatInfo }) {
+export default function Sidebar({
+  chatHistory,
+  slug,
+  pdfuri,
+  userChatInfo,
+  slugBaar,
+}) {
   const sidebarRef = useRef();
   const [chats, setChats] = useState([]);
   const [pdfChats, setPdfChats] = useState([]);
@@ -245,7 +251,8 @@ export default function Sidebar({ chatHistory, slug, pdfuri, userChatInfo }) {
         } bg-secondary bg-opacity-80 dark:bg-opacity-80 bg-blend-color-dodge md:bg-transparent text-primary dark:text-secondary dark:bg-neutral-800 md:p-4 flex flex-col gap-8 md:gap-6 transition-opacity ease-in-out duration-500 z-20 dark:shadow-2xl md:border-r dark:border-none`}
       >
         <SidebarHeader />
-        {userChatInfo && userChatInfo.chatOptionsUsed !== 2 ? (
+        {(userChatInfo && userChatInfo.chatOptionsUsed !== 2) ||
+        slugBaar !== "yes" ? (
           <NewChatButton className="hidden md:block" />
         ) : (
           <LimitReachedComponent newButton userChatInfo={userChatInfo} />

@@ -4,11 +4,6 @@ const { recommendResources } = require("../services/resourceRecommendation");
 const { getNextSequenceValue } = require("../utils/autoIncrement");
 const { paginateResults } = require("../utils/pagination");
 const { fetchPdfAsBuffer } = require("../utils/fetchPdfAsBuffer");
-const User = require("../models/user");
-const {
-  getDrivePdfUrl,
-  getDriveViewPdfUrl,
-} = require("../utils/getDrivePdfLink");
 
 const getAllResources = async (req, res) => {
   const {
@@ -176,23 +171,8 @@ const getAllResourcesForUser = async (req, res) => {
 
 // Recommend a resource for the authenticated user
 const recommendResource = async (req, res) => {
-  let user;
-
-  const token = req?.headers?.authorization;
-
-  if (token) {
-    const trimToken = token.replace("Bearer ", "").trim();
-    jwt.verify(trimToken, process.env.JWT_SECRET, async (err, user) => {
-      if (err) {
-        return res.status(403).json({ message: "Invalid token" });
-      }
-      req.user = user;
-      user = req?.user;
-    });
-  }
-
   try {
-    // const user = req.user;
+    const user = req.user;
     const { resourceSlug, keyword } = req.query;
 
     const recommendedResources = await recommendResources(
@@ -241,12 +221,13 @@ const getGDrivePDFLink = async (req, res) => {
 
 const getResourceBySlug = async (req, res) => {
   const { slug } = req.params;
+
   let userId;
   const token = req?.headers?.authorization;
 
   if (token) {
     const trimToken = token.replace("Bearer ", "").trim();
-    jwt.verify(trimToken, process.env.JWT_SECRET, async (err, user) => {
+    jwt.verify(trimToken, process.env.JWT_SECRET, (err, user) => {
       if (err) {
         return res.status(403).json({ message: "Invalid token" });
       }
@@ -256,244 +237,38 @@ const getResourceBySlug = async (req, res) => {
   }
 
   try {
-    const user = await User.findById(userId);
     const resource = await Resource.findOne({ slug });
-
     if (!resource) {
       return res.status(404).json({ message: "Resource not found" });
     }
 
-    // If the user is not found, return resource without viewLink and downloadLink
-    if (!user) {
-      return res.status(200).json({
-        ...resource._doc,
-        viewLink: "",
-        downloadLink: "",
-        source: "", // Send source if available, otherwise empty
-      });
-    }
-
-    // Check if resource type is "notes", or the user is not a member
-    const isNotes = resource.type === "notes";
-    const isNotMember = !user?.isMember;
-
-    // If either condition is true, remove viewLink and downloadLink
-    const removeLinks = isNotes && isNotMember;
-
-    // If the user is a member, skip all limits and send the PDF link directly
-    if (user.isMember) {
-      return res.status(200).json({
-        ...resource._doc,
-        viewLink: removeLinks ? "" : resource.pdfLink[0], // Don't send link for "notes" or non-members
-        downloadLink: removeLinks
-          ? ""
-          : resource.pdfLink.length !== 0
-          ? getDrivePdfUrl(resource.pdfLink[0])
-          : "",
-        source: resource.source || "", // Send the source directly for members
-      });
-    }
-
-    const currentDate = new Date();
-    const resourceResetDate = new Date(user.resourceResetDate);
-    const timeSinceResourceReset = currentDate - resourceResetDate;
-
-    // Reset limits if it's been more than 24 hours since the last reset
-    if (timeSinceResourceReset >= 24 * 60 * 60 * 1000) {
-      user.downloadsToday = 0;
-      user.viewedResources = [];
-      user.resourceResetDate = currentDate;
-    }
-
-    let isDownloadExceed = false;
-    let isViewedExceed = false;
-
-    // Check if the user has exceeded their download limit (2 downloads today)
-    if (user.downloadsToday >= 2) {
-      isDownloadExceed = true;
-    }
-
-    // Check if the user has exceeded their resource view limit (2 resources today)
-    if (user.viewedResources.length >= 2) {
-      isViewedExceed = true;
-    }
-
-    await user.save();
-
-    // Return resource details with viewLink and downloadLink if limits aren't exceeded
-    res.status(200).json({
-      ...resource._doc,
-      hasLiked: resource.likedBy.includes(userId),
-      hasDisliked: resource.dislikedBy.includes(userId),
-      hasRated: resource.ratings.some(
+    if (userId) {
+      const hasLiked = resource.likedBy.includes(userId);
+      const hasDisliked = resource.dislikedBy.includes(userId);
+      const hasRated = resource.ratings.some(
         (r) => r.userId.toString() === userId.toString()
-      ),
-      ratingNumber:
-        resource.ratings.find((r) => r.userId.toString() === userId.toString())
-          ?.rating || null,
-      viewLink: removeLinks ? "" : "", // Don't send links for "notes" or non-members
-      downloadLink: removeLinks
-        ? ""
-        : isDownloadExceed
-        ? ""
-        : getDrivePdfUrl(resource.pdfLink[0]), // Don't send links for "notes"
-      source: removeLinks ? "" : "", // No source for "notes" or non-members
-      pdfLink: removeLinks ? [] : [], // No PDF links for "notes" or non-members
-      isViewedExceed: removeLinks,
-      isDownloadExceed: removeLinks,
-      downloadsToday: user.downloadsToday,
-      viewedCount: user.viewedResources.length,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error fetching resource by slug" });
-  }
-};
+      );
+      const userRating = resource?.ratings.find(
+        (r) => r.userId.toString() === userId.toString()
+      );
+      const ratingNumber = userRating ? userRating?.rating : null;
 
-const downloadPDFResource = async (req, res) => {
-  const { slug } = req.params;
-  const userId = req.user.id;
-
-  try {
-    if (!userId) {
-      return res.status(401).json({ message: "Unauthorized access" });
-    }
-    const user = await User.findById(userId);
-    const resource = await Resource.findOne({ slug });
-
-    if (!resource) {
-      return res.status(404).json({ message: "Resource not found" });
-    }
-
-    // Check if the resource type is "notes", or the user is not a member
-    if (resource.type === "notes" && !user.isMember) {
-      return res.status(403).json({
-        message: "Download not allowed for notes type for non-members",
-        downloadLink: "",
-      });
-    }
-
-    // Check if the user is not a member, if they are, no need to check download limits
-    if (!user.isMember) {
-      const currentDate = new Date();
-      const resourceResetDate = new Date(user.resourceResetDate);
-      const timeSinceResourceReset = currentDate - resourceResetDate;
-
-      // Reset download count if 24 hours have passed
-      if (timeSinceResourceReset >= 24 * 60 * 60 * 1000) {
-        user.downloadsToday = 0;
-        user.resourceResetDate = currentDate;
-      }
-
-      // Check if the user has exceeded the download limit
-      if (user.downloadsToday >= 2) {
-        return res.status(403).json({
-          message: "Download limit reached",
-          downloadLink: "",
-        });
-      }
-
-      // Increment the download count for today
-      user.downloadsToday += 1;
-      await user.save();
-    }
-
-    // Generate the download URL
-    const downloadUrl = getDrivePdfUrl(resource.pdfLink[0]);
-
-    // Return the download URL
-    res.status(200).json({
-      message: "Download link generated successfully",
-      downloadLink: downloadUrl,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error processing the download request" });
-  }
-};
-
-const viewPDFResource = async (req, res) => {
-  const { slug } = req.params;
-
-  const userId = req.user.id;
-
-  try {
-    if (!userId) {
-      return res.status(401).json({ message: "Unauthorized access" });
-    }
-
-    const user = await User.findById(userId);
-    const resource = await Resource.findOne({ slug });
-
-    if (!resource) {
-      return res.status(404).json({ message: "Resource not found" });
-    }
-
-    // Check if the resource type is "notes", or the user is not a member
-    const isNotes = resource.type === "notes";
-    const isNotMember = !user?.isMember;
-
-    // If either condition is true, remove viewLink and downloadLink
-    const removeLinks = isNotes && isNotMember;
-
-    // If the user is not found, return resource without viewLink and downloadLink
-    if (!user) {
-      return res.status(200).json({
+      res.status(200).json({
         ...resource._doc,
-        viewLink: removeLinks ? "" : "", // Don't send view link for notes or non-members
-        downloadLink: removeLinks ? "" : "", // Don't send download link for notes or non-members
-        source: resource.source || "", // Send source if available, otherwise empty
+        hasLiked,
+        hasDisliked,
+        hasRated,
+        ratingNumber,
+        pdfLink:
+          resource.pdfLink && resource.pdfLink.includes("drive")
+            ? [`${process.env.BACKEND_ORIGIN}/api/resources/pdf/${slug}`]
+            : resource.pdfLink,
       });
-    }
-
-    // If the user is a member, skip all limits and send the PDF link directly
-    if (user.isMember) {
-      return res.status(200).json({
+    } else {
+      res.status(200).json({
         ...resource._doc,
-        viewLink: removeLinks ? "" : getDriveViewPdfUrl(resource.pdfLink[0]), // Don't send link for notes or non-members
-        downloadLink: removeLinks
-          ? ""
-          : resource.pdfLink.length !== 0
-          ? getDrivePdfUrl(resource.pdfLink[0])
-          : "",
-        source: resource.source || "", // Send the source directly for members
       });
     }
-
-    // Check if the user has exceeded their resource view limit (2 resources today)
-    if (user.viewedResources.length >= 2) {
-      return res.status(403).json({
-        message: "View limit reached",
-        viewLink: "",
-        downloadLink: "",
-        source: "",
-      });
-    }
-
-    // Add the resource to the user's viewedResources array if not already viewed
-    if (!user.viewedResources.includes(resource._id)) {
-      user.viewedResources.push(resource._id);
-    }
-
-    await user.save();
-
-    console.log(getDriveViewPdfUrl(resource.pdfLink[0]));
-
-    // Return resource details with viewLink and downloadLink if limits aren't exceeded
-    res.status(200).json({
-      ...resource._doc,
-      viewLink: removeLinks
-        ? ""
-        : resource.pdfLink
-        ? getDriveViewPdfUrl(resource.pdfLink[0])
-        : "",
-      downloadLink: removeLinks
-        ? ""
-        : resource.pdfLink
-        ? getDrivePdfUrl(resource.pdfLink[0])
-        : "",
-      source: resource.source || "", // Provide source if available
-    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error fetching resource by slug" });
@@ -832,8 +607,6 @@ const rateResource = async (req, res) => {
 module.exports = {
   recommendResource,
   getResourceBySlug,
-  downloadPDFResource,
-  viewPDFResource,
   addResource,
   updateResourceBySlug,
   getGDrivePDFLink,

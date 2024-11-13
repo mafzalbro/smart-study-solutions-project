@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { AiOutlineBook, AiOutlineFileText, AiOutlineFileSearch, AiOutlineRobot, AiOutlineQuestionCircle } from 'react-icons/ai';
 
 const offerings = [
-  { icon: <AiOutlineBook className="mx-auto text-5xl text-accent-600 group-hover:text-link-hover transition-colors duration-300" />, title: "Books", url: "/resources/type/book" },
-  { icon: <AiOutlineFileText className="mx-auto text-5xl text-accent-600 group-hover:text-link-hover transition-colors duration-300" />, title: "Past Papers", url: "/resources/type/past-papers" },
+  { icon: <AiOutlineBook className="mx-auto text-5xl text-accent-600 group-hover:text-link-hover transition-colors duration-300" />, title: "Books", url: "/resources/type/books" },
+  { icon: <AiOutlineFileText className="mx-auto text-5xl text-accent-600 group-hover:text-link-hover transition-colors duration-300" />, title: "Past Papers", url: "/resources/type/ " },
   { icon: <AiOutlineFileSearch className="mx-auto text-5xl text-accent-600 group-hover:text-link-hover transition-colors duration-300" />, title: "Notes", url: "/resources/type/notes" },
   { icon: <AiOutlineRobot className="mx-auto text-5xl text-accent-600 group-hover:text-link-hover transition-colors duration-300" />, title: "AI PDF Chat", url: "/chat" },
   { icon: <AiOutlineQuestionCircle className="mx-auto text-5xl text-accent-600 group-hover:text-link-hover transition-colors duration-300" />, title: "QnA Forum", url: "/forum" },

@@ -62,7 +62,7 @@ export const fetcher = async (
   // Handle unauthorized access
   if (
     response.status === 401 &&
-    !path.includes("/resources") &&
+    // !path.includes("/resources") &&
     path !== new URL(process.env.NEXT_PUBLIC_FRONTEND_ORIGIN).pathname
   ) {
     window.location.replace(`${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/login`);

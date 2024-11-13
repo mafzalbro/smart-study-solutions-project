@@ -7,6 +7,7 @@ const LimitReachedComponent = ({
   setUserChatInfo,
   newButton,
   fetchChatInfo,
+  pdfUrls,
 }) => {
   const [timeLeft, setTimeLeft] = useState(null);
 
@@ -42,6 +43,9 @@ const LimitReachedComponent = ({
     return null; // Don't render anything for members
   }
 
+  if (pdfUrls !== "PDFTEXT") {
+    return null;
+  }
   if (userChatInfo?.queriesUsed === undefined) {
     return (
       <div className="p-2 text-center text-sm sm:text-md animate-pulse text-gray-500 dark:text-gray-400">
@@ -63,13 +67,13 @@ const LimitReachedComponent = ({
 
   if (!newButton && !inputArea)
     return (
-      <div className="fixed left-1 right-auto top-10 md:top-20 md:left-auto md:right-4 p-3">
+      <div className="fixed left-[50%] right-auto top-10 md:top-20 md:left-auto md:right-4 p-3">
         <div className="relative group">
           {/* Timer Text Displayed in Top Right */}
           <div className="text-sm font-medium cursor-pointer rounded-full px-2 bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200">
             {userChatInfo.queriesUsed < 10 && (
               <p className="text-gray-800 dark:text-gray-200 font-medium text-md">
-                {10 - parseInt(userChatInfo.queriesUsed)} queries left
+                {10 - parseInt(userChatInfo.queriesUsed)} queries left (pdf)
               </p>
             )}
 

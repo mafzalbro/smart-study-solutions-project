@@ -23,7 +23,6 @@ const LoginForm = () => {
   const router = useRouter();
   // const pathname = usePathname();
 
-
   useEffect(() => {
     const handleErrors = (error) => {
       if (error) {
@@ -83,19 +82,28 @@ const LoginForm = () => {
         // }
       }
     } catch (error) {
-      toast.error("Login failed: " + (error ? error: ''));
+      toast.error("Login failed: " + (error ? error : ""));
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCheck = (checked) => setIsRememberMe(checked)
+  const handleCheck = (checked) => setIsRememberMe(checked);
 
   return (
     <CardContainer>
       <h2 className="text-2xl font-bold mb-6 text-primary dark:text-secondary">
         Welcome Back to Login!
       </h2>
+      <Link
+        href="/login/google"
+        className="flex justify-center items-center gap-5 w-full py-2 px-4 bg-accent-500font-semibold rounded-lg dark:bg-accent-900 dark:hover:bg-accent-800 dark:text-secondary bg-accent-50 hover:bg-accent-100 focus:outline-none focus:ring-2 focus:ring-accent-300 mt-4 text-center text-link"
+      >
+        <FcGoogle className="h-8 w-8" /> <span>Register with Google</span>
+      </Link>
+
+      <hr className="my-10 border-t border-accent-300 w-[50%] mx-auto" />
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -125,9 +133,15 @@ const LoginForm = () => {
         />
         <div className="mt-4 flex justify-between items-center">
           <label className="flex items-center">
-            <input type="checkbox" className="form-checkbox text-accent-600" onChange={(e) => handleCheck(e.target.checked)
-            } checked={isRememberMe}/>
-            <span className="ml-2 text-neutral-500 dark:text-neutral-300">Remember Me</span>
+            <input
+              type="checkbox"
+              className="form-checkbox text-accent-600"
+              onChange={(e) => handleCheck(e.target.checked)}
+              checked={isRememberMe}
+            />
+            <span className="ml-2 text-neutral-500 dark:text-neutral-300">
+              Remember Me
+            </span>
           </label>
         </div>
         <SubmitButton
@@ -144,13 +158,6 @@ const LoginForm = () => {
           Forgot Password?
         </Link>
       </div>
-      <hr className="my-10 border-t border-accent-300 w-[50%] mx-auto" />
-      <Link
-        href="/login/google"
-        className="flex justify-center items-center gap-5 w-full py-2 px-4 bg-accent-500font-semibold rounded-lg dark:bg-accent-900 dark:hover:bg-accent-800 dark:text-secondary bg-accent-50 hover:bg-accent-100 focus:outline-none focus:ring-2 focus:ring-accent-300 mt-4 text-center text-link"
-      >
-        <FcGoogle className="h-8 w-8" /> <span>Register with Google</span>
-      </Link>
     </CardContainer>
   );
 };

@@ -47,7 +47,7 @@ export default function UploadPdfModal({
         setErrorMessage("This PDF contains no text or may be image-based.");
       } else {
         setPdfText(fullText);
-        onUpload(fullText);
+        // onUpload(fullText);
       }
     } catch (error) {
       console.error("Error extracting text from PDF:", error);
@@ -61,7 +61,7 @@ export default function UploadPdfModal({
     if (pdfFile) {
       extractTextFromPdf(pdfFile);
     } else if (pdfUrl) {
-      onUpload(pdfUrl);
+      // onUpload(pdfUrl);
     }
   };
 

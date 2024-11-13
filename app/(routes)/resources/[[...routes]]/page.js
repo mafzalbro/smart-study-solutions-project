@@ -14,6 +14,9 @@ import { useSearchParams, useRouter } from "next/navigation";
 // import { useRouter } from "next-nprogress-bar";
 import Link from "next/link";
 import { FaChevronLeft } from "react-icons/fa";
+import ResourceTabs from "@/app/components/resources/ResourceTabs";
+import { AiOutlineInfoCircle, AiOutlineMail } from "react-icons/ai";
+import LinkButton from "@/app/components/LinkButton";
 
 export default function ResourcesPage({ params }) {
   const routes = params?.routes || [];
@@ -248,6 +251,7 @@ export default function ResourcesPage({ params }) {
               disabled={isLoading}
             />
           </div>
+          <ResourceTabs />
 
           <div className="md:flex px-4 md:gap-4">
             <SideArea
@@ -268,7 +272,28 @@ export default function ResourcesPage({ params }) {
                   Error fetching resources: {error.message}
                 </p>
               ) : resources.length === 0 ? (
-                <p className="text-center text-gray-500 my-10">Nothing here.</p>
+                <div className="flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 rounded-lg mt-8 mx-auto max-w-xl">
+                  <div className="text-accent-600 dark:text-accent-400 text-5xl mb-4">
+                    <AiOutlineInfoCircle />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-semibold text-gray-700 dark:text-gray-200 mb-4 text-center">
+                    Nothing Here... Apologies for the inconvenience!
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-300 text-center mb-6 px-4">
+                    We’re currently adding new materials to this section. If you
+                    have any questions or would like to share study materials,
+                    please reach out to us!
+                  </p>
+                  <LinkButton
+                    link="/contact"
+                    text={"Contact Us"}
+                    icon={<AiOutlineMail />}
+                    className="transition duration-300 transform hover:scale-105"
+                  ></LinkButton>
+                  <p className="text-gray-500 dark:text-gray-400 mt-4 text-sm text-center">
+                    We’re here to help you find what you need.
+                  </p>
+                </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {resources.map((resource) => (

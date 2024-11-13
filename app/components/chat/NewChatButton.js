@@ -9,7 +9,7 @@ import { MdOutlineAdd } from "react-icons/md";
 import Spinner from "../Spinner";
 import { toast } from "react-toastify";
 
-export default function NewChatButton({ stickyBtn, className }) {
+export default function NewChatButton({ stickyBtn, className, load }) {
   const [creatingChat, setCreatingChat] = useState(false);
   const router = useRouter();
 
@@ -40,7 +40,7 @@ export default function NewChatButton({ stickyBtn, className }) {
     }
   };
 
-  if (stickyBtn) {
+  if (stickyBtn && load !== "no") {
     return (
       <button
         onClick={createNewChat}

@@ -5,12 +5,14 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { loadStripe } from "@stripe/stripe-js";
 import { fetcher } from "@/app/utils/fetcher";
+import { useAuth } from "@/app/customHooks/AuthContext";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 );
 
 export default function SubscribePage() {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
@@ -47,7 +49,7 @@ export default function SubscribePage() {
   if (type === "success" && session_id) {
     return (
       <div className="container mx-auto px-4 py-8 my-32">
-        <div className="bg-green-500 text-white p-6 rounded-lg shadow-lg text-center">
+        <div className="bg-green-200 text-primary dark:bg-green-800 dark:text-secondary p-6 rounded-lg shadow-lg text-center">
           <h2 className="text-xl font-semibold">Subscription Successful!</h2>
           <p>Your subscription is now active. Thank you for joining!</p>
           <Link
@@ -64,7 +66,7 @@ export default function SubscribePage() {
   if (type === "cancel") {
     return (
       <div className="container mx-auto px-4 py-8 my-32">
-        <div className="bg-red-500 text-white p-6 rounded-lg shadow-lg text-center">
+        <div className="bg-red-200 text-primary dark:bg-red-800 dark:text-secondary p-6 rounded-lg shadow-lg text-center">
           <h2 className="text-xl font-semibold">Subscription Cancelled</h2>
           <p>Your subscription attempt was cancelled. Please try again.</p>
           <button
@@ -73,7 +75,7 @@ export default function SubscribePage() {
             className={`mt-6 w-full py-3 rounded-lg text-lg ${
               loading
                 ? "bg-neutral-500 cursor-not-allowed"
-                : "bg-accent-700 hover:bg-accent-800"
+                : "bg-red-300 dark:bg-red-200 dark:text-primary hover:bg-red-400 dark:hover:bg-secondary"
             } transition-all duration-300`}
           >
             {loading ? "Processing..." : "Try Again! Subscribe"}
@@ -86,7 +88,7 @@ export default function SubscribePage() {
   return (
     <div className="container mx-auto px-4 py-16">
       <h1 className="text-3xl font-bold text-center mb-12 text-gray-800 dark:text-gray-100">
-        Become a Member
+        {user?.isMember ? "You are Already a Member" : "Become a Member"}
       </h1>
       <div className="flex flex-col md:flex-row items-center justify-center gap-12">
         <div className="bg-white dark:bg-neutral-800 shadow-lg rounded-lg p-6 w-80 transition transform hover:scale-105 duration-300">
@@ -98,7 +100,8 @@ export default function SubscribePage() {
             <li>
               • Access 2 documents in every 2 hours i.e. 2 chat can be created
             </li>
-            <li>• Limited access to Q&A forum</li>
+            <li>• Can't see any notes</li>
+            <li>• Limited access to Q&A forum (Can't see teacher's answers)</li>
           </ul>
           <Link
             href="/"
@@ -113,7 +116,8 @@ export default function SubscribePage() {
           <ul className="space-y-2 mb-6">
             <li>• Unlimited access to AI chat</li>
             <li>• Unlimited PDF downloads</li>
-            <li>• Full access to Q&A forum</li>
+            <li>• Full access to Q&A forum (Can see teachers answers)</li>
+            <li>• Can access all notes</li>
           </ul>
           <button
             onClick={handleCheckout}
@@ -121,7 +125,7 @@ export default function SubscribePage() {
             className={`w-full py-3 rounded-full text-lg ${
               loading
                 ? "bg-blue-500 cursor-not-allowed"
-                : "bg-accent-700 hover:bg-accent-800"
+                : "bg-accent-900 hover:bg-accent-700"
             } transition-all duration-300`}
           >
             {loading ? "Processing..." : "Subscribe Now"}

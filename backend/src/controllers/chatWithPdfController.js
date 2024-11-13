@@ -85,9 +85,7 @@ const createChatOption = async (req, res) => {
     await user.resetDailyLimitsIfNeeded();
 
     if (!user.canCreateChatOption()) {
-      return res
-        .status(403)
-        .json({ message: "Daily chat option limit reached." });
+      return res.status(403).json({ message: "chats limit reached." });
     }
 
     user.chatOptionsUsed += 1; // Increment chat option usage
@@ -346,7 +344,6 @@ const getPdfTitles = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 const chatWithPdfBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
@@ -364,15 +361,18 @@ const chatWithPdfBySlug = async (req, res) => {
         .send("<p>User not found. You must be logged in.</p>");
     }
 
-    // Reset daily limits if necessary
+    // Reset limits if necessary
     await user.resetDailyLimitsIfNeeded();
 
     // Check if the user can create a new query or chat option
-    if (!user.canCreateQuery()) {
-      return res.status(403).json({ message: "Daily query limit reached." });
+    if (!user.canCreateQuery(slug)) {
+      return res
+        .status(403)
+        .send(
+          "<p>Query limit reached. <a href='/pricing'>Upgrade You Account</a></p>"
+        );
     }
 
-    user.queriesUsed += 1; // Increment query usage
     let chatOption;
 
     if (slug) {
@@ -478,6 +478,14 @@ const chatWithPdfBySlug = async (req, res) => {
         }
       }
     }
+
+    // Increment query usage ONLY if pdfText exists in chatOption
+    if (!!chatOption.pdfText) {
+      user.queriesUsed += 1; // Increment query usage only if pdfText is available
+    }
+
+    // Finally, save user after all changes are made
+    await user.save(); // Save user at the end
 
     res.end();
   } catch (error) {

@@ -9,7 +9,7 @@ const Sidebar = ({ resource }) => {
         <p className="font-bold">Quick Links</p>
         <div>
           <Link
-            href="/resources/type/book"
+            href="/resources/type/books"
             className="text-blue-600 dark:text-blue-300 hover:underline underline-offset-4"
           >
             Books

@@ -50,16 +50,23 @@ export default function Chat({ params }) {
   const fetchChatInfo = async () => {
     try {
       if (userChatInfo && userChatInfo.queriesUsed) {
-        if (document !== undefined) {
-          sessionStorage.setItem("query_used", userChatInfo.queriesUsed);
-          setUserChatInfo((prev) => ({
-            ...prev,
-            queriesUsed: prev.queriesUsed + 1,
-          }));
+        if (window !== undefined) {
+          if (pdfUrls === "PDFTEXT") {
+            // const info = {
+            //   query_used: userChatInfo.queriesUsed,
+            //   pdf_text: pdfUrls,
+            //   slug: slug,
+            // };
+            // window.sessionStorage.setItem("limit", JSON.stringify(info));
+            setUserChatInfo((prev) => ({
+              ...prev,
+              queriesUsed: prev.queriesUsed + 1,
+            }));
+          }
         }
       } else {
         const info = await fetcher(
-          `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/info`
+          `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/info/`
         );
         if (
           info.message === "User's information for today fetched successfully"
@@ -92,9 +99,12 @@ export default function Chat({ params }) {
     setChatHistory((prevHistory) => [...prevHistory, message]);
   };
 
+  console.log({ chatHistory });
+
   return (
     <div>
       <LimitReachedComponent
+        pdfUrls={pdfUrls}
         fetchChatInfo={fetchChatInfo}
         userChatInfo={userChatInfo}
         setUserChatInfo={setUserChatInfo}
@@ -108,6 +118,7 @@ export default function Chat({ params }) {
           slug={slug}
           pdfuri={pdfUrls}
           userChatInfo={userChatInfo}
+          slugBaar="yes"
         />
         <div className="flex flex-col w-full md:w-3/4">
           <ChatHistory
@@ -116,24 +127,27 @@ export default function Chat({ params }) {
             loading={loading}
           />
 
-          {userChatInfo && userChatInfo.queriesUsed < 10 ? (
-            <MessageInput
-              fetchChat={fetchChat}
-              userChatInfo={userChatInfo}
-              fetchChatInfo={fetchChatInfo}
-              chatId={slug}
-              addMessageToChatHistory={addMessageToChatHistory}
-              chatHistory={chatHistory}
-            />
-          ) : (
-            <LimitReachedComponent
-              userChatInfo={userChatInfo}
-              setUserChatInfo={setUserChatInfo}
-              inputArea={true}
-            />
-          )}
+          <MessageInput
+            fetchChat={fetchChat}
+            userChatInfo={userChatInfo}
+            fetchChatInfo={fetchChatInfo}
+            chatId={slug}
+            addMessageToChatHistory={addMessageToChatHistory}
+            chatHistory={chatHistory}
+          />
         </div>
       </div>
     </div>
   );
 }
+
+{
+  /* {userChatInfo && userChatInfo.queriesUsed < 10 ? ( */
+}
+// ) : (
+//   <LimitReachedComponent
+//     userChatInfo={userChatInfo}
+//     setUserChatInfo={setUserChatInfo}
+//     inputArea={true}
+//   />
+// )}

@@ -101,6 +101,12 @@ const userSchema = new Schema(
       type: Date,
       default: Date.now,
     },
+    downloadsToday: { type: Number, default: 0 },
+    viewedResources: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Resource" },
+    ],
+    resourceResetDate: { type: Date, default: Date.now },
+    lastResetDate: { type: Date, default: Date.now },
     resetTokenExpiry: {
       type: Date,
       default: null,
@@ -166,32 +172,70 @@ userSchema.post("save", async function (doc) {
 
 //   return Promise.resolve();
 // };
-
-userSchema.methods.resetDailyLimitsIfNeeded = function () {
+userSchema.methods.resetDailyLimitsIfNeeded = async function () {
   const currentDate = new Date();
-  const lastResetDate = new Date(this.lastResetDate);
 
-  // Calculate the time difference in milliseconds
-  const timeDifference = currentDate - lastResetDate;
+  // If the user is a member, skip the date checks and check subscription dates
+  if (this.isMember) {
+    const subscriptionStartDate = new Date(this.subscriptionStartDate);
+    const subscriptionEndDate = new Date(this.subscriptionEndDate);
 
-  // Check if it's been more than 10 minutes since the last reset
-  if (this.isMember || timeDifference >= 120 * 60 * 1000) {
-    // 10 minutes in milliseconds
-    this.queriesUsed = 0;
-    this.chatOptionsUsed = 0;
-    this.lastResetDate = currentDate;
-    return this.save(); // Save the updated user document
+    // Check if the subscription has ended, and update the membership status
+    if (currentDate > subscriptionEndDate) {
+      this.isMember = false;
+      console.log("Subscription has ended. Membership status updated.");
+    }
+    // If the subscription hasn't ended, skip further checks
+    else {
+      return true; // Membership is valid, so no changes are needed
+    }
   }
 
-  return Promise.resolve(); // No reset needed
-};
+  // Check if it's been more than 24 hours for resource-related reset (downloads and resources)
+  const resourceResetDate = new Date(this.resourceResetDate);
+  const timeSinceResourceReset = currentDate - resourceResetDate;
+  if (timeSinceResourceReset >= 24 * 60 * 60 * 1000) {
+    // 24 hours
+    this.downloadsToday = 0; // Reset daily downloads
+    this.viewedResources = []; // Reset viewed resources
+    this.resourceResetDate = currentDate; // Update resource reset timestamp
+  }
 
-userSchema.methods.canCreateQuery = function () {
-  return this.queriesUsed < 10; // Limit: 10 queries per day
+  // Check if it's been more than 2 hours for resetting usage limits (queries and chat options)
+  const lastResetDate = new Date(this.lastResetDate);
+  const timeSinceLastReset = currentDate - lastResetDate;
+  if (timeSinceLastReset >= 2 * 60 * 60 * 1000) {
+    // 2 hours
+    this.queriesUsed = 0;
+    this.chatOptionsUsed = 0;
+    this.lastResetDate = currentDate; // Update limit reset timestamp
+  }
+
+  try {
+    // Save all changes in one save call to avoid parallel save errors
+    await this.save();
+    return true;
+  } catch (error) {
+    console.error("Error saving user limits:", error);
+    return false;
+  }
+};
+// Add this to your user schema methods
+userSchema.methods.canCreateQuery = function (slug) {
+  // Find the chatOption based on slug
+  const chatOption = this.chatOptions.find((option) => option.slug === slug);
+
+  // If no chatOption is found or there's no pdfText, allow query creation
+  if (!chatOption || !chatOption.pdfText) {
+    return true;
+  }
+
+  // If pdfText exists, enforce query limit of 10
+  return this.queriesUsed < 10;
 };
 
 userSchema.methods.canCreateChatOption = function () {
-  return this.chatOptionsUsed < 2; // Limit: 2 chat options per day
+  return this.chatOptionsUsed < 2; // Limit: 2 chat options per 2 hours
 };
 
 module.exports = mongoose.model("User", userSchema);

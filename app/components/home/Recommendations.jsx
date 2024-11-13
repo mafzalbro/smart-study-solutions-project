@@ -100,14 +100,16 @@ const RecommendationsForYou = () => {
               </div>
             </div>
           ))}
+          <div className="flex justify-center items-center ">
+            <LinkButton
+              text={"See All"}
+              icon={<BiArrowToRight />}
+              iconPosition="right"
+              link={"/resources"}
+            />
+          </div>
         </div>
       )}
-      <LinkButton
-        text={"See All"}
-        icon={<BiArrowToRight />}
-        iconPosition="right"
-        link={"/resources"}
-      />
     </div>
   );
 };

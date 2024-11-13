@@ -1,7 +1,7 @@
 import React from "react";
 import Hr from "./components/Hr";
 import WhatWeOffer from "./components/home/WhatWeOffer";
-import GetStartedButtons from "./components/GetStartedButtons"; 
+import GetStartedButtons from "./components/GetStartedButtons";
 import Features from "./components/home/Features";
 import Testimonials from "./components/home/Testimonials";
 import ContactUs from "./components/ContactUs";
@@ -12,16 +12,18 @@ import MainHeading from "./components/MainHeading.jsx";
 // import StylishTitle from "./components/StylishTitle";
 // import StylishSpan from "./components/StylishSpan";
 import RecommendationsForYou from "./components/home/Recommendations";
+import AnnouncementStripe from "./components/home/Stripe";
 
 const LandingPage = () => {
   return (
     <div>
       <Announcements />
-     
+
       <div className="container mx-auto md:my-20">
         {/* <Hr /> */}
 
         <div>
+          <AnnouncementStripe />
           <WhatWeOffer />
         </div>
 

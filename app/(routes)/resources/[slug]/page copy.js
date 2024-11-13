@@ -19,15 +19,7 @@ import {
 import { fetcher } from "@/app/utils/fetcher";
 import LinkButton from "@/app/components/LinkButton";
 import { MdShoppingCart } from "react-icons/md";
-import {
-  AiFillDislike,
-  AiFillLike,
-  AiOutlineInfoCircle,
-  AiOutlineLock,
-  AiOutlineLogin,
-} from "react-icons/ai";
-import { toast } from "react-toastify";
-import ResourceMembershipMessage from "@/app/components/resources/StripMessage";
+import { AiOutlineLogin } from "react-icons/ai";
 
 export default function ResourcePage({ params }) {
   const [resource, setResource] = useState(null);
@@ -38,8 +30,8 @@ export default function ResourcePage({ params }) {
   const [rating, setRating] = useState(0);
   const [ratingCount, setRatingCount] = useState(0);
   const [ratingNumber, setRatingNumber] = useState(null);
-  const [isDownloadExceed, setIsDownloadExceed] = useState(true);
-  const [isViewedExceed, setIsViewedExceed] = useState(true);
+  const [showPdfModal, setShowPdfModal] = useState(false);
+  const [showBookModal, setShowBookModal] = useState(false);
   const [hasLiked, setHasLiked] = useState(false);
   const [hasDisliked, setHasDisliked] = useState(false);
   const [hasRated, setHasRated] = useState(false);
@@ -154,7 +146,7 @@ export default function ResourcePage({ params }) {
           throw new Error("Failed to fetch resource data");
         }
         if (data.message == "Resource not found") {
-          setResource(null);
+          return notFound();
         }
         document.title = data.title;
         setResource(data);
@@ -166,8 +158,6 @@ export default function ResourcePage({ params }) {
         setHasRated(data.hasRated);
         setRatingCount(data.ratingCount);
         setRatingNumber(data.ratingNumber);
-        setIsDownloadExceed(data.isDownloadExceed);
-        setIsViewedExceed(data.isViewedExceed);
 
         // Fetch related resources
         const relatedRes = await fetcher(
@@ -186,61 +176,9 @@ export default function ResourcePage({ params }) {
     fetchResource();
   }, [slug]);
 
-  const handleDownload = async () => {
-    try {
-      const response = await fetcher(
-        `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/download-pdf/${slug}`
-      );
-
-      if (response.message == "Download limit reached") {
-        setIsDownloadExceed(true);
-      }
-      if (response.downloadLink) {
-        setIsDownloadExceed(false);
-        // Open the download link in a new tab or window
-        window.open(response.downloadLink, "_blank");
-        toast.success("Download link generated successfully!");
-      } else {
-        throw new Error(response.message || "Download failed");
-      }
-    } catch (error) {
-      if (error.message == "Download limit reached") {
-        setIsDownloadExceed(true);
-      }
-      console.error("Error downloading PDF:", error);
-      toast.error(error.message || "Error downloading PDF");
-    }
-  };
-
-  const handleView = async () => {
-    try {
-      const response = await fetcher(
-        `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/view-pdf/${slug}`
-      );
-
-      if (response.message == "View limit reached") {
-        setIsViewedExceed(true);
-      }
-      if (response.viewLink) {
-        // Open the view link in a new tab or window
-        setIsViewedExceed(false);
-        window.open(response.viewLink, "_blank");
-        toast.success("View link generated successfully!");
-      } else {
-        throw new Error(response.message || "View failed");
-      }
-    } catch (error) {
-      if (error.message == "View limit reached") {
-        setIsViewedExceed(true);
-      }
-      console.error("Error viewing PDF:", error);
-      toast.error(error.message || "Error viewing PDF");
-    }
-  };
-
   if (loading) {
     return (
-      <div className="resource-item container mx-auto w-full md:w-[90vw] my-10 px-4">
+      <div className="resource-item container mx-auto w-[95vw] md:w-[90vw] my-10 px-4">
         <section className="flex flex-col md:flex-row gap-8">
           {/* Main Content Skeleton */}
           <main className="bg-secondary dark:bg-neutral-800 shadow-md bg-clip-border rounded-lg p-6 md:p-10 flex-1">
@@ -323,38 +261,38 @@ export default function ResourcePage({ params }) {
 
   return (
     resource && (
-      <div className="resource-item container mx-auto w-full md:w-[100vw] my-6 sm:my-12 px-6">
-        <ResourceMembershipMessage />
-        <section className="flex flex-col md:flex-row gap-12">
-          <main className="text-neutral-800 dark:text-neutral-200 bg-secondary dark:bg-neutral-800 shadow-lg bg-clip-border rounded-xl p-8 md:p-12 flex-1">
+      <div className="resource-item container mx-auto w-[95vw] md:w-[90vw] my-10 px-4">
+        <section className="flex flex-col md:flex-row gap-8">
+          <main className="text-neutral-700 dark:text-neutral-300 bg-secondary dark:bg-neutral-800 shadow-md bg-clip-border rounded-lg p-6 md:p-10 flex-1">
             <Link
               href="/resources"
-              className="text-accent-600 dark:text-accent-400 inline-flex items-center text-lg font-medium mb-4"
+              className="text-accent-600 dark:text-accent-300 inline-flex items-center"
             >
-              <FaChevronLeft className="mr-2" /> Back to Resources
+              <FaChevronLeft className="mr-1" /> Back to Resources
             </Link>
-            <div className="mt-6 text-sm md:text-base flex gap-6 flex-wrap">
+            <div className="mt-4">
               {resource?.type && (
-                <p className="text-neutral-700 dark:text-neutral-300">
+                <p className="text-neutral-700 dark:text-neutral-300 mb-2">
                   <strong>Type:</strong>
                   <Link
                     href={`/resources/type/${resource.type
                       .split(" ")
                       .join("-")}`}
-                    className="text-accent-600 hover:text-accent-700 dark:text-accent-300 dark:hover:text-accent-400 transition-colors duration-200 capitalize ml-2"
+                    className="text-accent-500 hover:text-accent-600 dark:text-accent-300 transition-all duration-100 capitalize"
                   >
-                    {resource.type}
+                    {" "}
+                    {resource.type}{" "}
                   </Link>
                 </p>
               )}
               {resource?.tags && (
-                <p className="text-neutral-700 dark:text-neutral-300">
+                <p className="text-neutral-700 dark:text-neutral-300 mb-2">
                   <strong>Tags:</strong>{" "}
                   {resource.tags.map((tag, i) => (
                     <Link
                       key={i}
                       href={`/resources/tag/${tag.split(" ").join("-")}`}
-                      className="text-accent-600 hover:text-accent-700 dark:text-accent-300 dark:hover:text-accent-400 transition-colors duration-200 capitalize"
+                      className="text-accent-500 hover:text-accent-600 dark:text-accent-300 transition-all duration-100 capitalize"
                     >
                       {tag}
                       {i < resource.tags.length - 1 && ", "}
@@ -362,137 +300,82 @@ export default function ResourcePage({ params }) {
                   ))}
                 </p>
               )}
-              <p className="text-neutral-700 dark:text-neutral-300">
+              <p className="text-neutral-700 dark:text-neutral-300 mb-2">
                 <strong>Published At:</strong>{" "}
-                <span className="text-neutral-800 dark:text-neutral-400 ml-2">
-                  {new Date(resource.createdAt).toLocaleDateString()}
-                </span>
+                {new Date(resource.createdAt).toLocaleDateString()}
               </p>
-              <p className="text-neutral-700 dark:text-neutral-300">
+              <p className="text-neutral-700 dark:text-neutral-300 mb-2">
                 <strong>Updated At:</strong>{" "}
-                <span className="text-neutral-800 dark:text-neutral-400 ml-2">
-                  {new Date(resource.updatedAt).toLocaleDateString()}
-                </span>
+                {new Date(resource.updatedAt).toLocaleDateString()}
               </p>
             </div>
-
-            <StylishTitle
-              colored={resource.title}
-              fontSize="text-lg sm:text-3xl lg:text-5xl"
-              className="my-8 !mt-8 text-3xl lg:text-5xl font-bold"
-            />
-
-            <div className="flex items-center gap-6 mb-8">
-              <button
-                onClick={() => handleLike()}
-                disabled={hasLiked}
-                className={`flex items-center text-neutral-600 dark:text-neutral-300 text-lg font-medium transition-colors duration-200 ${
-                  hasLiked
-                    ? "text-blue-500"
-                    : "hover:text-blue-500 dark:hover:text-blue-400"
-                } disabled:text-blue-500 dark:disabled:text-blue-500 disabled:pointer-events-none`}
-              >
-                <AiFillLike className="mr-2 text-xl" /> {likes}
-              </button>
-              <button
-                onClick={() => handleDislike()}
-                disabled={hasDisliked}
-                className={`flex items-center text-neutral-600 dark:text-neutral-300 text-lg font-medium transition-colors duration-200 ${
-                  hasDisliked
-                    ? "text-red-500"
-                    : "hover:text-red-500 dark:hover:text-red-400"
-                } disabled:text-red-500 dark:disabled:text-red-500 disabled:pointer-events-none`}
-              >
-                <AiFillDislike className="mr-2 text-xl" /> {dislikes}
-              </button>
-            </div>
-
+            {/* <h1 className="text-2xl md:text-4xl my-6 text-foreground">{resource.title}</h1> */}
+            <StylishTitle colored={resource.title} />
             {resource?.profileImage && (
               <img
                 src={resource.profileImage}
                 alt={resource.title}
-                className="mb-6 w-full mx-auto rounded-lg shadow-md"
+                className="mb-4 w-full max-w-xs mx-auto"
               />
             )}
-
-            {resource.type === "notes" && (
-              <div className="flex items-center border border-yellow-300 bg-yellow-50 rounded-lg p-4 dark:bg-yellow-800 dark:border-yellow-700">
-                <AiOutlineInfoCircle className="text-yellow-600 mr-2 dark:text-yellow-300" />
-                <span className="text-yellow-700 text-sm md:text-base dark:text-yellow-200">
-                  These notes are part of our premium content. Please upgrade to
-                  access.
-                </span>
-              </div>
-            )}
-
-            <p className="my-4 text-base md:text-lg">{resource?.description}</p>
-
+            <p className="mb-4 text-lg">{resource?.description}</p>
             <div className="my-6 flex flex-col md:flex-row gap-4">
-              {!!user && !user?.username && (
+              {!!user && !user?.username ? (
                 <LinkButton
                   text="Please login to view PDF..."
-                  icon={<AiOutlineLock />}
-                  iconPosition="right"
+                  icon={<AiOutlineLogin />}
                   link={"/login"}
                   className="!bg-accent-600 text-scondary text-sm md:text-base !py-2 !px-4 !rounded-full hover:!bg-accent-700 flex items-center justify-center gap-2 text-center"
                 />
+              ) : (
+                ""
               )}
-
-              {!!user &&
-                user?.username &&
-                (!isViewedExceed || user?.isMember) && (
+              {resource?.pdfLink?.length !== 0 && !!user && user?.username && (
+                <>
                   <button
-                    onClick={handleView}
+                    onClick={() => setShowPdfModal(true)}
                     className="bg-accent-600 text-white rounded-lg py-2 px-4 hover:bg-accent-700 dark:bg-accent-600 dark:hover:bg-accent-700"
                   >
                     View PDF
                   </button>
-                )}
-
-              {isDownloadExceed && (
-                <div className="flex items-center justify-center bg-red-600 text-white rounded-lg py-2 px-4 hover:bg-red-700 dark:bg-red-800 dark:hover:bg-red-900 transition duration-200 ease-in-out transform hover:scale-105">
-                  <AiOutlineLock className="mr-2 text-lg text-gray-200 dark:text-gray-400" />
-                  <span className="text-sm md:text-base">
-                    {resource.type === "notes"
-                      ? "Cannot Download Notes in Free Version"
-                      : "Download Limit Exceeded"}
-                  </span>
-                </div>
+                  {user?.isMember ? (
+                    <button
+                      onClick={() => setShowBookModal(true)}
+                      className="bg-accent-600 text-white rounded-lg py-2 px-4 hover:bg-accent-700 dark:bg-accent-600 dark:hover:bg-accent-700"
+                    >
+                      Read PDF as 3D Book
+                    </button>
+                  ) : (
+                    <LinkButton
+                      text="Buy Membership to Chat with PDF"
+                      icon={<MdShoppingCart />}
+                      link={"/pricing"}
+                      className="!bg-accent-600 text-scondary text-sm md:text-base !py-2 !px-4 !rounded-full hover:!bg-accent-700 flex items-center justify-center gap-2 text-center"
+                    />
+                  )}
+                </>
               )}
-              {isViewedExceed && (
-                <div className="flex items-center justify-center bg-red-600 text-white rounded-lg py-2 px-4 hover:bg-red-700 dark:bg-red-800 dark:hover:bg-red-900 transition duration-200 ease-in-out transform hover:scale-105">
-                  <AiOutlineLock className="mr-2 text-lg text-gray-200 dark:text-gray-400" />
-                  <span className="text-sm md:text-base">
-                    {resource.type === "notes"
-                      ? "Cannot View Notes in Free Version"
-                      : "Views Limit Exceeded"}
-                  </span>
-                </div>
-              )}
-
-              {!!user &&
-                user?.username &&
-                (!isDownloadExceed || user?.isMember) && (
-                  <button
-                    onClick={handleDownload}
-                    className="bg-accent-600 text-white rounded-lg py-2 px-4 hover:bg-accent-700 dark:bg-accent-600 dark:hover:bg-accent-700"
-                  >
-                    Download PDF
-                  </button>
-                )}
-
-              {!!user &&
-                !user.isMember &&
-                (isDownloadExceed || isViewedExceed) && (
-                  <LinkButton
-                    text="Buy Membership to Download and View PDFs"
-                    icon={<MdShoppingCart />}
-                    link={"/pricing"}
-                    className="!bg-accent-600 text-scondary text-sm md:text-base !py-2 !px-4 !rounded-full hover:!bg-accent-700 flex items-center justify-center gap-2 text-center"
-                  />
-                )}
             </div>
-
+            <div className="flex items-center gap-4 mb-6">
+              <button
+                onClick={() => handleLike()}
+                disabled={hasLiked}
+                className={`flex items-center text-neutral-700 dark:text-neutral-300 ${
+                  hasLiked ? "text-blue-500" : ""
+                } disabled:text-blue-500 dark:disabled:text-blue-500 disabled:pointer-events-none`}
+              >
+                <FaThumbsUp className="mr-2" /> {likes}
+              </button>
+              <button
+                onClick={() => handleDislike()}
+                disabled={hasDisliked}
+                className={`flex items-center disabled:text-red-500 dark:disabled:text-red-500 disabled:pointer-events-none text-neutral-700 dark:text-neutral-300 ${
+                  hasDisliked ? "text-red-500" : ""
+                }`}
+              >
+                <FaThumbsDown className="mr-2" /> {dislikes}
+              </button>
+            </div>
             <div>
               <h2 className="text-lg mb-2">
                 Ratings: {rating?.toFixed(2)} / 5 ({ratingCount} ratings)
@@ -537,6 +420,20 @@ export default function ResourcePage({ params }) {
               ))}
             </section>
           </>
+        )}
+
+        {showPdfModal && (
+          <PdfModal
+            onClose={() => setShowPdfModal(false)}
+            fileUrl={resource?.pdfLink[0]}
+          />
+        )}
+
+        {showBookModal && (
+          <BookViewer
+            onClose={() => setShowBookModal(false)}
+            pdfUrl={resource?.pdfLink[0]}
+          />
         )}
       </div>
     )
