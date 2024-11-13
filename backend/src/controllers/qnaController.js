@@ -182,67 +182,55 @@ const getQuestionBySlug = async (req, res) => {
       return res.status(404).json({ message: "This question is not found" });
     }
 
-    // Calculate number of upvotes and downvotes
+    // Calculate number of upvotes and downvotes for the question
     const upvotesCount = question.upvotedBy.length;
     const downvotesCount = question.downvotedBy.length;
 
-    // Check if current user has upvoted or downvoted this answer
+    // Check if the current user has upvoted or downvoted this question
     const isUpvoted = question.upvotedBy.includes(req?.user?.id);
     const isDownvoted = question.downvotedBy.includes(req?.user?.id);
 
-    const answers = question?.answers.map((answer) => {
-      const isUpvoted = answer.upvotedBy.includes(req?.user?.id);
-      const isDownvoted = answer.downvotedBy.includes(req?.user?.id);
+    // Conditionally filter answers based on user membership status
+    const answers = question.answers
+      .filter((answer) => {
+        // Show answer if the user is a member, or if the answer is by a student, or if the answer is by the current user
+        return (
+          req.user?.isMember ||
+          answer.answeredBy?.role === "student" ||
+          answer.answeredBy?._id.toString() === req.user?.id
+        );
+      })
 
-      // Calculate upvotes and downvotes counts
-      const upvotesCount = answer.upvotedBy.length;
-      const downvotesCount = answer.downvotedBy.length;
+      .map((answer) => {
+        const isAnswerUpvoted = answer.upvotedBy.includes(req?.user?.id);
+        const isAnswerDownvoted = answer.downvotedBy.includes(req?.user?.id);
 
-      return {
-        ...answer.toJSON(),
-        isUpvoted,
-        isDownvoted,
-        upvotesCount,
-        downvotesCount,
-      };
-    });
+        // Calculate upvotes and downvotes counts for each answer
+        const answerUpvotesCount = answer.upvotedBy.length;
+        const answerDownvotesCount = answer.downvotedBy.length;
 
-    // console.log(JSON.stringify(answers, null, 2))
-
-    // const reports = question.reports?.map(report => ({
-    //   description: report.description,
-    //   createdAt: report.createdAt,
-    //   reportedBy: report.reportedBy
-    // }))
-
-    // Prepare the response object including upvotes and downvotes
-    const response = {
-      _id: question?._id,
-      slug: question.slug,
-      question: question.question,
-      reports: question.reports,
-      answers: answers,
-      askedBy: {
-        _id: question.askedBy?._id,
-        username: question.askedBy?.username,
-        slug: question.askedBy?.slug,
-      },
-      category: {
-        name: question.category?.name,
-        _id: question.category?._id,
-      },
+        return {
+          ...answer.toJSON(),
+          isUpvoted: isAnswerUpvoted,
+          isDownvoted: isAnswerDownvoted,
+          upvotesCount: answerUpvotesCount,
+          downvotesCount: answerDownvotesCount,
+        };
+      });
+    res.status(200).json({
+      ...question.toJSON(),
+      answers,
       upvotesCount,
       downvotesCount,
       isUpvoted,
       isDownvoted,
-    };
-
-    res.status(200).json(response);
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to retrieve question" });
+    res.status(500).json({ message: "Failed to retrieve the question" });
   }
 };
+
 // Update a question by slug
 const updateQuestion = async (req, res) => {
   const { slug } = req.params;
