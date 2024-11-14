@@ -103,7 +103,7 @@ const getAllResourcesForUser = async (req, res) => {
     showFullJSON,
   } = req.query;
 
-  let queryOptions = { status: true };
+  let queryOptions = {};
   let sortOptions = { updatedAt: -1 };
 
   try {
@@ -136,30 +136,39 @@ const getAllResourcesForUser = async (req, res) => {
     let results;
     if (showAll) {
       results = await paginateResults(
-        Resource.find(queryOptions).sort(sortOptions),
+        Resource.find({ status: true, ...queryOptions }).sort({
+          updatedAt: -1,
+          ...sortOptions,
+        }),
         null,
         null,
         showAll
       );
     } else if (showFullJSON) {
       results = await paginateResults(
-        Resource.find(queryOptions).sort(sortOptions),
+        Resource.find({ status: true, ...queryOptions }).sort({
+          updatedAt: -1,
+          ...sortOptions,
+        }),
         parseInt(page),
         parseInt(limit)
       );
     } else {
       results = await paginateResults(
-        Resource.find(queryOptions, {
-          title: 1,
-          description: 1,
-          slug: 1,
-          semester: 1,
-          degree: 1,
-          type: 1,
-          createdAt: 1,
-          likes: 1,
-          profileImage: 1,
-        }).sort(sortOptions),
+        Resource.find(
+          { status: true, ...queryOptions },
+          {
+            title: 1,
+            description: 1,
+            slug: 1,
+            semester: 1,
+            degree: 1,
+            type: 1,
+            createdAt: 1,
+            likes: 1,
+            profileImage: 1,
+          }
+        ).sort({ updatedAt: -1, ...sortOptions }),
         parseInt(page),
         parseInt(limit)
       );
@@ -582,6 +591,7 @@ const updateResourceBySlug = async (req, res) => {
     ratingCount,
     likes,
     dislikes,
+    pdfLink,
     source,
   } = req.body;
 
@@ -607,11 +617,7 @@ const updateResourceBySlug = async (req, res) => {
         likes,
         dislikes,
         source,
-        pdfLink: pdfLink
-          ? Array.isArray(pdfLink)
-            ? [pdfLink]
-            : pdfLink
-          : [source],
+        pdfLink: !!pdfLink ? [pdfLink] : [source],
       },
       { new: true }
     );

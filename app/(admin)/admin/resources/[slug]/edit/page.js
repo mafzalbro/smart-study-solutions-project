@@ -10,6 +10,7 @@ import { fetcher } from "@/app/(admin)/utils/fetcher";
 import imageCompression from "browser-image-compression";
 import { toast } from "react-toastify";
 import { removeOlderCacheAfterMutation } from "@/app/utils/caching";
+import Skeleton from "react-loading-skeleton";
 
 const EditResourcePage = ({ params: { slug } }) => {
   const router = useRouter();
@@ -25,9 +26,12 @@ const EditResourcePage = ({ params: { slug } }) => {
   const [status, setStatus] = useState(false);
   const [imageBase64, setImageBase64] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchResource = async () => {
+      setIsLoading(true);
       try {
         const data = await fetcher(
           `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/${slug}`
@@ -41,7 +45,9 @@ const EditResourcePage = ({ params: { slug } }) => {
         setStatus(data.status);
         setType(data.type);
         setProfileImage(data.profileImage); // Set the profile image URL
+        setIsLoading(false);
       } catch (error) {
+        setIsLoading(false);
         if (error === "Resource Not Found") {
           router.push("/admin/resources");
           toast.error("Resource Does not exists...");
@@ -72,6 +78,7 @@ const EditResourcePage = ({ params: { slug } }) => {
   };
 
   const handleSubmit = async (e) => {
+    setIsSubmitting(true);
     e.preventDefault();
     try {
       const updatedResource = {
@@ -90,10 +97,12 @@ const EditResourcePage = ({ params: { slug } }) => {
         "PUT",
         updatedResource
       );
+      setIsSubmitting(false);
       removeOlderCacheAfterMutation("/api/resouces");
       toast.success("Resource updated successfully!");
       router.back();
     } catch (error) {
+      setIsSubmitting(false);
       toast.error(
         "Failed to update resource." + (error ? JSON.stringify(error) : "")
       );
@@ -106,6 +115,14 @@ const EditResourcePage = ({ params: { slug } }) => {
     setImageBase64(null);
     fileInputRef.current.value = "";
   };
+
+  if (isLoading) {
+    return (
+      <>
+        <Skeleton height={400} className="!w-full" />
+      </>
+    );
+  }
 
   return (
     <>
@@ -211,6 +228,17 @@ const EditResourcePage = ({ params: { slug } }) => {
             className={`inline-flex cursor-pointer items-center space-x-2 py-2 px-4 text-accent-900 bg-accent-100 hover:bg-accent-200 dark:bg-accent-300 dark:hover:bg-accent-400 rounded-lg text-center`}
           >
             Save Changes
+          </button>
+          <button
+            type="submit"
+            className={`inline-flex text-black cursor-pointer text-center items-center space-x-2 py-2 px-4 ${
+              isSubmitting
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-accent-100 hover:bg-accent-200 dark:bg-accent-300 dark:hover:bg-accent-400"
+            } rounded-lg text-center`}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Saving..." : "Save Changes"}
           </button>
         </form>
       </div>

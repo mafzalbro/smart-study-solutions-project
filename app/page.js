@@ -23,7 +23,6 @@ const LandingPage = () => {
         {/* <Hr /> */}
 
         <div>
-          <AnnouncementStripe />
           <WhatWeOffer />
         </div>
 
@@ -36,6 +35,8 @@ const LandingPage = () => {
           <Features />
         </div>
 
+          <AnnouncementStripe />
+          
         <div>
           <MainHeading name="Testimonials" />
           <Testimonials />

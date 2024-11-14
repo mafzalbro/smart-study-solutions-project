@@ -6,24 +6,28 @@ import Link from "next/link";
 import { fetcher } from "@/app/(admin)/utils/fetcher";
 import { toast } from "react-toastify";
 import { removeOlderCacheAfterMutation } from "@/app/utils/caching";
+import { useState } from "react";
 
 const DeleteResourcePage = ({ params: { slug } }) => {
   const router = useRouter();
+  const [deleting, setDeleting] = useState(false);
 
   const handleSubmit = async (e) => {
+    setDeleting(true);
     e.preventDefault();
     try {
       const data = await fetcher(
         `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/resources/${slug}`,
         "DELETE"
       );
-      console.log({ data });
 
       removeOlderCacheAfterMutation("/api/resources");
+      setDeleting(false);
       toast.success("Resource deleted successfully!");
       router.push("/admin/resources");
     } catch (error) {
-      toast.error("Failed to delete resource. " + error);
+      setDeleting(false);
+      toast.error("Failed to delete resource. " + error?.message);
       console.error("Failed to delete resource", error);
     }
   };
@@ -37,14 +41,15 @@ const DeleteResourcePage = ({ params: { slug } }) => {
 
       <div className="my-10 px-4">
         <h2 className="text-xl my-4">
-          Are you sure to Delete ({slug?.split(" ").toUpperCase()}) ?
+          Are you sure to Delete ({slug?.toUpperCase()?.split(" ")}) ?
         </h2>
         <form onSubmit={handleSubmit} className="flex gap-4">
           <button
             type="submit"
+            disabled={deleting}
             className={`inline-flex cursor-pointer items-center space-x-2 py-2 px-4  text-accent-900 bg-red-600 hover:bg-red-700 rounded-lg text-center`}
           >
-            Delete
+            {deleting ? "Deleting" : "Delete"}
           </button>
           <Link
             href="/admin/resources"
