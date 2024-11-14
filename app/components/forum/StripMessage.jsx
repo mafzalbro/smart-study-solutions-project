@@ -1,8 +1,14 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { AiOutlineClose } from "react-icons/ai";
+import { useAuth } from "@/app/customHooks/AuthContext";
 
 const StripeMessage = () => {
+  const { user } = useAuth();
+  if (!!user && user?.isMember) {
+    return null;
+  }
+
   const [isVisible, setIsVisible] = useState(true); // State to control visibility
 
   const handleClose = () => {

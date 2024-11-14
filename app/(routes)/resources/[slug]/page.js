@@ -415,7 +415,7 @@ export default function ResourcePage({ params }) {
               />
             )}
 
-            {resource.type === "notes" && (
+            {resource?.type === "notes" && !user?.isMember && (
               <div className="flex items-center border border-yellow-300 bg-yellow-50 rounded-lg p-4 dark:bg-yellow-800 dark:border-yellow-700">
                 <AiOutlineInfoCircle className="text-yellow-600 mr-2 dark:text-yellow-300" />
                 <span className="text-yellow-700 text-sm md:text-base dark:text-yellow-200">

@@ -12,8 +12,8 @@ const AnnouncementStripe = () => {
 
   return (
     isVisible && (
-      <div className="bg-gradient-to-r from-accent-600 to-accent-500 dark:bg-gradient-to-r dark:from-accent-600 dark:to-accent-800 text-white p-4 md:p-6 rounded-lg shadow-lg mt-8 relative">
-        <div className="flex flex-col gap-8 items-center justify-between">
+      <div className="bg-gradient-to-r from-accent-600 to-accent-500 dark:bg-gradient-to-r dark:from-accent-600 dark:to-accent-800 text-center md:text-left text-white p-5 md:p-6 md:rounded-lg shadow-lg mt-8 relative">
+        <div className="flex flex-col my-10 md:gap-10 items-center justify-between">
           <div className="flex flex-col items-start md:items-center">
             <h2 className="text-2xl font-semibold mb-2 md:mb-0">
               📢 Hey Students! Need help or have materials to upload?
@@ -25,7 +25,7 @@ const AnnouncementStripe = () => {
           </div>
           <Link
             href="/contact"
-            className="mt-4 md:mt-0 text-lg font-semibold text-accent-100 bg-accent-900 dark:bg-accent-500 hover:bg-accent-800 py-2 px-6 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105"
+            className="mt-4 md:mt-0 text-lg font-semibold text-secondary bg-accent-900 dark:bg-accent-500 hover:bg-accent-800 py-2 px-6 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105"
           >
             Contact Us
           </Link>

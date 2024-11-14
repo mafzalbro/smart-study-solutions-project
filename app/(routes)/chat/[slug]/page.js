@@ -9,6 +9,7 @@ import NewChatButton from "@/app/components/chat/NewChatButton";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import LimitReachedComponent from "@/app/components/chat/LimitReachedComponent";
+import { removeOlderCacheAfterMutation } from "@/app/utils/caching";
 
 export default function Chat({ params }) {
   const { slug } = params;
@@ -21,6 +22,7 @@ export default function Chat({ params }) {
   const fetchChat = async () => {
     if (!slug) return;
 
+    await removeOlderCacheAfterMutation(`/chat/${slug}`);
     setLoading(true);
     try {
       const data = await fetcher(
@@ -98,8 +100,6 @@ export default function Chat({ params }) {
   const addMessageToChatHistory = (message) => {
     setChatHistory((prevHistory) => [...prevHistory, message]);
   };
-
-  console.log({ chatHistory });
 
   return (
     <div>
