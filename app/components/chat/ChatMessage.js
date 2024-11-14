@@ -7,6 +7,8 @@ import VideoSearchModal from "./VideoSearchModal";
 import { SyncLoader } from "react-spinners";
 const marked = require("marked");
 const cheerio = require("cheerio");
+import { useAuth } from "@/app/customHooks/AuthContext";
+import StylishTitle from "../StylishTitle";
 
 // Function to apply Tailwind classes to HTML content using cheerio
 const addTailwindClasses = (html) => {
@@ -37,6 +39,8 @@ const addTailwindClasses = (html) => {
 
 export default function ChatMessage({ message, display }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { user } = useAuth();
 
   const renderMarkdown = (text) => {
     if (!text) return { __html: "<span></span>" }; // Return empty HTML if text is null or undefined
@@ -82,18 +86,34 @@ export default function ChatMessage({ message, display }) {
           </div>
 
           <div className="flex items-start">
-            <FaRobot
-              className="text-accent-200 dark:text-accent-400 text-2xl mr-2"
-              size={20}
-            />
-            {message.model_response ? (
-              <p
-                dangerouslySetInnerHTML={renderMarkdown(
-                  message.model_response || ""
-                )}
-              />
+            {message.model_response == "Empty Message..." ? (
+              <div className="text-center">
+                <StylishTitle
+                  tagName="h3"
+                  colored={user?.fullname ? `${user?.fullname}` : "Dear!"}
+                />
+                <p className="dark:text-gray-300 text-sm md:text-base">
+                  Nothing to display! Type your query...
+                </p>
+              </div>
+            ) : message.model_response ? (
+              <>
+                <FaRobot
+                  className="text-accent-200 dark:text-accent-400 text-2xl mr-2"
+                  size={20}
+                />
+                <p
+                  dangerouslySetInnerHTML={renderMarkdown(
+                    message.model_response || ""
+                  )}
+                />
+              </>
             ) : (
               <div className="flex items-center">
+                <FaRobot
+                  className="text-accent-200 dark:text-accent-400 text-2xl mr-2"
+                  size={20}
+                />
                 <SyncLoader color="#4a90e2" size={6} />
                 <span className="ml-3 text-gray-600 dark:text-gray-400">
                   Generating response...
@@ -103,7 +123,7 @@ export default function ChatMessage({ message, display }) {
           </div>
         </div>
       )}
-      
+
       <VideoSearchModal
         query={message.model_response}
         isOpen={isModalOpen}
