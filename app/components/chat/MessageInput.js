@@ -30,6 +30,7 @@ export default function MessageInput({
   chatId,
   addMessageToChatHistory,
   chatHistory,
+  setChatHistory,
   addPdfURL,
   fetchChat,
   userChatInfo,
@@ -94,6 +95,71 @@ export default function MessageInput({
     }
   };
 
+  // const sendMessage = async () => {
+  //   if (message.trim() === "") return;
+
+  //   // Validate PDF URL before sending
+  //   if (pdfUrl.trim() !== "" && !isValidPdfUrl(pdfUrl)) {
+  //     setError("Invalid PDF URL"); // Set error message
+  //     return;
+  //   }
+
+  //   setIsSending(true);
+
+  //   try {
+  //     const token = localStorage.getItem("token"); // Get token from local storage
+  //     const response = await fetch(
+  //       `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/${chatId}`,
+  //       {
+  //         method: "POST",
+  //         credentials: "include",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  //         },
+  //         body: JSON.stringify({ pdfUrl, pdfText, message, title: message }),
+  //       }
+  //     );
+
+  //     if (!response.body) {
+  //       console.error("ReadableStream not supported in this browser.");
+  //       return;
+  //     }
+
+  //     const reader = response.body.getReader();
+  //     const decoder = new TextDecoder();
+  //     let fullMessage = "";
+
+  //     const firstChunk = await reader.read();
+  //     fullMessage += decoder.decode(firstChunk.value);
+  //     setReply(fullMessage);
+
+  //     while (true) {
+  //       const { done, value } = await reader.read();
+  //       if (done) break;
+  //       fullMessage += decoder.decode(value);
+  //       setReply(fullMessage);
+  //     }
+
+  //     addMessageToChatHistory({
+  //       user_query: message,
+  //       model_response: fullMessage,
+  //     });
+  //     setMessage("");
+  //     setPdfUrl("");
+  //     setShowPdfInput(false);
+  //     setIsSending(false);
+  //     setPdfText("");
+  //     fetchChatInfo();
+  //     if (inputRef && inputRef.current) {
+  //       inputRef.current.focus();
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //     setIsSending(false);
+  //   }
+  // };
+
   const sendMessage = async () => {
     if (message.trim() === "") return;
 
@@ -104,6 +170,13 @@ export default function MessageInput({
     }
 
     setIsSending(true);
+    let fullMessage = ""; // Initialize the full message string to accumulate chunks
+
+    // Add an initial message entry in chat history with an empty response
+    setChatHistory((prevHistory) => [
+      ...prevHistory,
+      { user_query: message, model_response: "" }, // Add a new message entry with empty response
+    ]);
 
     try {
       const token = localStorage.getItem("token"); // Get token from local storage
@@ -120,6 +193,9 @@ export default function MessageInput({
         }
       );
 
+      setIsSending(false);
+      setMessage("");
+
       if (!response.body) {
         console.error("ReadableStream not supported in this browser.");
         return;
@@ -127,29 +203,47 @@ export default function MessageInput({
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let fullMessage = "";
-
-      const firstChunk = await reader.read();
-      fullMessage += decoder.decode(firstChunk.value);
-      setReply(fullMessage);
-
+      // Start reading the stream in chunks
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        fullMessage += decoder.decode(value);
-        setReply(fullMessage);
+
+        // Decode the chunk and append to fullMessage
+        const chunk = decoder.decode(value, { stream: true });
+        fullMessage += chunk;
+
+        // Update only the latest message's model_response with each new chunk
+        setChatHistory((prevHistory) => {
+          const updatedHistory = [...prevHistory];
+          const lastMessageIndex = updatedHistory.length - 1; // Get last message index
+          updatedHistory[lastMessageIndex] = {
+            ...updatedHistory[lastMessageIndex],
+            model_response: fullMessage, // Update response with the latest accumulated chunks
+          };
+          return updatedHistory;
+        });
       }
 
-      addMessageToChatHistory({
-        user_query: message,
-        model_response: fullMessage,
+      // Final update to ensure the last message has the full response
+      setChatHistory((prevHistory) => {
+        const updatedHistory = [...prevHistory];
+        const lastMessageIndex = updatedHistory.length - 1;
+        updatedHistory[lastMessageIndex] = {
+          ...updatedHistory[lastMessageIndex],
+          model_response: fullMessage, // Ensure complete response is set
+        };
+        return updatedHistory;
       });
+
+      // Clear inputs and states after sending the message
       setMessage("");
       setPdfUrl("");
       setShowPdfInput(false);
       setIsSending(false);
       setPdfText("");
       fetchChatInfo();
+
+      // Focus the input field again after sending the message
       if (inputRef && inputRef.current) {
         inputRef.current.focus();
       }

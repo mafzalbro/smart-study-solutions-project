@@ -182,7 +182,7 @@ export default function UploadPdfModal({
 
         {wordCountError && (
           <div className="text-center text-red-600 dark:text-red-400">
-            {user?.isMember ? (
+            {!user?.isMember ? (
               <div className="bg-yellow-100 p-4 rounded-lg text-center text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
                 <div className="font-semibold text-lg">
                   Dear Partner, we apologize for the inconvenience!
@@ -191,6 +191,14 @@ export default function UploadPdfModal({
                   It seems that this PDF exceeds 5000 words. While this may be a
                   bit of a hassle, you can still extract the text page by page
                   for a more tailored experience.
+                </div>
+                <div className="mt-4">
+                  <button
+                    onClick={openPageRangeModal}
+                    className="bg-blue-600 hover:bg-blue-500 text-white rounded-lg py-2 px-6"
+                  >
+                    Extract Text Page-Wise
+                  </button>
                 </div>
               </div>
             ) : (

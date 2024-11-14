@@ -74,7 +74,7 @@ const VideoSearchModal = ({ query, isOpen, onClose }) => {
                 <li key={video.id} className="mb-6">
                   <div
                     onClick={() => setSelectedVideo(video.id)}
-                    className="cursor-pointer flex flex-col md:flex-row items-start p-3 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-md transition-colors duration-200"
+                    className="cursor-pointer flex flex-col md:flex-row items-start gap-2 p-3 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-md transition-colors duration-200"
                   >
                     <img
                       src={video.thumbnail.thumbnails[0].url}

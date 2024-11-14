@@ -254,12 +254,12 @@ userSchema.methods.resetDailyLimitsIfNeeded = async function () {
     // // Check if the subscription has ended, and update the membership status
     if (currentDate > subscriptionEndDate) {
       // this.isMember = false;
-      this.downloadsToday = 0; // Reset daily downloads
-      this.viewedResources = []; // Reset viewed resources
-      this.resourceResetDate = currentDate; // Update resource reset timestamp
-      this.queriesUsed = 0;
-      this.chatOptionsUsed = 0;
-      this.lastResetDate = currentDate; // Update limit reset timestamp
+      // this.downloadsToday = 0; // Reset daily downloads
+      // this.viewedResources = []; // Reset viewed resources
+      // this.resourceResetDate = currentDate; // Update resource reset timestamp
+      // this.queriesUsed = 0;
+      // this.chatOptionsUsed = 0;
+      // this.lastResetDate = currentDate; // Update limit reset timestamp
       console.log("Subscription has ended. Membership status updated.");
     }
     // If the subscription hasn't ended, skip further checks

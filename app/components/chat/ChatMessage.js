@@ -4,6 +4,7 @@ import hljs from "highlight.js";
 import "highlight.js/styles/github.css"; // Light mode style
 import "highlight.js/styles/github-dark.css"; // Dark mode style
 import VideoSearchModal from "./VideoSearchModal";
+import { SyncLoader } from "react-spinners";
 const marked = require("marked");
 const cheerio = require("cheerio");
 
@@ -38,6 +39,7 @@ export default function ChatMessage({ message, display }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const renderMarkdown = (text) => {
+    if (!text) return { __html: "<span></span>" }; // Return empty HTML if text is null or undefined
     const html = marked.parse(text);
     const styledHtml = addTailwindClasses(html);
     return { __html: styledHtml };
@@ -51,9 +53,9 @@ export default function ChatMessage({ message, display }) {
 
   return (
     <>
-      {message && message?.model_response !== "" && (
+      {message && (
         <div
-          className={` overflow-auto p-4 mb-2 rounded-lg dark:bg-neutral-900 dark:text-secondary ${
+          className={`overflow-auto p-4 mb-2 rounded-lg dark:bg-neutral-900 dark:text-secondary ${
             display ? display : ""
           }`}
         >
@@ -64,11 +66,10 @@ export default function ChatMessage({ message, display }) {
             />
             <p
               className="text-accent-500 dark:text-accent-400 flex-1"
-              dangerouslySetInnerHTML={renderMarkdown(message.user_query)}
+              dangerouslySetInnerHTML={renderMarkdown(message.user_query || "")}
             />
-            {/* Video Search Button */}
             {/what|how|why|when|where|who|\?/.test(
-              message.user_query?.toLowerCase()
+              (message.user_query || "").toLowerCase()
             ) && (
               <button
                 className="ml-4 text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
@@ -77,42 +78,37 @@ export default function ChatMessage({ message, display }) {
               >
                 <FaVideo size={20} />
               </button>
-            )}{" "}
+            )}
           </div>
+
           <div className="flex items-start">
             <FaRobot
               className="text-accent-200 dark:text-accent-400 text-2xl mr-2"
               size={20}
             />
-            <p
-              dangerouslySetInnerHTML={renderMarkdown(message.model_response)}
-            />
+            {message.model_response ? (
+              <p
+                dangerouslySetInnerHTML={renderMarkdown(
+                  message.model_response || ""
+                )}
+              />
+            ) : (
+              <div className="flex items-center">
+                <SyncLoader color="#4a90e2" size={6} />
+                <span className="ml-3 text-gray-600 dark:text-gray-400">
+                  Generating response...
+                </span>
+              </div>
+            )}
           </div>
         </div>
       )}
-
-      {message && message?.model_response === "" && (
-        <div
-          className={`p-4 mb-2 text-center rounded-lg dark:bg-neutral-900 dark:text-secondary ${display}`}
-        >
-          <p
-            className="text-accent-500 dark:text-accent-400 flex-1"
-            dangerouslySetInnerHTML={renderMarkdown(message.user_query)}
-          />
-          <p dangerouslySetInnerHTML={renderMarkdown(message.model_response)} />
-        </div>
-      )}
-
-      {/* VideoSearchModal Component */}
-      {/what|how|why|when|where|who|\?/.test(
-        message.user_query?.toLowerCase()
-      ) && (
-        <VideoSearchModal
-          query={message.model_response}
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-        />
-      )}
+      
+      <VideoSearchModal
+        query={message.model_response}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </>
   );
 }

@@ -46,6 +46,7 @@ const LimitReachedComponent = ({
   if (pdfUrls !== "PDFTEXT") {
     return null;
   }
+
   if (userChatInfo?.queriesUsed === undefined) {
     return (
       <div className="p-2 text-center text-sm sm:text-md animate-pulse text-gray-500 dark:text-gray-400">
@@ -54,7 +55,7 @@ const LimitReachedComponent = ({
     );
   }
 
-  if (newButton && userChatInfo.chatOptionsUsed === 2) {
+  if (newButton && userChatInfo.chatOptionsUsed > 2) {
     return <div>2 chats already created! Limit Reached!</div>;
   }
 
@@ -77,7 +78,7 @@ const LimitReachedComponent = ({
               </p>
             )}
 
-            {timeLeft && userChatInfo.queriesUsed === 10 && (
+            {timeLeft && userChatInfo.queriesUsed >= 10 && (
               <p className="text-gray-500 dark:text-gray-400 text-sm">
                 Reset in: <span className="font-medium">{timeLeft}</span>
               </p>

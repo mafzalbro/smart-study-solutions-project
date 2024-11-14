@@ -10,10 +10,12 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import LimitReachedComponent from "@/app/components/chat/LimitReachedComponent";
 import { removeOlderCacheAfterMutation } from "@/app/utils/caching";
+import { useAuth } from "@/app/customHooks/AuthContext";
 
 export default function Chat({ params }) {
   const { slug } = params;
   const router = useRouter();
+  const { user } = useAuth();
   const [chatHistory, setChatHistory] = useState([]);
   const [pdfUrls, setPdfUrls] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -110,9 +112,8 @@ export default function Chat({ params }) {
         setUserChatInfo={setUserChatInfo}
       />
       <div className="chat-home flex h-screen">
-        {userChatInfo && userChatInfo.chatOptionsUsed !== 2 && (
-          <NewChatButton stickyBtn={true} />
-        )}
+        {((userChatInfo && userChatInfo.chatOptionsUsed <= 2) ||
+          user?.isMember) && <NewChatButton stickyBtn={true} />}
         <Sidebar
           chatHistory={chatHistory}
           slug={slug}
@@ -134,6 +135,7 @@ export default function Chat({ params }) {
             chatId={slug}
             addMessageToChatHistory={addMessageToChatHistory}
             chatHistory={chatHistory}
+            setChatHistory={setChatHistory}
           />
         </div>
       </div>
