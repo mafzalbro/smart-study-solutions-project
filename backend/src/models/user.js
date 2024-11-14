@@ -252,14 +252,14 @@ userSchema.methods.resetDailyLimitsIfNeeded = async function () {
     const subscriptionEndDate = new Date(this.subscriptionEndDate);
 
     // // Check if the subscription has ended, and update the membership status
-    // if (currentDate > subscriptionEndDate) {
-    //   this.isMember = false;
-    //   console.log("Subscription has ended. Membership status updated.");
-    // }
-    // // If the subscription hasn't ended, skip further checks
-    // else {
-    //   return true; // Membership is valid, so no changes are needed
-    // }
+    if (currentDate > subscriptionEndDate) {
+      this.isMember = false;
+      console.log("Subscription has ended. Membership status updated.");
+    }
+    // If the subscription hasn't ended, skip further checks
+    else {
+      return true; // Membership is valid, so no changes are needed
+    }
   }
 
   // Check if it's been more than 24 hours for resource-related reset (downloads and resources)
