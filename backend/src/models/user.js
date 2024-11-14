@@ -5,27 +5,98 @@ const bcrypt = require("bcrypt");
 const Schema = mongoose.Schema;
 
 const googleCacheMetaData = require("./googleCacheMetaData"); // Ensure correct path
+const ChatSchema = new Schema(
+  {
+    _id: { type: Schema.Types.ObjectId, auto: true },
 
-const ChatSchema = new Schema({
-  _id: { type: Schema.Types.ObjectId, auto: true },
-  slug: { type: String, required: true, unique: true, default: uuidv4 },
-  title: { type: String, required: true, default: "New Chat" },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-  pdfText: { type: String, default: "" },
-  pdfUrls: { type: [String], default: [] },
-  googleCacheMetaData: [
-    { type: Schema.Types.ObjectId, ref: "googleCacheMetaData" },
-  ], // Add this line
-
-  chatHistory: [
-    {
-      _id: { type: Schema.Types.ObjectId, auto: true },
-      user_query: { type: String, required: true },
-      model_response: { type: String, required: true },
+    // Unique identifier for each chat
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+      default: uuidv4,
     },
-  ],
-});
+
+    // Title for the chat
+    title: {
+      type: String,
+      required: true,
+      default: "New Chat",
+    },
+
+    // Automatic timestamps
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now,
+    },
+
+    // Text extracted from the PDF (latest extraction)
+    pdfText: {
+      type: String,
+      default: "",
+    },
+
+    // Array of unique URLs of PDFs related to this chat
+    pdfUrls: {
+      type: [String],
+      default: [],
+      validate: {
+        validator: function (v) {
+          return Array.isArray(v) && v.every((url, i) => v.indexOf(url) === i);
+        },
+        message: "PDF URLs must be unique.",
+      },
+    },
+
+    // Metadata reference for Google cache
+    googleCacheMetaData: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "googleCacheMetaData",
+      },
+    ],
+
+    // Array to store texts extracted from multiple PDFs with their indices
+    pdfTexts: [
+      {
+        text: {
+          type: String,
+          required: true,
+        },
+        index: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
+
+    // Array of chat history entries, each entry has user_query and model_response
+    chatHistory: [
+      {
+        _id: {
+          type: Schema.Types.ObjectId,
+          auto: true,
+        },
+        user_query: {
+          type: String,
+          required: true,
+        },
+        model_response: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
+  },
+  {
+    // Enables automatic updating of timestamps on updates
+    timestamps: true,
+  }
+);
 
 const userSchema = new Schema(
   {
@@ -180,15 +251,15 @@ userSchema.methods.resetDailyLimitsIfNeeded = async function () {
     const subscriptionStartDate = new Date(this.subscriptionStartDate);
     const subscriptionEndDate = new Date(this.subscriptionEndDate);
 
-    // Check if the subscription has ended, and update the membership status
-    if (currentDate > subscriptionEndDate) {
-      this.isMember = false;
-      console.log("Subscription has ended. Membership status updated.");
-    }
-    // If the subscription hasn't ended, skip further checks
-    else {
-      return true; // Membership is valid, so no changes are needed
-    }
+    // // Check if the subscription has ended, and update the membership status
+    // if (currentDate > subscriptionEndDate) {
+    //   this.isMember = false;
+    //   console.log("Subscription has ended. Membership status updated.");
+    // }
+    // // If the subscription hasn't ended, skip further checks
+    // else {
+    //   return true; // Membership is valid, so no changes are needed
+    // }
   }
 
   // Check if it's been more than 24 hours for resource-related reset (downloads and resources)
@@ -223,6 +294,9 @@ userSchema.methods.resetDailyLimitsIfNeeded = async function () {
 // Add this to your user schema methods
 userSchema.methods.canCreateQuery = function (slug) {
   // Find the chatOption based on slug
+  if (this.isMember) {
+    return true;
+  }
   const chatOption = this.chatOptions.find((option) => option.slug === slug);
 
   // If no chatOption is found or there's no pdfText, allow query creation
@@ -235,6 +309,10 @@ userSchema.methods.canCreateQuery = function (slug) {
 };
 
 userSchema.methods.canCreateChatOption = function () {
+  if (this.isMember) {
+    return true;
+  }
+
   return this.chatOptionsUsed < 2; // Limit: 2 chat options per 2 hours
 };
 

@@ -361,67 +361,83 @@ const chatWithPdfBySlug = async (req, res) => {
         .send("<p>User not found. You must be logged in.</p>");
     }
 
-    // Reset limits if necessary
     await user.resetDailyLimitsIfNeeded();
 
-    // Check if the user can create a new query or chat option
     if (!user.canCreateQuery(slug)) {
       return res
         .status(403)
         .send(
-          "<p>Query limit reached. <a href='/pricing'>Upgrade You Account</a></p>"
+          "<p>Query limit reached for PDFs, wait for 2 hours or <a href='/pricing'>Upgrade Your Account</a></p>"
         );
     }
 
-    let chatOption;
+    let chatOption = slug
+      ? user.chatOptions.find((option) => option.slug === slug)
+      : user.chatOptions[0];
 
-    if (slug) {
-      chatOption = user.chatOptions.find((option) => option.slug === slug);
-      if (!chatOption) {
-        return res.status(404).send("<p>Chat not found.</p>");
-      }
-    } else {
-      chatOption = user.chatOptions[0];
+    if (!chatOption) {
+      return res.status(404).send("<p>Chat not found.</p>");
     }
 
+    chatOption.title = title;
     const apiKey = user.apiKey;
 
-    // Set chatOption title
-    chatOption.title = title;
-
     if (pdfUrl) {
-      // Add unique PDF URL to the list
       chatOption.pdfUrls = pdfUrl.includes("http")
         ? Array.from(new Set([...chatOption.pdfUrls, pdfUrl]))
         : Array.from(new Set([...chatOption.pdfUrls]));
     }
 
     let finalPdfText = pdfText;
-    // Handle PDF text extraction if URL is provided
     if (pdfText) {
       chatOption.pdfText = pdfText;
     }
+
     if (pdfUrl) {
-      chatOption.pdfText = ""; // Clear previous text if a new URL is provided
-      finalPdfText = await extractTextFromPdf(pdfUrl); // Extract text from PDF
-      chatOption.pdfText = finalPdfText; // Save extracted text
-    } else if (!finalPdfText && chatOption.pdfText) {
-      // If no pdfText in request body and chatOption has saved text
-      finalPdfText = chatOption.pdfText;
+      chatOption.pdfText = "";
+      finalPdfText = await extractTextFromPdf(pdfUrl);
+      chatOption.pdfText = finalPdfText;
     }
 
     const context = JSON.parse(JSON.stringify(chatOption.chatHistory)) || [];
     let initialMessage;
 
-    // If there's a context and pdfText, add it to the context
-    if (context.length > 0 && finalPdfText) {
-      context[0].user_query += ` ___-------- (PDF Document Text: ${finalPdfText}) -----------`;
-    } else if (finalPdfText) {
-      // If no context, initialize with the PDF text
-      initialMessage = `${message} -------- (PDF Document Text: ${finalPdfText}) -----------`;
+    if (finalPdfText) {
+      // If there's new pdfText, add it directly to the latest user_query in context
+      if (context.length > 0) {
+        context[
+          context.length - 1
+        ].user_query += ` ___-------- (PDF Document Text: ${finalPdfText}) -----------`;
+      } else {
+        initialMessage = `${message} -------- (PDF Document Text: ${finalPdfText}) -----------`;
+      }
+
+      chatOption.pdfTexts.push({
+        text: finalPdfText,
+        index: context.length - 1,
+      });
+    } else {
+      const pdfContextIndex = context.findIndex(
+        (entry, index) => index > 0 && entry.user_query
+      );
+
+      if (pdfContextIndex !== -1 && chatOption.pdfText) {
+        context[
+          pdfContextIndex
+        ].user_query += ` ___-------- (PDF Document Text: ${chatOption.pdfText}) -----------`;
+        chatOption.pdfTexts.push({
+          text: chatOption.pdfText,
+          index: pdfContextIndex,
+        });
+      }
+
+      // Set pdfText to the most recent entry in pdfTexts if available
+      if (chatOption.pdfTexts?.length !== 0) {
+        chatOption.pdfText =
+          chatOption.pdfTexts[chatOption.pdfTexts.length - 1]?.text;
+      }
     }
 
-    // Generate chat response
     let responseStream;
     if (initialMessage) {
       responseStream = generateChatResponse(
@@ -450,21 +466,24 @@ const chatWithPdfBySlug = async (req, res) => {
       res.write(chunkText);
     }
 
-    // Save chat history after the response is sent
-    chatOption.chatHistory.push({
-      user_query: message,
-      model_response: fullResponse,
-    });
+    if (fullResponse) {
+      chatOption.chatHistory.push({
+        user_query: message,
+        model_response: fullResponse,
+      });
+    }
 
-    // Attempt to save with retry logic
+    if (!!chatOption.pdfText) {
+      user.queriesUsed += 1;
+    }
+
     let saveAttempt = 0;
     while (saveAttempt < 3) {
       try {
         await user.save();
-        break; // Exit loop on success
+        break;
       } catch (error) {
         if (error.name === "VersionError") {
-          // Re-fetch user and retry if there's a version conflict
           user = await User.findById(userId);
           chatOption =
             user.chatOptions.find((option) => option.slug === slug) ||
@@ -478,14 +497,6 @@ const chatWithPdfBySlug = async (req, res) => {
         }
       }
     }
-
-    // Increment query usage ONLY if pdfText exists in chatOption
-    if (!!chatOption.pdfText) {
-      user.queriesUsed += 1; // Increment query usage only if pdfText is available
-    }
-
-    // Finally, save user after all changes are made
-    await user.save(); // Save user at the end
 
     res.end();
   } catch (error) {
