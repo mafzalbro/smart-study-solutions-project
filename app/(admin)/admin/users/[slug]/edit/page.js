@@ -10,24 +10,27 @@ import { removeOlderCacheAfterMutation } from "@/app/utils/caching";
 
 const EditUserPage = ({ params: { slug } }) => {
   const router = useRouter();
-  
-  const [username, setUsername] = useState('');
-  const [fullname, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [favoriteGenre, setFavoriteGenre] = useState('');
-  const [role, setRole] = useState('');
+
+  const [username, setUsername] = useState("");
+  const [fullname, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [favoriteGenre, setFavoriteGenre] = useState("");
+  const [role, setRole] = useState("");
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const userData = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/user/${slug}`);
+        const userData = await fetcher(
+          `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/user/${slug}`
+        );
         setUsername(userData.username);
         setEmail(userData.email);
         setFavoriteGenre(userData.favoriteGenre);
         setRole(userData.role);
         setFullName(userData.fullname);
-        
+
         removeOlderCacheAfterMutation("/api/user");
       } catch (error) {
         console.error("Failed to fetch user data", error);
@@ -41,12 +44,26 @@ const EditUserPage = ({ params: { slug } }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
-      const updatedUser = { username, fullname, email, favoriteGenre, role };
-      await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/user/update`, "PUT", updatedUser);
+      const updatedUser = {
+        username,
+        fullname,
+        email,
+        favoriteGenre,
+        role,
+        slug,
+      };
+      await fetcher(
+        `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/user/get/update`,
+        "PUT",
+        updatedUser
+      );
       toast.success("User updated successfully!");
+      setIsSubmitting(false);
       router.push("/admin/users");
     } catch (error) {
+      setIsSubmitting(false);
       toast.error("Failed to update user");
       console.error("Error updating user", error);
     }
@@ -54,7 +71,9 @@ const EditUserPage = ({ params: { slug } }) => {
 
   return (
     <div className="p-4">
-      <button onClick={() => router.back()} className="text-blue-500 mb-4">Go Back</button>
+      <button onClick={() => router.back()} className="text-blue-500 mb-4">
+        Go Back
+      </button>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {loading ? (
           <p>Loading user data...</p>
@@ -101,7 +120,7 @@ const EditUserPage = ({ params: { slug } }) => {
               type="submit"
               className="py-2 px-4 text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
             >
-              Save Changes
+              {isSubmitting ? "Saving..." : "Save Changes"}
             </button>
           </>
         )}

@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 const slugify = require("slugify");
 const { paginateResults } = require("../utils/pagination");
 
-// Submit a question
 const submitQuestion = async (req, res) => {
   const { question, category, tags } = req.body;
   try {
@@ -16,6 +15,7 @@ const submitQuestion = async (req, res) => {
       return res.status(400).json({ message: "Question already exists" });
     }
 
+    // Create new question
     const newQuestion = new Question({
       question,
       askedBy: req?.user?.id,
@@ -24,6 +24,15 @@ const submitQuestion = async (req, res) => {
       slug: slugify(question, { lower: true, strict: true }),
     });
     await newQuestion.save();
+
+    // Create a notification for the user confirming the submission
+    await Notification.create({
+      user_id: req.user.id,
+      message: "Your question was submitted successfully.",
+      questionId: newQuestion._id,
+      type: "questionSubmitted",
+    });
+
     res
       .status(201)
       .json({ message: "Question submitted successfully", newQuestion });
@@ -55,6 +64,7 @@ const answerQuestion = async (req, res) => {
       });
     }
 
+    // Add new answer to question
     const newAnswer = {
       answerText,
       answeredBy: req?.user?.id,
@@ -62,6 +72,23 @@ const answerQuestion = async (req, res) => {
 
     question.answers.push(newAnswer);
     await question.save();
+
+    // Create a notification for the user who asked the question
+    await Notification.create({
+      user_id: question.askedBy,
+      message: "Your question received a new answer.",
+      questionId: question._id,
+      type: "answerReceived",
+    });
+
+    // Create a notification for the user who asked the question
+    await Notification.create({
+      user_id: newAnswer.answeredBy,
+      message: "New question have been answered.",
+      questionId: question._id,
+      type: "answerReceived",
+    });
+
     res.status(200).json({ message: "Question answered successfully" });
   } catch (error) {
     console.error(error);
@@ -112,7 +139,7 @@ const getAllQuestions = async (req, res) => {
           path: "category",
           select: "name _id slug",
         })
-        .sort(sortOptions),
+        .sort({ updatedAt: -1, ...sortOptions }),
       parseInt(page),
       parseInt(limit)
     );
@@ -258,14 +285,25 @@ const updateQuestion = async (req, res) => {
   }
 };
 
-// Delete a question by slug
+// Delete a question by slug and create a notification
 const deleteQuestion = async (req, res) => {
   const { slug } = req.params;
+
   try {
     const question = await Question.findOneAndDelete({ slug });
     if (!question) {
       return res.status(404).json({ message: "Question not found" });
     }
+
+    // Create a notification for the user who asked the question
+    await Notification.create({
+      user_id: question.askedBy,
+      message: "Your question was deleted by an admin.",
+      questionId: question._id,
+      type: "deletedByAdmin",
+      reason: "Violation of community guidelines or reported content",
+    });
+
     res.status(200).json({ message: "Question deleted successfully" });
   } catch (error) {
     console.error(error);
@@ -298,9 +336,10 @@ const updateAnswer = async (req, res) => {
   }
 };
 
-// Delete an answer
+// Delete an answer and create a notification
 const deleteAnswer = async (req, res) => {
   const { slug, answerId } = req.params;
+
   try {
     const question = await Question.findOne({ slug });
     if (!question) {
@@ -312,8 +351,18 @@ const deleteAnswer = async (req, res) => {
       return res.status(404).json({ message: "Answer not found" });
     }
 
-    question.answers.pull(answerId); // Use pull to remove the subdocument
+    question.answers.pull(answerId); // Remove the answer
     await question.save();
+
+    // Create a notification for the user who provided the answer
+    await Notification.create({
+      user_id: answer.answeredBy,
+      message: "Your answer was deleted by an admin.",
+      questionId: question._id,
+      type: "deletedByAdmin",
+      reason: "Violation of community guidelines or reported content",
+    });
+
     res.status(200).json({ message: "Answer deleted successfully" });
   } catch (error) {
     console.error(error);
@@ -638,7 +687,7 @@ const getAllCategories = async (req, res) => {
       Category.find(queryOptions),
       parseInt(page),
       parseInt(limit),
-      sortOptions
+      { updatedAt: -1, ...sortOptions }
     );
 
     res

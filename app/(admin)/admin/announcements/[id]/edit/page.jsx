@@ -20,7 +20,7 @@ const EditAnnouncementPage = ({ params: { id } }) => {
   const [description, setDescription] = useState("");
   const [btnText, setBtnText] = useState("");
   const [btnLink, setBtnLink] = useState("");
-  const [icon, setIcon] = useState("");
+  // const [icon, setIcon] = useState("");
   const [imageBase64, setImageBase64] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
 
@@ -35,7 +35,7 @@ const EditAnnouncementPage = ({ params: { id } }) => {
         setDescription(data.description);
         setBtnText(data.btnText);
         setBtnLink(data.btnLink);
-        setIcon(data.icon);
+        // setIcon(data.icon);
         setProfileImage(data.image); // Set the image URL
       } catch (error) {
         console.error("Failed to fetch announcement", error);
@@ -73,8 +73,8 @@ const EditAnnouncementPage = ({ params: { id } }) => {
         description,
         btnText,
         btnLink,
-        icon,
-        image: imageBase64,
+        // icon,
+        image: imageBase64 || profileImage,
       };
 
       await fetcher(
@@ -143,7 +143,7 @@ const EditAnnouncementPage = ({ params: { id } }) => {
         <div className="flex flex-col gap-2">
           <label className="font-medium">Button Link:</label>
           <TextInputField
-            type="url"
+            type="text"
             value={btnLink}
             onChange={(e) => setBtnLink(e.target.value)}
             className="p-2 border rounded-lg"
@@ -151,7 +151,7 @@ const EditAnnouncementPage = ({ params: { id } }) => {
           />
         </div>
 
-        <div className="flex flex-col gap-2">
+        {/* <div className="flex flex-col gap-2">
           <label className="font-medium">Icon:</label>
           <TextInputField
             type="text"
@@ -160,7 +160,7 @@ const EditAnnouncementPage = ({ params: { id } }) => {
             className="p-2 border rounded-lg"
             placeholder="Enter icon URL or icon name"
           />
-        </div>
+        </div> */}
 
         <div className="flex flex-col gap-2">
           <label className="font-medium">Image:</label>
@@ -178,8 +178,9 @@ const EditAnnouncementPage = ({ params: { id } }) => {
             ref={fileInputRef}
             onChange={handleImageUpload}
             className="p-2 border rounded-lg"
-          />
-          {profileImage && (
+          /> */}
+
+          {/* {profileImage && (
             <div className="mt-2">
               <img
                 src={profileImage}

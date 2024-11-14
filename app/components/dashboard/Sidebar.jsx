@@ -11,6 +11,7 @@ import {
   AiOutlineLock,
   AiOutlineHeart,
   AiOutlineQuestion,
+  AiOutlineBell,
 } from "react-icons/ai";
 import { RiQuestionAnswerLine } from "react-icons/ri";
 import ClickButton from "../ClickButton";
@@ -41,6 +42,12 @@ export default function Sidebar({ height }) {
       href: "/dashboard",
       key: "dashboard",
       icon: <AiOutlineHome />,
+    },
+    {
+      label: "Notifications",
+      href: "/dashboard/notifications",
+      key: "notifications",
+      icon: <AiOutlineBell />,
     },
     {
       label: "Update Profile",
@@ -129,7 +136,11 @@ export default function Sidebar({ height }) {
                 }`}
               >
                 <span className="text-lg">{item.icon}</span>
+
                 <span>{item.label}</span>
+                {item.key === "notifications" && (
+                  <span className="w-2.5 h-2.5 bg-red-500 dark:bg-red-400 rounded-full"></span>
+                )}
               </span>
             </Link>
           ))}

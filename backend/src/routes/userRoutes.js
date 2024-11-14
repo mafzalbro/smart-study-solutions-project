@@ -48,7 +48,7 @@ router.get("/:slug", getUserBySlug);
 // Route to update a user by ID
 router.put("/:id", auth, updateUserById);
 
-router.put("/update", adminAuth, updateUserBySlug);
+router.put("/get/update", adminAuth, updateUserBySlug);
 
 // Route to delete a user by Slug
 router.delete("/:slug", adminAuth, deleteUserBySlug);

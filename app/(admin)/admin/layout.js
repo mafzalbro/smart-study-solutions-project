@@ -2,6 +2,7 @@ import { AdminAuthProvider } from "@/app/(admin)/customHooks/AdminAuthProvider";
 import NavBarAdmin from "../components/navbar/NavBarAdmin";
 import Sidebar from "../components/sidebar/Sidebar";
 import AdminWrapper from "../components/admin/AdminWrapper";
+import { ToastContainer } from "react-toastify";
 
 export const metadata = {
   title: "Admin Dashboard",
@@ -10,6 +11,7 @@ export const metadata = {
 const AdminRootLayout = async ({ children }) => {
   return (
     <AdminAuthProvider>
+      {/* <ToastContainer /> */}
       <NavBarAdmin />
       {/* <h2 className="text-4xl text-center my-10">Admin Dashboard</h2> */}
       <div className="flex flex-col md:flex-row p-2">

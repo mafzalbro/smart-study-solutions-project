@@ -363,7 +363,7 @@ const chatWithPdfBySlug = async (req, res) => {
 
     await user.resetDailyLimitsIfNeeded();
 
-    if (!user.canCreateQuery(slug)) {
+    if (!user.canCreateQuery(slug) || (pdfText && user.queriesUsed === 10)) {
       return res
         .status(403)
         .send(

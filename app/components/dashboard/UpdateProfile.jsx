@@ -17,6 +17,7 @@ const UpdateProfile = () => {
   const [user, setUser] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
   const [imageBase64, setImageBase64] = useState(null);
+  const [submiting, setSubmiting] = useState(false);
   const [loadingImage, setLoadingImage] = useState(false); // New state for loading
   const fileInputRef = useRef(null);
 
@@ -88,6 +89,7 @@ const UpdateProfile = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setSubmiting(true);
 
     try {
       const updatedUserData = {
@@ -96,7 +98,7 @@ const UpdateProfile = () => {
         email: user.email,
         role: user.role,
         favoriteGenre: user.favoriteGenre,
-        profileImage: imageBase64,
+        profileImage: imageBase64 || user.profileImage,
       };
 
       const response = await fetcher(
@@ -105,6 +107,7 @@ const UpdateProfile = () => {
         updatedUserData
       );
 
+      setSubmiting(false);
       if (response) {
         removeUserCacheHistory();
         toast.success("Profile updated successfully");
@@ -114,6 +117,7 @@ const UpdateProfile = () => {
         );
       }
     } catch (error) {
+      setSubmiting(false);
       toast.error(`Error updating profile: ${error.message}`);
     }
   };
@@ -237,11 +241,11 @@ const UpdateProfile = () => {
         />
         <button
           type="submit"
-          className="w-full py-2 px-4 bg-accent-600 text-white rounded-lg shadow-md hover:bg-accent-700 focus:outline-none focus:ring-2 focus:ring-accent-600"
+          disabled={submiting}
+          className="w-full py-2 px-4 bg-accent-600 text-white rounded-lg shadow-md hover:bg-accent-700 focus:outline-none focus:ring-2 focus:ring-accent-600 disabled:pointer-events-none disabled:bg-accent-400"
         >
-          Update Profile
+          {submiting ? "Updating..." : "Update Profile"}
         </button>
-        <ToastContainer />
       </form>
     </div>
   );

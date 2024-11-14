@@ -32,7 +32,7 @@ const AddPdfModel = ({ isOpen, onClose, onCreateNewChat, userChatInfo }) => {
             <FaTimes className="mr-2" /> Cancel
           </button>
           {/* {userChatInfo?.chatOptionsUsed !==2 && <NewChatButton />} */}
-          <NewChatButton />
+          <NewChatButton onClosePdfModal={onClose} />
         </div>
       </div>
     </div>

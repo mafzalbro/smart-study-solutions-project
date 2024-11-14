@@ -1,27 +1,32 @@
-import { useState, useEffect } from 'react';
-import { fetcher } from '@/app/utils/fetcher';
-import AlertMessage from '@/app/components/AlertMessage';
-import TextInputField from '@/app/components/TextInputField';
-import TextAreaField from '@/app/components/TextAreaField';
-import WhiteContainer from '../WhiteContainer';
-import { useRouter } from 'next-nprogress-bar' 
+import { useState, useEffect } from "react";
+import { useRouter } from "next-nprogress-bar";
+import { toast } from "react-toastify";
+import { fetcher } from "@/app/utils/fetcher";
+import TextInputField from "@/app/components/TextInputField";
+import TextAreaField from "@/app/components/TextAreaField";
+import WhiteContainer from "../WhiteContainer";
+import { useAuth } from "@/app/customHooks/AuthContext";
+import { AiFillLock } from "react-icons/ai";
 
 const QuestionForm = ({ onSuccess, onClose }) => {
-  const router = useRouter()
-  const [question, setQuestion] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
+  const router = useRouter();
+  const { user } = useAuth();
+  const [question, setQuestion] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
   const [categories, setCategories] = useState([]);
-  const [tags, setTags] = useState('');
-  const [alertMessage, setAlertMessage] = useState({ message: '', type: 'info' });
+  const [tags, setTags] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false); // Track submission state
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/qna/categories`);
+        const data = await fetcher(
+          `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/qna/categories`
+        );
         setCategories(data.data);
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error("Error fetching categories:", error);
       }
     };
 
@@ -30,44 +35,56 @@ const QuestionForm = ({ onSuccess, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const tagsArray = tags.split(',').map(tag => tag.trim());
+    const tagsArray = tags.split(",").map((tag) => tag.trim());
+
+    setIsSubmitting(true); // Disable form elements during submission
 
     try {
       const data = await fetcher(
         `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/qna/submit`,
-        'POST',
+        "POST",
         { question, description, category, tags: tagsArray }
       );
 
-      console.log({data})
-      console.log(data.newQuestion.slug)
+      toast.success("Question submitted successfully!");
 
-      router.push(`/forum/${data.newQuestion.slug}`)
+      // Navigate to the newly created question's page
+      router.push(`/forum/${data.newQuestion.slug}`);
 
-      setQuestion('');
-      setDescription('');
-      setTags('');
-      setAlertMessage({ message: 'Question submitted successfully!', type: 'success' });
-
+      setQuestion("");
+      setDescription("");
+      setTags("");
       if (onSuccess) onSuccess();
     } catch (error) {
-      setAlertMessage({ message: error.message || 'Failed to submit question', type: 'error' });
+      toast.error(error.message || "Failed to submit question");
+    } finally {
+      setIsSubmitting(false); // Re-enable form elements after submission
     }
   };
-
-  const handleAlertClose = () => {
-    setAlertMessage({ message: '', type: 'info' });
-  };
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center space-y-6 py-8 px-4 text-center">
+        <div className="bg-accent-100 dark:bg-accent-600 p-6 rounded-lg shadow-lg w-full max-w-md">
+          <AiFillLock className="text-5xl text-red-500 dark:text-red-400 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-accent-900 dark:text-accent-100 mb-2">
+            Please Log In to Submit Your Question
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
+            You need to log in to submit questions or participate in the forum.
+          </p>
+          <button
+            onClick={() => router.push("/login")}
+            className="py-2 px-6 bg-accent-500 text-white font-semibold rounded-lg shadow-md hover:bg-accent-700 transition-all duration-300"
+          >
+            Log In
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <WhiteContainer>
-      {alertMessage.message && (
-        <AlertMessage
-          message={alertMessage.message}
-          type={alertMessage.type}
-          onClose={handleAlertClose}
-        />
-      )}
       <form onSubmit={handleSubmit} className="space-y-6 p-6 w-full">
         <TextInputField
           type="text"
@@ -85,15 +102,19 @@ const QuestionForm = ({ onSuccess, onClose }) => {
           rows={4}
         />
         <div>
-          <label className="block text-secondary font-bold mb-2">Category</label>
+          <label className="block text-secondary font-bold mb-2">
+            Category
+          </label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             className="w-full px-3 py-2 border dark:text-secondary dark:bg-neutral-800 border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-600"
           >
             <option value="">Select a category</option>
-            {categories.map(cat => (
-              <option key={cat._id} value={cat._id}>{cat.name}</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
             ))}
           </select>
         </div>
@@ -106,9 +127,10 @@ const QuestionForm = ({ onSuccess, onClose }) => {
         />
         <button
           type="submit"
-          className="block w-full py-2 px-4 bg-accent-500 text-white font-semibold rounded-lg shadow-sm hover:bg-accent-700 transition-colors"
+          disabled={isSubmitting || question === "" || category === ""}
+          className={`block w-full py-2 px-4 bg-accent-500 text-white font-semibold rounded-lg shadow-sm hover:bg-accent-700 disabled:hover:bg-accent-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
         >
-          Submit
+          {isSubmitting ? "Submitting..." : "Submit"}
         </button>
       </form>
     </WhiteContainer>

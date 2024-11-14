@@ -9,7 +9,12 @@ import { MdOutlineAdd } from "react-icons/md";
 import Spinner from "../Spinner";
 import { toast } from "react-toastify";
 
-export default function NewChatButton({ stickyBtn, className, load }) {
+export default function NewChatButton({
+  stickyBtn,
+  className,
+  load,
+  onClosePdfModal,
+}) {
   const [creatingChat, setCreatingChat] = useState(false);
   const router = useRouter();
 
@@ -22,16 +27,25 @@ export default function NewChatButton({ stickyBtn, className, load }) {
         { title: "New Chat" }
       );
       if (newChat) {
+        if (onClosePdfModal) {
+          onClosePdfModal();
+        }
         // const newChat = await res.json();
         const slug = newChat.chatOption.slug;
         router.push(`/chat/${slug}`);
       } else {
         router.push("/login");
         console.error("Failed to create new chat");
+        toast.error("Failed to create new chat");
       }
     } catch (error) {
       console.error("Error creating new chat:", error);
-      if (error.message.includes("Daily chat option limit reached.")) {
+      toast.error("Failed to create new chat");
+
+      if (onClosePdfModal) {
+        onClosePdfModal();
+      }
+      if (error.message.includes("chats limit reached.")) {
         toast.error(error.message);
         // if (window !== undefined) window.location.reload();
       }

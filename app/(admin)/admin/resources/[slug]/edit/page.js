@@ -21,11 +21,13 @@ const EditResourcePage = ({ params: { slug } }) => {
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
   const [semester, setSemester] = useState("");
+  const [author, setAuthor] = useState("");
   const [degree, setDegree] = useState("");
   const [type, setType] = useState("");
   const [status, setStatus] = useState(false);
   const [imageBase64, setImageBase64] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
+  const [source, setSource] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -41,9 +43,11 @@ const EditResourcePage = ({ params: { slug } }) => {
         setDescription(data.description);
         setTags(data.tags);
         setSemester(data.semester);
+        setAuthor(data.author);
         setDegree(data.degree);
         setStatus(data.status);
         setType(data.type);
+        setSource(data.pdfLink[0]);
         setProfileImage(data.profileImage); // Set the profile image URL
         setIsLoading(false);
       } catch (error) {
@@ -85,6 +89,8 @@ const EditResourcePage = ({ params: { slug } }) => {
         title,
         description,
         tags,
+        author,
+        source,
         semester,
         degree,
         type,
@@ -145,10 +151,27 @@ const EditResourcePage = ({ params: { slug } }) => {
           />
 
           <TextInputField
+            name="author"
+            type="text"
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+            placeholder="Enter the author (optional)"
+          />
+
+          <TextInputField
             name="tags"
             value={tags}
             onChange={(e) => setTags(e.target.value)}
             placeholder="Enter tags (comma separated)"
+          />
+
+          <TextInputField
+            name="source"
+            type="text"
+            value={source}
+            onChange={(e) => setSource(e.target.value)}
+            placeholder="Enter source e.g., Google Drive Link"
+            required={true}
           />
 
           <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -223,12 +246,6 @@ const EditResourcePage = ({ params: { slug } }) => {
             />
           </div>
 
-          <button
-            type="submit"
-            className={`inline-flex cursor-pointer items-center space-x-2 py-2 px-4 text-accent-900 bg-accent-100 hover:bg-accent-200 dark:bg-accent-300 dark:hover:bg-accent-400 rounded-lg text-center`}
-          >
-            Save Changes
-          </button>
           <button
             type="submit"
             className={`inline-flex text-black cursor-pointer text-center items-center space-x-2 py-2 px-4 ${

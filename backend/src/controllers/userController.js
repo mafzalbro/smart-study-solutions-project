@@ -93,16 +93,17 @@ const getUser = async (req, res) => {
 
 // Update a user by Slug
 const updateUserBySlug = async (req, res) => {
-  const { slug } = req.params;
+  const { username, fullname, slug, email, favoriteGenre, role, profileImage } =
+    req.body;
 
   const user = await User.findOne({ slug });
-
-  const { username, fullname, email, favoriteGenre, role, profileImage } =
-    req.body;
 
   try {
     if (!username) {
       return res.status(404).json({ message: "username not found" });
+    }
+    if (!user) {
+      return res.status(404).json({ message: "user not found" });
     }
     const updateData = {
       username,

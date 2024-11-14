@@ -19,7 +19,7 @@ const AddAnnouncementPage = () => {
   const [description, setDescription] = useState("");
   const [btnText, setBtnText] = useState("");
   const [btnLink, setBtnLink] = useState("");
-  const [icon, setIcon] = useState("");
+  // const [icon, setIcon] = useState("");
   const [imageBase64, setImageBase64] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -62,7 +62,7 @@ const AddAnnouncementPage = () => {
         description,
         btnText,
         btnLink,
-        icon,
+        // icon,
         image: imageBase64,
       };
 
@@ -120,14 +120,14 @@ const AddAnnouncementPage = () => {
           label="Button Link"
           required={true}
         />
-        <TextInputField
+        {/* <TextInputField
           name="icon"
           type="text"
           value={icon}
           onChange={(e) => setIcon(e.target.value)}
           label="Icon (optional)"
           placeholder="Icon (optional)"
-        />
+        /> */}
         <FileUploadComponent
           profileImage={imageBase64}
           setProfileImage={setImageBase64}

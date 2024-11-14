@@ -167,7 +167,7 @@ export default function Notifications() {
             notifications.map((notification) => (
               <tr key={notification._id} className="text-center">
                 <td className="p-4">{notification.message || "N/A"}</td>
-                <td className="p-4">{notification.user_id?.email || "N/A"}</td>
+                <td className="p-4">{notification.user_id || "N/A"}</td>
                 <td className="p-4">{notification.questionId || "N/A"}</td>
                 <td className="p-4">{notification.type || "N/A"}</td>
                 <td className="p-4">{notification.reason || "N/A"}</td>

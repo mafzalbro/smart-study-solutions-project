@@ -51,34 +51,34 @@ export default function Chat({ params }) {
 
   const fetchChatInfo = async () => {
     try {
-      if (userChatInfo && userChatInfo.queriesUsed) {
-        if (window !== undefined) {
-          if (pdfUrls === "PDFTEXT") {
-            // const info = {
-            //   query_used: userChatInfo.queriesUsed,
-            //   pdf_text: pdfUrls,
-            //   slug: slug,
-            // };
-            // window.sessionStorage.setItem("limit", JSON.stringify(info));
-            setUserChatInfo((prev) => ({
-              ...prev,
-              queriesUsed: prev.queriesUsed + 1,
-            }));
-          }
-        }
+      // if (!!userChatInfo?.queriesUsed) {
+      //   if (window !== undefined) {
+      //     if (pdfUrls === "PDFTEXT") {
+      //       // const info = {
+      //       //   query_used: userChatInfo.queriesUsed,
+      //       //   pdf_text: pdfUrls,
+      //       //   slug: slug,
+      //       // };
+      //       // window.sessionStorage.setItem("limit", JSON.stringify(info));
+      //       setUserChatInfo((prev) => ({
+      //         ...prev,
+      //         queriesUsed: prev.queriesUsed + 1,
+      //       }));
+      //     }
+      //   }
+      // } else {
+      const info = await fetcher(
+        `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/info/`
+      );
+      if (
+        info.message === "User's information for today fetched successfully"
+      ) {
+        setUserChatInfo(info.data);
+        sessionStorage.setItem("query_used", info.data.queriesUsed);
       } else {
-        const info = await fetcher(
-          `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/chat/info/`
-        );
-        if (
-          info.message === "User's information for today fetched successfully"
-        ) {
-          setUserChatInfo(info.data);
-          sessionStorage.setItem("query_used", info.data.queriesUsed);
-        } else {
-          setUserChatInfo({});
-        }
+        setUserChatInfo({});
       }
+      // }
     } catch (error) {}
   };
 

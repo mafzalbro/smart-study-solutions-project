@@ -240,10 +240,10 @@ export default function ResourcePage({ params }) {
 
   if (loading) {
     return (
-      <div className="resource-item container mx-auto w-full md:w-[90vw] my-10 px-4">
+      <div className="resource-item container mx-auto w-full my-12 px-4">
         <section className="flex flex-col md:flex-row gap-8">
           {/* Main Content Skeleton */}
-          <main className="bg-secondary dark:bg-neutral-800 shadow-md bg-clip-border rounded-lg p-6 md:p-10 flex-1">
+          <main className="bg-secondary dark:bg-neutral-800 shadow-md bg-clip-border rounded-xl p-6 md:p-10 flex-1">
             {/* Back Link Skeleton */}
             <Skeleton height={30} width="200px" className="mb-4" />
 
@@ -300,7 +300,7 @@ export default function ResourcePage({ params }) {
   if (!resource) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600">
-        <div className="text-center text-white p-8 rounded-lg shadow-lg max-w-md w-full bg-white bg-opacity-40 backdrop-blur-lg">
+        <div className="text-center text-white p-8 rounded-xl shadow-lg max-w-md w-full bg-white bg-opacity-40 backdrop-blur-lg">
           <h1 className="text-4xl font-extrabold mb-4">
             Oops! Something went wrong.
           </h1>
@@ -323,7 +323,7 @@ export default function ResourcePage({ params }) {
 
   return (
     resource && (
-      <div className="resource-item container mx-auto w-full md:w-[100vw] my-6 sm:my-12 px-6">
+      <div className="resource-item container mx-auto w-full my-6 sm:my-12 px-6">
         <ResourceMembershipMessage />
         <section className="flex flex-col md:flex-row gap-12">
           <main className="text-neutral-800 dark:text-neutral-200 bg-secondary dark:bg-neutral-800 shadow-lg bg-clip-border rounded-xl p-8 md:p-12 flex-1">

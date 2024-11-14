@@ -56,7 +56,7 @@ export default function Contacts() {
     const data = await fetcher(
       `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/contact`
     );
-    return data.results.data;
+    return data.data.data;
   };
 
   const categories = [

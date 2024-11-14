@@ -46,6 +46,7 @@ const getAllResources = async (req, res) => {
       queryOptions.$or = [
         { title: { $regex: query, $options: "i" } },
         { author: { $regex: query, $options: "i" } },
+        { tags: { $regex: query, $options: "i" } },
         { description: { $regex: query, $options: "i" } },
       ];
     }
@@ -557,11 +558,8 @@ const addResource = async (req, res) => {
       semester,
       degree,
       profileImage,
-      pdfLink: pdfLink
-        ? Array.isArray(pdfLink)
-          ? [pdfLink]
-          : pdfLink
-        : [source],
+      source,
+      pdfLink: pdfLink ? [pdfLink] : [source],
     });
     await newResource.save();
     res
