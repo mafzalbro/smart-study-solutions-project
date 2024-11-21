@@ -3,7 +3,7 @@ import { AiOutlineBook, AiOutlineFileText, AiOutlineFileSearch, AiOutlineRobot, 
 
 const offerings = [
   { icon: <AiOutlineBook className="mx-auto text-5xl text-accent-600 group-hover:text-link-hover transition-colors duration-300" />, title: "Books", url: "/resources/type/books" },
-  { icon: <AiOutlineFileText className="mx-auto text-5xl text-accent-600 group-hover:text-link-hover transition-colors duration-300" />, title: "Past Papers", url: "/resources/type/ " },
+  { icon: <AiOutlineFileText className="mx-auto text-5xl text-accent-600 group-hover:text-link-hover transition-colors duration-300" />, title: "Past Papers", url: "/resources/type/past-papers " },
   { icon: <AiOutlineFileSearch className="mx-auto text-5xl text-accent-600 group-hover:text-link-hover transition-colors duration-300" />, title: "Notes", url: "/resources/type/notes" },
   { icon: <AiOutlineRobot className="mx-auto text-5xl text-accent-600 group-hover:text-link-hover transition-colors duration-300" />, title: "AI PDF Chat", url: "/chat" },
   { icon: <AiOutlineQuestionCircle className="mx-auto text-5xl text-accent-600 group-hover:text-link-hover transition-colors duration-300" />, title: "QnA Forum", url: "/forum" },
