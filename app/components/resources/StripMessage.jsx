@@ -24,7 +24,7 @@ const ResourceMembershipMessage = () => {
     >
       <div className="flex flex-col sm:flex-row items-start sm:items-center">
         <span className="text-sm md:text-base font-semibold">
-          2 Docs canbe viewed or downloaded for today in the free version.
+          10 Docs can be viewed and 2 can be downloaded for today in the free version.
         </span>
         <Link
           href="/pricing"

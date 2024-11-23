@@ -21,8 +21,8 @@ const PdfUploadComponent = ({
       <input
         type="file"
         disabled={disabled || isUploading}
-        accept="application/pdf"
-        onChange={handleFileChange} // Use the new handleFileChange method
+        accept="application/*"
+        onChange={handleFileChange}
         className="hidden disabled:cursor-not-allowed"
         id="pdfInput"
         ref={fileInputRef} // Attach the ref here

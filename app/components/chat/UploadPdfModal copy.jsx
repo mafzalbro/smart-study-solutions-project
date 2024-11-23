@@ -1,16 +1,15 @@
 import { useRef, useState } from "react";
-// import * as pdfjsLib from "pdfjs-dist/build/pdf";
 import Modal from "../Modal";
 import { FaTimes } from "react-icons/fa";
 import { AiOutlineClear, AiOutlineLoading } from "react-icons/ai";
-import { AiOutlineFileText } from "react-icons/ai"; // For page-wise button
-import PdfUploadComponent from "./PDFUploadComponent";
-import PageRangeModal from "./PageRangeModal"; // New Modal for page range
 import { useAuth } from "@/app/customHooks/AuthContext";
+import PdfUploadComponent from "./PDFUploadComponent";
+import PageRangeModal from "./PageRangeModal";
 import mammoth from "mammoth";
 import * as pdfjsLib from "pdfjs-dist";
 import PptxGenJS from "pptxgenjs";
 import { read, utils } from "xlsx";
+import jsPDF from "jspdf";
 
 // Set up the worker for pdfjs
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
@@ -29,12 +28,56 @@ export default function UploadPdfModal({
   const [errorMessage, setErrorMessage] = useState("");
   const [wordCountError, setWordCountError] = useState(false);
   const [showPageRangeModal, setShowPageRangeModal] = useState(false);
-  const [pdfPages, setPdfPages] = useState(0); // Keep track of PDF page count
+  const [pdfPages, setPdfPages] = useState(0);
   const fileInputRef = useRef(null);
   const { user } = useAuth();
 
-  // Function to extract text from PDF
-  const extractTextFromPdf = async (file) => {
+  // Convert DOCX to PDF
+  const convertDocxToPdf = async (file) => {
+    const arrayBuffer = await file.arrayBuffer();
+    const { value: text } = await mammoth.extractRawText({ arrayBuffer });
+    const pdf = new jsPDF();
+    const lines = pdf.splitTextToSize(text, 180);
+    lines.forEach((line, index) => {
+      if (index > 0 && index % 50 === 0) pdf.addPage(); // Add pages as needed
+      pdf.text(10, 10 + (index % 50) * 5, line);
+    });
+    return pdf;
+  };
+
+  // Convert PPTX to PDF
+  const convertPptxToPdf = async (file) => {
+    const arrayBuffer = await file.arrayBuffer();
+    const pptx = new PptxGenJS();
+    pptx.load(arrayBuffer);
+    const pdf = new jsPDF();
+    pptx.slides.forEach((slide, index) => {
+      if (index > 0) pdf.addPage();
+      slide.objects.forEach((obj) => {
+        if (obj.text) pdf.text(10, 10, obj.text);
+      });
+    });
+    return pdf;
+  };
+
+  // Convert XLSX to PDF
+  const convertXlsxToPdf = async (file) => {
+    const arrayBuffer = await file.arrayBuffer();
+    const workbook = read(arrayBuffer, { type: "array" });
+    const pdf = new jsPDF();
+    workbook.SheetNames.forEach((sheetName) => {
+      const sheet = workbook.Sheets[sheetName];
+      const jsonData = utils.sheet_to_json(sheet, { header: 1 });
+      jsonData.forEach((row, rowIndex) => {
+        if (rowIndex > 0 && rowIndex % 50 === 0) pdf.addPage();
+        pdf.text(10, 10 + (rowIndex % 50) * 5, row.join(" "));
+      });
+    });
+    return pdf;
+  };
+
+  // Extract text from PDF
+  const extractTextFromPdf = async (file, startPage = 1, endPage) => {
     setIsLoading(true);
     setErrorMessage("");
     setWordCountError(false);
@@ -44,9 +87,11 @@ export default function UploadPdfModal({
       const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
       let fullText = "";
       let wordCount = 0;
-      setPdfPages(pdf.numPages); // Set the number of pages for the PDF
+      const totalPages = pdf.numPages;
 
-      for (let i = 1; i <= pdf.numPages; i++) {
+      endPage = endPage ? Math.min(endPage, totalPages) : totalPages;
+
+      for (let i = startPage; i <= endPage; i++) {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
         const pageText = textContent.items.map((item) => item.str).join(" ");
@@ -54,15 +99,14 @@ export default function UploadPdfModal({
         wordCount += pageText.split(" ").length;
       }
 
-      fullText = fullText.trim();
-
-      if (wordCount > 5000) {
+      if (wordCount > (user?.isMember ? 7000 : 5000)) {
         setWordCountError(true);
         setPdfText("");
       } else if (!fullText) {
         setErrorMessage("This PDF contains no text or may be image-based.");
       } else {
-        setPdfText(fullText);
+        setPdfText(fullText.trim());
+        setPdfPages(totalPages);
       }
     } catch (error) {
       console.error("Error extracting text from PDF:", error);
@@ -72,143 +116,47 @@ export default function UploadPdfModal({
     }
   };
 
-  // Function to extract text from DOCX
-  const extractTextFromDocx = async (file) => {
-    setIsLoading(true);
-    setErrorMessage("");
-    setWordCountError(false);
+  // Unified handler for extracting text
+  const extractTextFromFile = async (file, startPage, endPage) => {
+    let pdfBlob;
 
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const { value: text } = await mammoth.extractRawText({ arrayBuffer });
-      setPdfText(text.trim());
-    } catch (error) {
-      console.error("Error extracting text from DOCX:", error);
-      setErrorMessage(
-        "Failed to extract text from the DOCX. Please try again."
-      );
-    } finally {
-      setIsLoading(false);
+    if (file.type === "application/pdf") {
+      extractTextFromPdf(file, startPage, endPage);
+      return;
+    } else if (
+      file.type ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
+      const pdf = await convertDocxToPdf(file);
+      pdfBlob = pdf.output("blob");
+    } else if (
+      file.type ===
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    ) {
+      const pdf = await convertPptxToPdf(file);
+      pdfBlob = pdf.output("blob");
+    } else if (
+      file.type ===
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ) {
+      const pdf = await convertXlsxToPdf(file);
+      pdfBlob = pdf.output("blob");
+    } else {
+      setErrorMessage("Unsupported file type");
+      return;
     }
+
+    const pdfFile = new File([pdfBlob], "converted.pdf", {
+      type: "application/pdf",
+    });
+    extractTextFromPdf(pdfFile, startPage, endPage);
   };
 
-  // Function to extract text from PPTX
-  const extractTextFromPptx = async (file) => {
-    setIsLoading(true);
-    setErrorMessage("");
-    setWordCountError(false);
-
-    try {
-      const JSZip = (await import("jszip")).default;
-      const arrayBuffer = await file.arrayBuffer();
-      const zip = await JSZip.loadAsync(arrayBuffer);
-
-      let fullText = "";
-
-      // Extract slide text by reading XML files in the /ppt/slides/ directory
-      const slideFiles = Object.keys(zip.files).filter(
-        (fileName) =>
-          fileName.startsWith("ppt/slides/slide") && fileName.endsWith(".xml")
-      );
-
-      for (const slideFile of slideFiles) {
-        const slideXml = await zip.files[slideFile].async("string");
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(slideXml, "application/xml");
-
-        // Extract text elements from the slide XML
-        const textElements = xmlDoc.getElementsByTagName("a:t");
-        for (const textElement of textElements) {
-          fullText += textElement.textContent + " ";
-        }
-      }
-
-      fullText = fullText.trim();
-      const wordCount = fullText.split(" ").length;
-
-      if (wordCount > (user?.isMember ? 7000 : 5000)) {
-        setWordCountError(true);
-        setPdfText("");
-      } else if (!fullText) {
-        setErrorMessage("This PPTX file contains no text.");
-      } else {
-        setPdfText(fullText);
-      }
-    } catch (error) {
-      console.error("Error extracting text from PPTX:", error);
-      setErrorMessage(
-        "Failed to extract text from the PPTX. Please try again."
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Function to extract text from XLSX
-  const extractTextFromXlsx = async (file) => {
-    setIsLoading(true);
-    setErrorMessage("");
-    setWordCountError(false);
-
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const workbook = read(arrayBuffer, { type: "array" });
-      let fullText = "";
-
-      workbook.SheetNames.forEach((sheetName) => {
-        const sheet = workbook.Sheets[sheetName];
-        const jsonData = utils.sheet_to_json(sheet, { header: 1 });
-
-        jsonData.forEach((row) => {
-          fullText += row.join(" ") + " "; // Join row data to a string
-        });
-      });
-
-      fullText = fullText.trim();
-
-      if (fullText.split(" ").length > 5000) {
-        setWordCountError(true);
-        setPdfText("");
-      } else if (!fullText) {
-        setErrorMessage("This XLSX file contains no data.");
-      } else {
-        setPdfText(fullText);
-      }
-    } catch (error) {
-      console.error("Error extracting text from XLSX:", error);
-      setErrorMessage(
-        "Failed to extract text from the XLSX. Please try again."
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Function to handle file upload and extraction
   const handleUpload = () => {
     if (pdfFile) {
-      if (pdfFile.type === "application/pdf") {
-        extractTextFromPdf(pdfFile);
-      } else if (
-        pdfFile.type ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-      ) {
-        extractTextFromDocx(pdfFile);
-      } else if (
-        pdfFile.type ===
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-      ) {
-        extractTextFromPptx(pdfFile);
-      } else if (
-        pdfFile.type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-      ) {
-        extractTextFromXlsx(pdfFile); // Added XLSX handler
-      } else {
-        setErrorMessage("Unsupported file type");
-      }
+      extractTextFromFile(pdfFile);
     } else if (pdfUrl) {
-      // onUpload(pdfUrl);
+      setErrorMessage("URL upload not supported for conversion.");
     }
   };
 
@@ -232,60 +180,17 @@ export default function UploadPdfModal({
     setPdfFile(null);
     setPdfText("");
     setErrorMessage("");
-    setErrorMessage(true);
-  };
-
-  // Function to handle page range extraction
-  const extractTextFromPages = async (file, startPage, endPage) => {
-    setIsLoading(true);
-    setErrorMessage("");
     setWordCountError(false);
-
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
-      let fullText = "";
-      let wordCount = 0;
-
-      // Ensure page range is within bounds
-      startPage = Math.max(1, startPage);
-      endPage = Math.min(endPage, pdf.numPages);
-
-      for (let i = startPage; i <= endPage; i++) {
-        const page = await pdf.getPage(i);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items.map((item) => item.str).join(" ");
-        fullText += pageText + " ";
-        wordCount += pageText.split(" ").length;
-      }
-
-      fullText = fullText.trim();
-
-      if (!fullText) {
-        setErrorMessage("This PDF contains no text or may be image-based.");
-      } else {
-        setPdfText(fullText);
-      }
-      if (user?.isMember && wordCount > 7000) {
-        setWordCountError(true);
-      } else if (!user?.isMember && wordCount > 5000) {
-        setWordCountError(true);
-      }
-    } catch (error) {
-      console.error("Error extracting text from specific pages:", error);
-      setErrorMessage("Failed to extract text from the PDF. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
   };
 
+  // Function to handle page range modal
   const openPageRangeModal = () => {
     setShowPageRangeModal(true);
   };
 
   const handlePageRangeSubmit = (startPage, endPage) => {
     setShowPageRangeModal(false);
-    extractTextFromPages(pdfFile, startPage, endPage);
+    extractTextFromPages(pdfFile, startPage, endPage); // Handle page range extraction
   };
 
   return (
@@ -325,9 +230,9 @@ export default function UploadPdfModal({
                   Dear Partner, we apologize for the inconvenience!
                 </div>
                 <div className="mt-2 text-md">
-                  It seems that this PDF exceeds 7000 words. While this may be a
-                  bit of a hassle, you can still extract the text page by page
-                  for a more tailored experience.
+                  It seems that this PDF or document exceeds 7000 words. While
+                  this may be a bit of a hassle, you can still extract the text
+                  page by page for a more tailored experience.
                 </div>
                 <div className="mt-4">
                   <button
@@ -366,8 +271,6 @@ export default function UploadPdfModal({
             {errorMessage}
           </div>
         )}
-
-        {/* <Modal>{pdfText}</Modal> */}
 
         {/* PDF Upload Section */}
         <PdfUploadComponent

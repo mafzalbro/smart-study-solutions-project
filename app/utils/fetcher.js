@@ -27,10 +27,12 @@ export const fetcher = async (
 
   // For GET method, retrieve cached data
   if (method === "GET") {
-    const cachedData = await getCachedData(cacheKey);
-    if (cachedData) {
-      console.log("Serving From Cache: ", cachedData);
-      return cachedData.data; // Return cached data if available
+    if(!url?.includes("chat/info")){
+      const cachedData = await getCachedData(cacheKey);
+      if (cachedData) {
+        console.log("Serving From Cache: ", cachedData);
+        return cachedData.data; // Return cached data if available
+      }
     }
   }
 

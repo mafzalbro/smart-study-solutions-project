@@ -83,7 +83,7 @@ export default function PageRangeModal({ pdfPages, onSubmit, onClose }) {
             onClick={handleSubmit}
             className="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-500"
           >
-            <AiOutlineArrowRight className="mr-2" />
+            <AiOutlineArrowRight className="mr-2 inline" />
             Extract
           </button>
         </div>

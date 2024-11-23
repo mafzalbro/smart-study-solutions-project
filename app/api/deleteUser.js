@@ -13,6 +13,7 @@ export const deleteUser = async () => {
       removeUserCacheHistory();
       toast.success("Profile deleted successfully");
       if(window !== undefined){
+        router.push("/login")
         window.localStorage.removeItem("token")
       }
     } else {

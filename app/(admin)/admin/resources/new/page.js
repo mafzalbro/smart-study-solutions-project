@@ -30,7 +30,34 @@ const AddResourcePage = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Update slug whenever the title changes (debounced)
+  // Degree management state
+  const [degrees, setDegrees] = useState([
+    "BSIT",
+    "BSCS",
+    "BSSE",
+    "BSEE",
+    "BSME",
+    "BSCE",
+    "BSCE_Civil",
+    "BSBio",
+    "BSPhysics",
+    "BSChemistry",
+  ]);
+  const [newDegree, setNewDegree] = useState("");
+
+  // Add new degree dynamically
+  const handleAddDegree = () => {
+    if (newDegree && !degrees.includes(newDegree)) {
+      setDegrees([...degrees, newDegree]);
+      setNewDegree("");
+      toast.success("Degree added successfully!");
+    } else if (!newDegree) {
+      toast.error("Please enter a valid degree.");
+    } else {
+      toast.error("Degree already exists.");
+    }
+  };
+
   const handleSlugGeneration = () => {
     const slugifiedTitle = title
       .trim()
@@ -93,7 +120,7 @@ const AddResourcePage = () => {
         "POST",
         newResource
       );
-      removeOlderCacheAfterMutation("/api/resources")
+      removeOlderCacheAfterMutation("/api/resources");
       toast.success("Resource added successfully!");
       router.push("/admin/resources");
     } catch (error) {
@@ -126,8 +153,8 @@ const AddResourcePage = () => {
             type="text"
             value={title}
             onChange={(e) => {
-              handleSlugGeneration();
               setTitle(e.target.value);
+              handleSlugGeneration();
             }}
             placeholder="Enter the title"
             required={true}
@@ -138,20 +165,6 @@ const AddResourcePage = () => {
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
             placeholder="Enter the author (optional)"
-          />
-          <label
-            htmlFor="status"
-            className="block text-sm font-medium text-gray-900 dark:text-gray-100"
-          >
-            You can't change slug later so be carefull in setting up...
-          </label>
-          <TextInputField
-            name="slug"
-            type="text"
-            value={slug}
-            onChange={(e) => setSlug(e.target.value)}
-            placeholder="Enter the slug"
-            required={true}
           />
           <TextAreaInputField
             name="description"
@@ -172,50 +185,69 @@ const AddResourcePage = () => {
             value={source}
             onChange={(e) => setSource(e.target.value)}
             placeholder="Enter source e.g., Google Drive Link"
-            required={true}
           />
-          <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
-            Semester:
-          </label>
           <select
             name="semester"
             value={semester}
             onChange={(e) => setSemester(e.target.value)}
             className="w-full p-2 border rounded-lg bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-neutral-600"
-            required={true}
+            required
           >
             <option value="" disabled>
               Select Semester...
             </option>
-            <option value="semester 1">1st Semester</option>
-            <option value="semester 2">2nd Semester</option>
-            <option value="semester 3">3rd Semester</option>
-            <option value="semester 4">4th Semester</option>
-            <option value="semester 5">5th Semester</option>
-            <option value="semester 6">6th Semester</option>
-            <option value="semester 7">7th Semester</option>
-            <option value="semester 8">8th Semester</option>
+            {[
+              "1st Semester",
+              "2nd Semester",
+              "3rd Semester",
+              "4th Semester",
+              "5th Semester",
+              "6th Semester",
+              "7th Semester",
+              "8th Semester",
+            ].map((sem) => (
+              <option key={sem} value={sem}>
+                {sem}
+              </option>
+            ))}
           </select>
-          <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
-            Degree:
-          </label>
-          <select
-            name="degree"
-            value={degree}
-            onChange={(e) => setDegree(e.target.value)}
-            className="w-full p-2 border rounded-lg bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-neutral-600"
-            required
-          >
-            <option value="" disabled>
-              Select Degree...
-            </option>
-            <option value="bsit">BSIT</option>
-            <option value="bscs">BSCS</option>
-            <option value="bsbio">BSBIO</option>
-          </select>
-          <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
-            Type:
-          </label>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
+              Degree:
+            </label>
+            <select
+              name="degree"
+              value={degree}
+              onChange={(e) => setDegree(e.target.value)}
+              className="w-full p-2 border rounded-lg bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-neutral-600"
+              required
+            >
+              <option value="" disabled>
+                Select Degree...
+              </option>
+              {degrees.map((deg, idx) => (
+                <option key={idx} value={deg}>
+                  {deg}
+                </option>
+              ))}
+            </select>
+            <div className="flex items-center space-x-2">
+              <input
+                type="text"
+                value={newDegree}
+                onChange={(e) => setNewDegree(e.target.value)}
+                placeholder="Add new degree..."
+                className="flex-grow p-2 border rounded-lg bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-neutral-600"
+              />
+              <button
+                type="button"
+                onClick={handleAddDegree}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              >
+                Add
+              </button>
+            </div>
+          </div>
           <select
             name="type"
             value={type}
@@ -238,28 +270,28 @@ const AddResourcePage = () => {
             handleImageUpload={handleImageUpload}
             handleRemoveImage={handleRemoveImage}
           />
-          <div className="flex gap-2 my-4 border-t pt-4 dark:border-gray-500">
+          <div className="flex items-center gap-2 my-4 border-t pt-4 dark:border-gray-500">
             <label
               htmlFor="status"
               className="block text-sm font-medium text-gray-900 dark:text-gray-100"
             >
               Want to publish?
             </label>
-
             <input
               type="checkbox"
               id="status"
-              value={status}
+              checked={status}
               onChange={() => setStatus((prev) => !prev)}
+              className="w-4 h-4"
             />
           </div>
           <button
             type="submit"
-            className={`inline-flex text-black cursor-pointer text-center items-center space-x-2 py-2 px-4 ${
+            className={`inline-flex items-center space-x-2 py-2 px-4 rounded-lg ${
               isLoading
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-accent-100 hover:bg-accent-200 dark:bg-accent-300 dark:hover:bg-accent-400"
-            } rounded-lg text-center`}
+                : "bg-blue-500 text-white hover:bg-blue-600"
+            }`}
             disabled={isLoading}
           >
             {isLoading ? "Submitting..." : "Add Resource"}

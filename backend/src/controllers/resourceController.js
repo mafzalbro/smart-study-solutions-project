@@ -324,7 +324,7 @@ const getResourceBySlug = async (req, res) => {
     }
 
     // Check if the user has exceeded their resource view limit (2 resources today)
-    if (user.viewedResources.length >= 2) {
+    if (user.viewedResources.length >= 10) {
       isViewedExceed = true;
     }
 
@@ -471,7 +471,7 @@ const viewPDFResource = async (req, res) => {
     }
 
     // Check if the user has exceeded their resource view limit (2 resources today)
-    if (user.viewedResources.length >= 2) {
+    if (user.viewedResources.length >= 10) {
       return res.status(403).json({
         message: "View limit reached",
         viewLink: "",

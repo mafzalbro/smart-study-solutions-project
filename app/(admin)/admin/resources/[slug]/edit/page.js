@@ -31,6 +31,21 @@ const EditResourcePage = ({ params: { slug } }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Dynamic degrees state
+  const [degrees, setDegrees] = useState([
+    "BSIT",
+    "BSCS",
+    "BSSE",
+    "BSEE",
+    "BSME",
+    "BSCE",
+    "BSCE_Civil",
+    "BSBio",
+    "BSPhysics",
+    "BSChemistry",
+  ]);
+  const [newDegree, setNewDegree] = useState("");
+
   useEffect(() => {
     const fetchResource = async () => {
       setIsLoading(true);
@@ -54,13 +69,26 @@ const EditResourcePage = ({ params: { slug } }) => {
         setIsLoading(false);
         if (error === "Resource Not Found") {
           router.push("/admin/resources");
-          toast.error("Resource Does not exists...");
+          toast.error("Resource does not exist...");
         }
         console.error("Failed to fetch resource", error);
       }
     };
     fetchResource();
   }, [slug]);
+
+  // Handle dynamic degree addition
+  const handleAddDegree = () => {
+    if (newDegree && !degrees.includes(newDegree)) {
+      setDegrees([...degrees, newDegree]);
+      setNewDegree("");
+      toast.success("Degree added successfully!");
+    } else if (!newDegree) {
+      toast.error("Please enter a valid degree.");
+    } else {
+      toast.error("Degree already exists.");
+    }
+  };
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -104,7 +132,7 @@ const EditResourcePage = ({ params: { slug } }) => {
         updatedResource
       );
       setIsSubmitting(false);
-      removeOlderCacheAfterMutation("/api/resouces");
+      removeOlderCacheAfterMutation("/api/resources");
       toast.success("Resource updated successfully!");
       router.back();
     } catch (error) {
@@ -202,10 +230,32 @@ const EditResourcePage = ({ params: { slug } }) => {
             onChange={(e) => setDegree(e.target.value)}
             className="w-full p-2 border rounded-lg bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-neutral-600"
           >
-            <option value="bsit">BSIT</option>
-            <option value="bscs">BSCS</option>
-            <option value="bsbio">BSBIO</option>
+            <option value="" disabled>
+              Select Degree...
+            </option>
+            {degrees.map((deg, idx) => (
+              <option key={idx} value={deg}>
+                {deg}
+              </option>
+            ))}
           </select>
+
+          <div className="flex items-center space-x-2">
+            <input
+              type="text"
+              value={newDegree}
+              onChange={(e) => setNewDegree(e.target.value)}
+              placeholder="Add new degree..."
+              className="flex-grow p-2 border rounded-lg bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-neutral-600"
+            />
+            <button
+              type="button"
+              onClick={handleAddDegree}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            >
+              Add
+            </button>
+          </div>
 
           <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
             Type:
@@ -235,9 +285,8 @@ const EditResourcePage = ({ params: { slug } }) => {
               htmlFor="status"
               className="block text-sm font-medium text-gray-900 dark:text-gray-100"
             >
-              change status publish?
+              Change status publish?
             </label>
-
             <input
               type="checkbox"
               id="status"

@@ -11,6 +11,8 @@ const LimitReachedComponent = ({
 }) => {
   const [timeLeft, setTimeLeft] = useState(null);
 
+  console.log({ pdfUrls });
+
   useEffect(() => {
     if (userChatInfo) {
       if (userChatInfo?.lastResetDate) {

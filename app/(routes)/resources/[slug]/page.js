@@ -28,6 +28,7 @@ import {
 } from "react-icons/ai";
 import { toast } from "react-toastify";
 import ResourceMembershipMessage from "@/app/components/resources/StripMessage";
+import SocialShare from "@/app/components/resources/SocialShare";
 
 export default function ResourcePage({ params }) {
   const [resource, setResource] = useState(null);
@@ -297,7 +298,7 @@ export default function ResourcePage({ params }) {
       </div>
     );
   }
-  if (!resource) {
+  if (!resource && !resource?.slug && !resource?.title) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600">
         <div className="text-center text-white p-8 rounded-xl shadow-lg max-w-md w-full bg-white bg-opacity-40 backdrop-blur-lg">
@@ -374,6 +375,13 @@ export default function ResourcePage({ params }) {
                   {new Date(resource.updatedAt).toLocaleDateString()}
                 </span>
               </p>
+            </div>
+
+            <div className="mt-4">
+              <SocialShare
+                title={resource?.title}
+                url={`${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/resources/${resource?.slug}`}
+              />
             </div>
 
             <StylishTitle
