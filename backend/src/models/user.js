@@ -130,6 +130,10 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    isNewsLetterHolder: {
+      type: Boolean,
+      default: false,
+    },
     subscriptionEndDate: {
       type: Date,
       default: null,

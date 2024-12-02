@@ -32,7 +32,7 @@ const ForgotPassword = (props) => {
       toast.success(response.message);
       // Optionally redirect or update state after a successful email send
     } catch (error) {
-      toast.error("Failed to send reset email. Please try again.");
+      toast.error("Failed to send reset email. Please try again." + (error.message ? error.message : ""));
       console.error("Failed to send reset email:", error.message);
     } finally {
       setLoading(false);
@@ -54,7 +54,7 @@ const ForgotPassword = (props) => {
         >
           <div className="relative">
             <MdEmail
-              className="absolute left-4 top-1/3 transform -translate-y-1/4 text-gray-400 dark:text-gray-500"
+              className="absolute left-4 top-1/2 transform -translate-y-1/4 text-gray-400 dark:text-gray-500"
               size={20}
             />
             <TextInputField

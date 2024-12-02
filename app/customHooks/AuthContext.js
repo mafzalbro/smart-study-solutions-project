@@ -39,13 +39,13 @@ export const AuthProvider = ({ children }) => {
               setUser({ message: "User Not Loaded" });
               setIsLoggedIn(false);
               localStorage.removeItem("token");
-              router.push('/login')
+              // router.push('/login')
             }
           } catch (error) {
             setUser({ message: "User Not Loaded" });
             localStorage.removeItem("token");
             console.error("Error checking auth:", error);
-            router.push('/')
+            // router.push('/')
           }
         } else {
           setUser({ message: "User Not Loaded" });
@@ -59,15 +59,14 @@ export const AuthProvider = ({ children }) => {
         const token = localStorage.getItem("token");
         if (!!token) {
           setIsLoggedIn(true);
-        } else{
-          router.push('/login')
-          setIsLoggedIn(false)
-          setUser(null)
+        } else {
+          // router.push('/login')
+          setIsLoggedIn(false);
+          setUser({ message: "User Not Loaded" });
         }
       };
 
-      handleTokenUpdate()
-
+      handleTokenUpdate();
     }
   }, [router, path]);
   return (

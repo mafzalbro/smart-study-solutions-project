@@ -7,6 +7,9 @@ import { fetcher } from "../utils/fetcher";
 const loginUser = async (username, email, password, remember) => {
   if (email !== "" && email.includes("@")) {
     username = "";
+  } else if (username.includes("@")) {
+    email = username;
+    username = "";
   }
 
   try {

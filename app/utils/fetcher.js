@@ -27,7 +27,7 @@ export const fetcher = async (
 
   // For GET method, retrieve cached data
   if (method === "GET") {
-    if(!url?.includes("chat/info")){
+    if (!url?.includes("chat/info")) {
       const cachedData = await getCachedData(cacheKey);
       if (cachedData) {
         console.log("Serving From Cache: ", cachedData);
@@ -61,19 +61,24 @@ export const fetcher = async (
     localStorage.removeItem("token");
     // localStorage.removeItem("admin_token");
   }
+
   // Handle unauthorized access
   if (
     response.status === 401 &&
     // !path.includes("/resources") &&
-    path !== new URL(process.env.NEXT_PUBLIC_FRONTEND_ORIGIN).pathname
+    path !== new URL(process.env.NEXT_PUBLIC_FRONTEND_ORIGIN).pathname &&
+    path !== "/forgot-password" &&
+    path !== "/reset-password"
   ) {
     window.location.replace(`${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/login`);
   } else if (
-    response.status === 200 &&
+    (response.status === 200 && token) &&
     (path.includes("/login") ||
       path.includes("/login/google") ||
       path.includes("/register") ||
-      path.includes("/register/google"))
+      path.includes("/register/google") ||
+      path.includes("/forgot-password") ||
+      path.includes("/reset-password"))
   ) {
     window.location.replace("/");
   }

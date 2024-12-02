@@ -114,6 +114,7 @@ export default function Chat({ params }) {
       <div className="chat-home flex h-screen">
         {((userChatInfo && userChatInfo.chatOptionsUsed <= 2) ||
           user?.isMember) && <NewChatButton stickyBtn={true} />}
+
         <Sidebar
           chatHistory={chatHistory}
           slug={slug}
@@ -121,6 +122,7 @@ export default function Chat({ params }) {
           userChatInfo={userChatInfo}
           slugBaar="yes"
         />
+
         <div className="flex flex-col w-full md:w-3/4">
           <ChatHistory
             chatHistory={chatHistory}
@@ -137,6 +139,7 @@ export default function Chat({ params }) {
             chatHistory={chatHistory}
             setChatHistory={setChatHistory}
           />
+          
         </div>
       </div>
     </div>

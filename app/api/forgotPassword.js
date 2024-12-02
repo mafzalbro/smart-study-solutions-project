@@ -10,7 +10,7 @@ const forgotPassword = async (email) => {
     return await fetcher(url, 'POST', { email });
   } catch (error) {
     console.error('Error sending forgot password email:', error.message);
-    throw error.message;
+    throw error;
   }
 };
 

@@ -9,6 +9,7 @@ import LinkButton from "@/app/components/LinkButton";
 import Skeleton from "react-loading-skeleton";
 import { BiPlus } from "react-icons/bi";
 import { FiDownload } from "react-icons/fi";
+import { AiOutlineSend } from "react-icons/ai";
 // import Link from "next/link";
 
 export default function Contacts() {
@@ -71,6 +72,7 @@ export default function Contacts() {
 
   return (
     <div className="p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg shadow overflow-auto">
+      <div className="mb-10">
         <div className="flex items-center justify-between w-full my-4 gap-4">
           <GeneralExportButton
             resource="contacts"
@@ -78,14 +80,23 @@ export default function Contacts() {
             requestData={requestData}
             icon={<FiDownload className="text-blue-500 mr-2" />}
           />
+
+          <LinkButton
+            link="/admin/contacts/send-newsletter"
+            text="Send Newletter"
+            icon={<AiOutlineSend />}
+            className="!mb-6"
+          />
+
           {/* <LinkButton
             link="/admin/contacts/new"
             text="Add New Contact"
             icon={<BiPlus />}
             className="!mb-6"
           /> */}
-          <SearchInput onSearch={handleSearch} debounceDelay={1000} />
         </div>
+        <SearchInput onSearch={handleSearch} debounceDelay={1000} />
+      </div>
 
       <table className="w-full border border-neutral-300 dark:border-neutral-600 rounded-lg overflow-hidden shadow">
         <thead>

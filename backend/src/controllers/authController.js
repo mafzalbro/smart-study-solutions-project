@@ -52,6 +52,9 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   const { username, email, password, remember } = req.body;
 
+  console.log(req.body);
+  
+
   console.log({ expiresIn: remember ? JWT_EXPIRATION_EXTENDED : JWT_EXPIRATION })
   
   try {
@@ -131,7 +134,7 @@ const forgotPassword = async (req, res) => {
   const { email } = req.body;
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: 'This user is no account yet' });
+    if (!user) return res.status(404).json({ message: 'There is no account on this email yet' });
 
     const resetToken = jwt.sign({ email: user.email }, JWT_SECRET, { expiresIn: '1h' });
     user.resetTokenExpiry = Date.now() + 3600000;
