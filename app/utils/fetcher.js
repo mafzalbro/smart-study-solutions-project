@@ -72,7 +72,8 @@ export const fetcher = async (
   ) {
     window.location.replace(`${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/login`);
   } else if (
-    (response.status === 200 && token) &&
+    response.status === 200 &&
+    token &&
     (path.includes("/login") ||
       path.includes("/login/google") ||
       path.includes("/register") ||
@@ -92,7 +93,7 @@ export const fetcher = async (
   }
 
   // Store new token if available in the response body
-  if (data.token) {
+  if (data.token && url.includes("login")) {
     localStorage.setItem("token", data.token); // Store token
   }
 

@@ -5,6 +5,7 @@ example.com/blog/how-to-write-blog
 /blog
 
 /chat/[slug]/page.js
+/chat/2343454
 
 /chat/page.js
 
@@ -50,8 +51,31 @@ JWT (json web token)
 Login With Google
 domain.com?token="ey..."
 --------------------------------------------------------------------------
-dashboard
 resources
+
+[[...resources]] -- catch all segments
+page.js
+params = slug, slug2, slug3
+type/notes
+bsit/semester-8/notes
+
+/resources/type/page.js
+
 forum
+
+/forum -- forum/page.js
+/forum/... -- forum/[slug]/page.js
+/forum/category -- forum/category/page.js
+/forum/category/... -- forum/category/[category]/page.js
+
+---------------
+
+documents in MONGODB
+
 --------------------------------------------------------------------------
+left behind...
+
+landing page
 admin
+dashboard
+contact

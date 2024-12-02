@@ -298,7 +298,7 @@ export default function ResourcePage({ params }) {
       </div>
     );
   }
-  if (!resource && !resource?.slug && !resource?.title) {
+  if (!resource  || !resource?.slug || !resource?.title) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600">
         <div className="text-center text-white p-8 rounded-xl shadow-lg max-w-md w-full bg-white bg-opacity-40 backdrop-blur-lg">

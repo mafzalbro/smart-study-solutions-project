@@ -31,6 +31,7 @@ import Link from "next/link";
 import { TbEdit } from "react-icons/tb";
 import { useAuth } from "@/app/customHooks/AuthContext";
 import StripeMessage from "@/app/components/forum/StripMessage";
+import QuestionLoadError from "@/app/components/forum/QuestionLoadError";
 
 const QuestionPage = ({ params }) => {
   const { slug } = params;
@@ -279,12 +280,8 @@ const QuestionPage = ({ params }) => {
       </section>
     );
 
-  if (!isLoading && !question)
-    return (
-      <div className="text-center py-80 px-4 md:px-8 text-red-600">
-        Question Details Failed to Load!
-      </div>
-    );
+  if (!isLoading && (!question || !question?.question))
+    return <QuestionLoadError />;
 
   return (
     <section className="px-4 py-8 md:px-10 max-w-screen-lg mx-auto">

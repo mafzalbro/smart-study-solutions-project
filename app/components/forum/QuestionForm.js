@@ -123,7 +123,7 @@ const QuestionForm = ({ onSuccess, onClose }) => {
           value={tags}
           onChange={(e) => setTags(e.target.value)}
           placeholder="Comma-separated tags here"
-          label="Tags"
+          label="Tags (Optional)"
         />
         <button
           type="submit"
