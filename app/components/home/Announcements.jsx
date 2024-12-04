@@ -36,6 +36,7 @@ const Announcements = () => {
 
         // Set announcements data
         setAnnouncements(data.data);
+        // setAnnouncements([]);
         setLoading(false);
       } catch (error) {
         console.error("Failed to fetch announcements:", error);

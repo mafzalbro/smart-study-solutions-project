@@ -43,7 +43,7 @@ const QuestionForm = ({ onSuccess, onClose }) => {
       const data = await fetcher(
         `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/qna/submit`,
         "POST",
-        { question, description, category, tags: tagsArray }
+        { question, category, tags: tagsArray }
       );
 
       toast.success("Question submitted successfully!");
@@ -94,13 +94,13 @@ const QuestionForm = ({ onSuccess, onClose }) => {
           label="Question"
           required
         />
-        <TextAreaField
+        {/* <TextAreaField
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Provide more details about your question"
           label="Description"
           rows={4}
-        />
+        /> */}
         <div>
           <label className="block text-secondary font-bold mb-2">
             Category

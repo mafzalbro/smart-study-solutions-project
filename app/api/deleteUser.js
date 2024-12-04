@@ -12,9 +12,9 @@ export const deleteUser = async () => {
     if (response) {
       removeUserCacheHistory();
       toast.success("Profile deleted successfully");
-      if(window !== undefined){
-        router.push("/login")
-        window.localStorage.removeItem("token")
+      if (window !== undefined) {
+        window.location.href = "/login";
+        window.localStorage.clear();
       }
     } else {
       toast.error(

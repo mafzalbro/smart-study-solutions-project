@@ -5,6 +5,7 @@ import dynamic from "next/dynamic"; // Dynamically import ReactQuill
 import { fetcher } from "@/app/(admin)/utils/fetcher";
 import TextInputField from "@/app/(admin)/components/admin/TextInputField";
 import "react-quill/dist/quill.snow.css"; // Import Quill styles
+import GoBackButton from "@/app/components/GoBackButton";
 
 // Dynamically import the Quill editor
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
@@ -31,7 +32,9 @@ const SendNewsletter = () => {
         setHtmlContent("");
         setResponseMessage(`Success: ${response.message}`);
       } else {
-        setResponseMessage(`Error: ${response.message || "Something went wrong."}`);
+        setResponseMessage(
+          `Error: ${response.message || "Something went wrong."}`
+        );
       }
     } catch (error) {
       console.error(error);
@@ -43,6 +46,7 @@ const SendNewsletter = () => {
 
   return (
     <div className="p-6 max-w-2xl mx-auto my-10 rounded-lg">
+      <GoBackButton />
       <h1 className="text-2xl font-semibold mb-4 text-neutral-800 dark:text-neutral-200">
         Send Newsletter
       </h1>

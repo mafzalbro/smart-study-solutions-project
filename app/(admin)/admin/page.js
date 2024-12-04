@@ -101,7 +101,7 @@ export default function Dashboard() {
               restrictedItems.includes(item.href) &&
               admin?.role === "admin"
             ) {
-              return null; // Don't render restricted items for "admin"
+              return null;
             }
             return (
               <Link key={item.key} href={item.href} passHref>

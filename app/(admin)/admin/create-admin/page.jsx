@@ -93,7 +93,7 @@ const CreateAdmin = () => {
           disabled={
             submitting || email === "" || username === "" || password === ""
           }
-          className="btn-primary bg-accent-600 dark:bg-accent-700 rounded-full py-4 px-6 disabled:cursor-not-allowed disabled:opacity-50"
+          className="btn-primary bg-accent-400 dark:bg-accent-700 rounded-full py-4 px-6 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {submitting ? <Spinner /> : "Create Admin"}
         </button>

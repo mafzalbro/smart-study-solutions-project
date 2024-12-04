@@ -30,7 +30,7 @@ const PasswordInput = ({
       <button
         type="button"
         onClick={() => setPasswordVisible(!passwordVisible)}
-        className="absolute right-4 top-1/3 transform -translate-y-1/4 text-gray-400 dark:text-gray-500"
+        className="absolute right-4 top-1/3 transform -translate-y-1/3 text-gray-400 dark:text-gray-500"
       >
         {passwordVisible ? (
           <AiFillEyeInvisible size={20} />

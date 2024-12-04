@@ -32,7 +32,7 @@ const RootLayout = ({ children }) => {
   return (
     <html lang="en">
       <body className={`${font.className} text-primary dark:text-secondary`}>
-      <ToastContainer />
+        <ToastContainer />
         {/* <SkeletonTheme color="#eeeeee20" highlightColor="#44444420" baseColor='#eeeeee20'> */}
         <SkeletonTheme
           color="#eeeeee0"

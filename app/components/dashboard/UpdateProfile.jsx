@@ -155,7 +155,7 @@ const UpdateProfile = () => {
           />
           <label
             htmlFor="fileInput"
-            className="flex items-center gap-4 w-full mt-1 py-4 px-4 border rounded-lg cursor-pointer focus:ring-2 focus:ring-accent-600 outline-none bg-white dark:bg-neutral-800 text-gray-800 dark:text-gray-300 border-neutral-300 dark:border-neutral-600"
+            className="flex items-center gap-4 w-full mt-1 py-4 px-4 border rounded-lg cursor-pointer focus:ring-2 focus:ring-accent-600 outline-none bg-white dark:bg-neutral-900 text-gray-800 dark:text-gray-300 border-neutral-300 dark:border-neutral-800"
           >
             <MdOutlineCloudUpload className="text-accent-600" />{" "}
             <span>Choose File</span>
@@ -220,7 +220,7 @@ const UpdateProfile = () => {
           placeholder="Email"
           required
         /> */}
-        <label className="block mb-4">
+        {/* <label className="block mb-4">
           Role:
           <select
             value={user.role || ""}
@@ -231,7 +231,7 @@ const UpdateProfile = () => {
             <option value="student">Student</option>
             <option value="teacher">Teacher</option>
           </select>
-        </label>
+        </label>  */}
         <TextInputField
           type="text"
           value={user.favoriteGenre || ""}

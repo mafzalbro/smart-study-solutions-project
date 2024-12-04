@@ -111,7 +111,7 @@ export default function UserDashboard() {
           <div className="pt-12 pb-6 text-center">
             {" "}
             <div
-              className={`inline-flex absolute top-2 right-2 md:top-4 md:right-4 items-center px-3 py-1 rounded-full font-semibold text-sm transition-all duration-300 ${
+              className={`inline-flex absolute top-2 right-2 md:top-4 md:right-4 z-10 items-center px-3 py-1 rounded-full font-semibold text-sm transition-all duration-300 ${
                 user?.isMember
                   ? "text-green-700 bg-green-100 dark:text-green-400 dark:bg-green-900"
                   : "text-blue-700 bg-blue-100 dark:text-blue-400 dark:bg-blue-900"

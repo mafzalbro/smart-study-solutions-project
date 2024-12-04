@@ -13,7 +13,7 @@ const FileUploadComponent = ({ profileImage, setProfileImage, setImageBase64, fi
       />
       <label
         htmlFor="fileInput"
-        className="flex items-center gap-4 w-full mt-1 py-4 px-4 border border-neutral-600 rounded-lg cursor-pointer focus:ring-2 focus:ring-accent-600 outline-none bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-300"
+        className="flex items-center gap-4 w-full mt-1 py-4 px-4 border border-neutral-800 rounded-lg cursor-pointer focus:ring-2 focus:ring-accent-600 outline-none bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-300"
       >
         <MdOutlineCloudUpload className="text-accent-600" /> <span>Upload Image</span>
       </label>

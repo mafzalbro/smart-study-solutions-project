@@ -2,17 +2,17 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import ResourceCard from "@/app/components/resources/ResourceCard";
-import PdfModal from "@/app/components/resources/PdfModal";
-import BookViewer from "@/app/components/resources/BookViewer";
+// import { notFound } from "next/navigation";
+import RelatedResourceCard from "@/app/components/resources/RelatedResourceCard";
+// import PdfModal from "@/app/components/resources/PdfModal";
+// import BookViewer from "@/app/components/resources/BookViewer";
 import StylishTitle from "@/app/components/StylishTitle";
 import Skeleton from "react-loading-skeleton";
 import Sidebar from "@/app/components/resources/Sidebar";
 import { useAuth } from "@/app/customHooks/AuthContext";
 import {
-  FaThumbsUp,
-  FaThumbsDown,
+  // FaThumbsUp,
+  // FaThumbsDown,
   FaStar,
   FaChevronLeft,
 } from "react-icons/fa";
@@ -24,7 +24,7 @@ import {
   AiFillLike,
   AiOutlineInfoCircle,
   AiOutlineLock,
-  AiOutlineLogin,
+  // AiOutlineLogin,
 } from "react-icons/ai";
 import { toast } from "react-toastify";
 import ResourceMembershipMessage from "@/app/components/resources/StripMessage";
@@ -298,7 +298,7 @@ export default function ResourcePage({ params }) {
       </div>
     );
   }
-  if (!resource  || !resource?.slug || !resource?.title) {
+  if (!resource || !resource?.slug || !resource?.title) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600">
         <div className="text-center text-white p-8 rounded-xl shadow-lg max-w-md w-full bg-white bg-opacity-40 backdrop-blur-lg">
@@ -324,7 +324,7 @@ export default function ResourcePage({ params }) {
 
   return (
     resource && (
-      <div className="resource-item container mx-auto w-full my-6 sm:my-12 px-6">
+      <div className="resource-item container mx-auto w-full sm:my-6 my-1 px-1 md:px-6">
         <ResourceMembershipMessage />
         <section className="flex flex-col md:flex-row gap-12">
           <main className="text-neutral-800 dark:text-neutral-200 bg-secondary dark:bg-neutral-800 shadow-lg bg-clip-border rounded-xl p-8 md:p-12 flex-1">
@@ -435,7 +435,7 @@ export default function ResourcePage({ params }) {
 
             <p className="my-4 text-base md:text-lg">{resource?.description}</p>
 
-            <div className="my-6 flex flex-col md:flex-row gap-4">
+            <div className="my-6 flex flex-col gap-4">
               {!!user && !user?.username && (
                 <LinkButton
                   text="Please login to view PDF..."
@@ -536,9 +536,9 @@ export default function ResourcePage({ params }) {
               tagName="h2"
               fontSize="3xl text-4xl text-center"
             />
-            <section className="w-full flex gap-2 flex-col md:flex-row my-10">
+            <section className="w-full flex gap-2 flex-col my-10 max-w-screen-md mx-auto">
               {relatedResources?.map((resource) => (
-                <ResourceCard
+                <RelatedResourceCard
                   key={`${resource.slug}-${resource._id}-${Date.now()}`}
                   resource={resource}
                 />

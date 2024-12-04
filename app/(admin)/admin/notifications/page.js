@@ -98,11 +98,11 @@ export default function Notifications() {
 
   const categories = [
     "Message",
+    "Status",
     "User",
     "Question ID",
     "Type",
     "Reason",
-    "Status",
     "Created At",
     "Sent At",
   ];
@@ -167,10 +167,6 @@ export default function Notifications() {
             notifications.map((notification) => (
               <tr key={notification._id} className="text-center">
                 <td className="p-4">{notification.message || "N/A"}</td>
-                <td className="p-4">{notification.user_id || "N/A"}</td>
-                <td className="p-4">{notification.questionId || "N/A"}</td>
-                <td className="p-4">{notification.type || "N/A"}</td>
-                <td className="p-4">{notification.reason || "N/A"}</td>
                 <td className="p-4">
                   <span
                     className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full ${
@@ -182,6 +178,10 @@ export default function Notifications() {
                     {notification.read === false ? "Unread" : "Already Read"}
                   </span>
                 </td>
+                <td className="p-4">{notification.user_id || "N/A"}</td>
+                <td className="p-4">{notification.questionId || "N/A"}</td>
+                <td className="p-4">{notification.type || "N/A"}</td>
+                <td className="p-4">{notification.reason || "N/A"}</td>
                 <td className="p-4">
                   {notification.created_at
                     ? new Date(notification.created_at).toLocaleString()
