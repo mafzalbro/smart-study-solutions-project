@@ -53,6 +53,8 @@ domain.com?token="ey..."
 --------------------------------------------------------------------------
 resources
 
+[...resources] -- catch all segments
+/resources/type/notes
 [[...resources]] -- expception catch all segments
 page.js
 params = slug, slug2, slug3
@@ -138,3 +140,14 @@ admin/resoures/[slug]/edit/page.js
 
 To delete
 admin/resoures/[slug]/delete/page.js
+
+---------------------------------------------
+
+NODEJS BASICS
+JS
+Server
+MongoDB
+Connection
+Rest API
+NEXTJS Fetch Data
+Display

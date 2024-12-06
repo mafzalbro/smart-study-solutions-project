@@ -11,7 +11,7 @@ const ContactPage = () => {
     return (
     <>
       <WhiteContainer>
-      {user && <h2 className="text-center my-10 text-2xl">Hey, {user.fullname}</h2>}
+      {user && user?.fullname && <h2 className="text-center my-10 text-2xl">Hey, {user?.fullname}</h2>}
         <ContactUs />
       </WhiteContainer>
     

@@ -6,6 +6,7 @@ import Link from "next/link";
 import Forum from "@/app/components/forum/forumPage";
 import Skeleton from "react-loading-skeleton";
 import { FaChevronLeft } from "react-icons/fa";
+import StylishTitle from "@/app/components/StylishTitle";
 const CategoryPage = ({ params: { category } }) => {
   const [categoryItem, setCategory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,8 +32,9 @@ const CategoryPage = ({ params: { category } }) => {
       >
         <FaChevronLeft className="mr-1" /> Back to All Categories Page
       </Link>
-      <section className="min-h-screen text-center p-4 md:p-8 mt-20">
-        <h1 className="text-5xl pb-4 capitalize">{categoryItem.name}</h1>
+      <section className="min-h-screen text-center p-4 md:p-8 mt-10">
+        <StylishTitle colored={categoryItem.name} noSpaces/>
+        {/* <h1 className="text-5xl pb-4 capitalize">{categoryItem.name}</h1> */}
         <p className="text-neutral-600 dark:text-neutral-300 my-4">
           {categoryItem.description}
         </p>
